@@ -1,0 +1,13 @@
+Move BackgroundStars into their own class
+Figure out proper imports;
+Create ForegroundObject array (quadtree?) and iterate from that
+Import player ship png and set up movement
+Design explosions and animate/test
+Bring in a local artist
+Create space aircraft carrier
+Create friendly wingmen? 
+Wings indicate allegiance? Central color for pilot?
+Small enemies first
+Large enemy ships with health after
+AI director
+frame based time calculations?

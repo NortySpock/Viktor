@@ -1,0 +1,4 @@
+Library licenses to the best of my knowledge:
+p5.js and p5.play.js are under the GNU Lesser General Public License v2.1 . The license text is included in this folder.
+
+p5.js-sound is under the MIT License. The license text is included in this folder.
