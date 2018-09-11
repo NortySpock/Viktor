@@ -19,6 +19,10 @@ var Game_Over_string = 'Game Over. Press [Enter] to start again.';
 var Game_Over_string_location;
 var backgroundStarCount = 20;
 
+var ship1;
+var ship2;
+
+
 
 function reset() {
     var canvas = createCanvas(canvasWidth, canvasHeight);
@@ -43,6 +47,11 @@ function reset() {
     preFillBackgroundStars();
 }
 
+function preload()
+{
+  ship1 = loadImage('img/ship1.png');
+  ship2 = loadImage('img/ship2.png');
+}
 
 function setup() {
   reset();
@@ -61,7 +70,7 @@ function draw() {
     }
 
     
-    //renderText();
+    image(ship2, 0, 0);
  
  
  
@@ -187,5 +196,13 @@ function preFillBackgroundStars()
   while(backgroundStars.length < backgroundStarCount)
   {
     backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,canvasWidth),randomFromInterval(0,canvasHeight))));
+  }
+}
+
+class ship
+{
+  constructor()
+  {
+    this.pos = createVector(canvasWidth/2,canvasHeight/2);
   }
 }
