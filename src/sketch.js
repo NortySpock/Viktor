@@ -1,9 +1,5 @@
 "use strict";
 
-var canvasWidth = 700;
-var canvasHeight = 700;
-
-var points = 0;
 var textColor;
 var soundMgr;
 var debugMode = false;
@@ -24,10 +20,14 @@ var ship2;
 
 var ship;
 
+var Game = {};
+Game.canvasWidth = 700;
+Game.canvasHeight = 700;
+Game.points = 0;
 
 
 function reset() {
-    var canvas = createCanvas(canvasWidth, canvasHeight);
+    var canvas = createCanvas(Game.canvasWidth, Game.canvasHeight);
     canvas.parent('sketch-holder');
 
     frameRate(60);
@@ -42,15 +42,15 @@ function reset() {
     textColor = 255;
     textFont('Courier New');
 
-    points = 0;
+    Game.points = 0;
 
     ship = new Ship();
 
     soundMgr = new SoundManager();
 
-    points_string_location = createVector(canvasWidth*(19/24),20);
+    points_string_location = createVector(Game.canvasWidth*(19/24),20);
     FPS_string_location = createVector(10,20);
-    Game_Over_string_location = createVector(canvasWidth/5,canvasHeight/2);
+    Game_Over_string_location = createVector(Game.canvasWidth/5,Game.canvasHeight/2);
 
     backgroundStars = [];
     preFillBackgroundStars();
@@ -155,7 +155,7 @@ function updateUIstuff()
   var fps = frameRate();
   FPS_string = "FPS:" + fps.toFixed(0);
 
-  points_string = "Points: " + points;
+  points_string = "Points: " + Game.points;
 }
 
 function renderUI()
@@ -198,10 +198,10 @@ class BackgroundStar
   {
     this.pos.y += this.fallSpeed;
 
-    if(this.pos.y > canvasHeight + 10)
+    if(this.pos.y > Game.canvasHeight + 10)
     {
       this.pos.y = -10; //recycle
-      this.pos.x = randomFromInterval(0,canvasWidth);
+      this.pos.x = randomFromInterval(0,Game.canvasWidth);
     }
   }
 
@@ -217,7 +217,7 @@ function preFillBackgroundStars()
 {
   while(backgroundStars.length < backgroundStarCount)
   {
-    backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,canvasWidth),randomFromInterval(0,canvasHeight))));
+    backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Game.canvasWidth),randomFromInterval(0,Game.canvasHeight))));
   }
 }
 
@@ -225,6 +225,6 @@ class Ship
 {
   constructor()
   {
-    this.pos = createVector(canvasWidth/2,canvasHeight/2);
+    this.pos = createVector(Game.canvasWidth/2,Game.canvasHeight/2);
   }
 }
