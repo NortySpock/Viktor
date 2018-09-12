@@ -70,7 +70,7 @@ function draw() {
     }
 
     
-    image(ship2, 0, 0);
+    image(ship2, canvasWidth/2, canvasHeight/2);
  
  
  
@@ -177,9 +177,8 @@ class BackgroundStar
     
     if(this.pos.y > canvasHeight + 10)
     {
-      this.pos.y = randomFromInterval(-10,-1); //recycle
-      this.size = randomFromInterval(this.minStarSize,this.maxStarSize)
-      this.fallSpeed = randomFromInterval(this.minFallSpeed,this.maxFallSpeed);      
+      this.pos.y = -10; //recycle
+      this.pos.x = randomFromInterval(0,canvasWidth);
     }
   }
   
