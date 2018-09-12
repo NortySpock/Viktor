@@ -1,7 +1,4 @@
 "use strict";
-
-var textColor;
-var soundMgr;
 var debugMode = false;
 var frameDebug = false;
 
@@ -33,20 +30,20 @@ function reset() {
     frameRate(60);
     background(0);
 
+    Game.textColor = color(255);
+
     textSize(14);
-    textColor = 255;
+    textStyle(NORMAL);
     textFont('Courier New');
-
-
-    //textStyle(BOLD);
-    textColor = 255;
-    textFont('Courier New');
+    stroke(Game.textColor);
+    fill(Game.textColor);
 
     Game.points = 0;
 
     ship = new Ship();
 
-    soundMgr = new SoundManager();
+    Game.soundMgr = new SoundManager();
+
 
     points_string_location = createVector(Game.canvasWidth*(19/24),20);
     FPS_string_location = createVector(10,20);
@@ -132,12 +129,28 @@ var handleKeyInput = function()
 function keyPressed() {
   if(key == ' ')
   {
-    soundMgr.queueSound('proton_bolt');
+    Game.soundMgr.queueSound('proton_bolt');
   }
 
   if(keyCode == ENTER || keyCode == RETURN)
   {
     reset();
+  }
+
+  if(key == 'P')
+  {
+    ship.triggerSound();
+  }
+
+  if(key == 'S')
+  {
+    backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Game.canvasWidth),randomFromInterval(0,Game.canvasHeight))));
+  }
+
+
+  if(key == 'O')
+  {
+    console.log('pressed oats')
   }
 };
 
@@ -163,8 +176,8 @@ function renderUI()
     textSize(14);
     textStyle(NORMAL);
     textFont('Courier New');
-    stroke(textColor);
-    fill(textColor);
+    stroke(Game.textColor);
+    fill(Game.textColor);
     text(FPS_string, FPS_string_location.x,FPS_string_location.y);
     text(points_string,points_string_location.x,points_string_location.y);
 }
@@ -226,5 +239,10 @@ class Ship
   constructor()
   {
     this.pos = createVector(Game.canvasWidth/2,Game.canvasHeight/2);
+  }
+
+  triggerSound()
+  {
+    Game.soundMgr.queueSound('test_sound');
   }
 }
