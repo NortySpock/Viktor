@@ -1,4 +1,3 @@
-Move BackgroundStars into their own class
 Figure out proper imports;
 Create ForegroundObject array (quadtree?) and iterate from that
 Design explosions and animate/test
