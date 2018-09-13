@@ -1,7 +1,6 @@
 Figure out proper imports;
 Create ForegroundObject array (quadtree?) and iterate from that
 Design explosions and animate/test
-Bring in a local artist
 Create space aircraft carrier
 Create friendly wingmen? 
 Wings indicate allegiance? Central color for pilot?
@@ -9,10 +8,9 @@ Small enemies first
 Large enemy ships with health after
 AI director
 frame based time calculations?
-Rename sketch.js to main.js
 Cookies with high-score list
 Hit percentage
 image bucket object
 Spritesheet
 Attract / Demo mode
-Command Pattern for Player to allow flexibility for Attract / Demo mode.
+Command Pattern for Player to allow flexibility for Attract / Demo mode
