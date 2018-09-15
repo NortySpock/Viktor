@@ -21,10 +21,10 @@ class SoundManager
         }
         else
         {
-            var previousSound = '';
+            let previousSound = '';
             while(this.soundQueue.length > 0)
             {
-                var currentSound = this.soundQueue.pop()
+                let currentSound = this.soundQueue.pop()
                 //cheap trick to try to avoid repeating sounds
                 if(previousSound==currentSound)
                 {

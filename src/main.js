@@ -1,29 +1,27 @@
 "use strict";
-var debugMode = false;
-var frameDebug = false;
+const debugMode = false;
+const frameDebug = false;
 
-var backgroundStars = [];
+let backgroundStars = [];
 
-var points_string = '';
-var points_string_location;
+let points_string = '';
+let points_string_location;
 var FPS_string  = '';
 var FPS_string_location;
-var Game_Over_string = 'Game Over. Press [Enter] to start again.';
-var Game_Over_string_location;
-var backgroundStarCount = 20;
+let Game_Over_string = 'Game Over. Press [Enter] to start again.';
+let Game_Over_string_location;
+let backgroundStarCount = 20;
 
-var ship;
+let ship;
 
-var Game = {};
-Game.canvasWidth = 700;
-Game.canvasHeight = 700;
-Game.points = 0;
-Game.images = {};
-
-
+let Game = {};
+const Game.canvasWidth = 700;
+const Game.canvasHeight = 700;
+let Game.points = 0;
+let Game.images = {};
 
 function reset() {
-    var canvas = createCanvas(Game.canvasWidth, Game.canvasHeight);
+    const canvas = createCanvas(Game.canvasWidth, Game.canvasHeight);
     canvas.parent('sketch-holder');
 
     frameRate(60);
@@ -71,7 +69,7 @@ function draw() {
     //BACKGROUND
     background(0);
 
-    for(var i = backgroundStars.length -1; i >= 0; i--)
+    for(let i = backgroundStars.length -1; i >= 0; i--)
     {
       backgroundStars[i].update();
       backgroundStars[i].render();
