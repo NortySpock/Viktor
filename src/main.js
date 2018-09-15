@@ -12,15 +12,14 @@ var Game_Over_string = 'Game Over. Press [Enter] to start again.';
 var Game_Over_string_location;
 var backgroundStarCount = 20;
 
-var ship1;
-var ship2;
-
 var ship;
 
 var Game = {};
 Game.canvasWidth = 700;
 Game.canvasHeight = 700;
 Game.points = 0;
+Game.images = {};
+
 
 
 function reset() {
@@ -57,8 +56,8 @@ function reset() {
 
 function preload()
 {
-  ship1 = loadImage('img/ship1.png');
-  ship2 = loadImage('img/ship2.png');
+  Game.images.ship1 = loadImage('img/ship1.png');
+  Game.images.ship2 = loadImage('img/ship2.png');
 }
 
 function setup() {
@@ -80,7 +79,7 @@ function draw() {
     //BACKGROUND
 
     //FOREGROUND
-    image(ship2, ship.pos.x, ship.pos.y);
+    image(Game.images.ship2, ship.pos.x, ship.pos.y);
     //FOREGROUND
 
     //UI
