@@ -1,6 +1,7 @@
 "use strict";
 const debugMode = false;
 const frameDebug = false;
+const backgroundColor = 0;
 
 let points_string = '';
 let points_string_location;
@@ -67,7 +68,7 @@ function draw() {
     handleKeyInput();
 
     //BACKGROUND
-    background(0);
+    background(backgroundColor); //black color
 
     for(let i = Game.backgroundStars.length -1; i >= 0; i--)
     {

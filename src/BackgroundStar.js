@@ -10,6 +10,7 @@ class BackgroundStar
     {
       this.pos = createVector(randomFromInterval(0,canvasWidth),0)
     }
+    
 
     this.minStarSize = 1;
     this.maxStarSize = 3;
