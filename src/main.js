@@ -2,26 +2,26 @@
 const debugMode = false;
 const frameDebug = false;
 
-let backgroundStars = [];
-
 let points_string = '';
 let points_string_location;
 var FPS_string  = '';
 var FPS_string_location;
 let Game_Over_string = 'Game Over. Press [Enter] to start again.';
 let Game_Over_string_location;
-let backgroundStarCount = 20;
+const backgroundStarCount = 20;
 
 let ship;
 
 let Game = {};
-const Game.canvasWidth = 700;
-const Game.canvasHeight = 700;
-let Game.points = 0;
-let Game.images = {};
+Game.canvasWidth = 700;
+Game.canvasHeight = 700;
+Game.points = 0;
+Game.images = {};
+Game.backgroundStars = [];
+
 
 function reset() {
-    const canvas = createCanvas(Game.canvasWidth, Game.canvasHeight);
+    let canvas = createCanvas(Game.canvasWidth, Game.canvasHeight);
     canvas.parent('sketch-holder');
 
     frameRate(60);
@@ -46,7 +46,7 @@ function reset() {
     FPS_string_location = createVector(10,20);
     Game_Over_string_location = createVector(Game.canvasWidth/5,Game.canvasHeight/2);
 
-    backgroundStars = [];
+    Game.backgroundStars = [];
     preFillBackgroundStars();
 
     setInterval(halfSecondUpdateLoop,500);
@@ -69,10 +69,10 @@ function draw() {
     //BACKGROUND
     background(0);
 
-    for(let i = backgroundStars.length -1; i >= 0; i--)
+    for(let i = Game.backgroundStars.length -1; i >= 0; i--)
     {
-      backgroundStars[i].update();
-      backgroundStars[i].render();
+      Game.backgroundStars[i].update();
+      Game.backgroundStars[i].render();
     }
     //BACKGROUND
 
@@ -141,7 +141,7 @@ function keyPressed() {
 
   if(key == 'S')
   {
-    backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Game.canvasWidth),randomFromInterval(0,Game.canvasHeight))));
+    Game.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Game.canvasWidth),randomFromInterval(0,Game.canvasHeight))));
   }
 
 
@@ -185,11 +185,13 @@ function halfSecondUpdateLoop(){
 
 function preFillBackgroundStars()
 {
-  while(backgroundStars.length < backgroundStarCount)
+  while(Game.backgroundStars.length < backgroundStarCount)
   {
-    backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Game.canvasWidth),randomFromInterval(0,Game.canvasHeight))));
+    Game.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Game.canvasWidth),randomFromInterval(0,Game.canvasHeight))));
   }
 }
+
+
 
 class Ship
 {
