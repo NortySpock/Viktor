@@ -25,10 +25,10 @@ class BackgroundStar
   {
     this.pos.y += this.fallSpeed;
 
-    if(this.pos.y > Game.canvasHeight + 10)
+    if(this.pos.y > Global.canvasHeight + 10)
     {
       this.pos.y = -10; //recycle to top
-      this.pos.x = randomFromInterval(0,Game.canvasWidth);
+      this.pos.x = randomFromInterval(0,Global.canvasWidth);
     }
   }
 

@@ -7,47 +7,47 @@ let points_string = '';
 let points_string_location;
 var FPS_string  = '';
 var FPS_string_location;
-let Game_Over_string = 'Game Over. Press [Enter] to start again.';
+let Game_Over_string = 'Global Over. Press [Enter] to start again.';
 let Game_Over_string_location;
 const backgroundStarCount = 20;
 
 let ship;
 
-let Game = {};
-Game.canvasWidth = 700;
-Game.canvasHeight = 700;
-Game.points = 0;
-Game.images = {};
-Game.backgroundStars = [];
+let Global = {};
+Global.canvasWidth = 700;
+Global.canvasHeight = 700;
+Global.points = 0;
+Global.images = {};
+Global.backgroundStars = [];
 
 
 function reset() {
-    let canvas = createCanvas(Game.canvasWidth, Game.canvasHeight);
+    let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
     canvas.parent('sketch-holder');
 
     frameRate(60);
     background(0);
 
-    Game.textColor = color(255);
+    Global.textColor = color(255);
 
     textSize(14);
     textStyle(NORMAL);
     textFont('Courier New');
-    stroke(Game.textColor);
-    fill(Game.textColor);
+    stroke(Global.textColor);
+    fill(Global.textColor);
 
-    Game.points = 0;
+    Global.points = 0;
 
     ship = new Ship();
 
-    Game.soundMgr = new SoundManager();
+    Global.soundMgr = new SoundManager();
 
 
-    points_string_location = createVector(Game.canvasWidth*(19/24),20);
+    points_string_location = createVector(Global.canvasWidth*(19/24),20);
     FPS_string_location = createVector(10,20);
-    Game_Over_string_location = createVector(Game.canvasWidth/5,Game.canvasHeight/2);
+    Game_Over_string_location = createVector(Global.canvasWidth/5,Global.canvasHeight/2);
 
-    Game.backgroundStars = [];
+    Global.backgroundStars = [];
     preFillBackgroundStars();
 
     setInterval(halfSecondUpdateLoop,500);
@@ -55,8 +55,8 @@ function reset() {
 
 function preload()
 {
-  Game.images.ship1 = loadImage('img/ship1.png');
-  Game.images.ship2 = loadImage('img/ship2.png');
+  Global.images.ship1 = loadImage('img/ship1.png');
+  Global.images.ship2 = loadImage('img/ship2.png');
 }
 
 function setup() {
@@ -70,15 +70,15 @@ function draw() {
     //BACKGROUND
     background(backgroundColor); //black color
 
-    for(let i = Game.backgroundStars.length -1; i >= 0; i--)
+    for(let i = Global.backgroundStars.length -1; i >= 0; i--)
     {
-      Game.backgroundStars[i].update();
-      Game.backgroundStars[i].render();
+      Global.backgroundStars[i].update();
+      Global.backgroundStars[i].render();
     }
     //BACKGROUND
 
     //FOREGROUND
-    image(Game.images.ship2, ship.pos.x, ship.pos.y);
+    image(Global.images.ship2, ship.pos.x, ship.pos.y);
     //FOREGROUND
 
     //UI
@@ -127,7 +127,7 @@ var handleKeyInput = function()
 function keyPressed() {
   if(key == ' ')
   {
-    Game.soundMgr.queueSound('proton_bolt');
+    Global.soundMgr.queueSound('proton_bolt');
   }
 
   if(keyCode == ENTER || keyCode == RETURN)
@@ -142,7 +142,7 @@ function keyPressed() {
 
   if(key == 'S')
   {
-    Game.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Game.canvasWidth),randomFromInterval(0,Game.canvasHeight))));
+    Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
   }
 
 
@@ -166,7 +166,7 @@ function updateUIstuff()
   var fps = frameRate();
   FPS_string = "FPS:" + fps.toFixed(0);
 
-  points_string = "Points: " + Game.points;
+  points_string = "Points: " + Global.points;
 }
 
 function renderUI()
@@ -174,8 +174,8 @@ function renderUI()
     textSize(14);
     textStyle(NORMAL);
     textFont('Courier New');
-    stroke(Game.textColor);
-    fill(Game.textColor);
+    stroke(Global.textColor);
+    fill(Global.textColor);
     text(FPS_string, FPS_string_location.x,FPS_string_location.y);
     text(points_string,points_string_location.x,points_string_location.y);
 }
@@ -186,9 +186,9 @@ function halfSecondUpdateLoop(){
 
 function preFillBackgroundStars()
 {
-  while(Game.backgroundStars.length < backgroundStarCount)
+  while(Global.backgroundStars.length < backgroundStarCount)
   {
-    Game.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Game.canvasWidth),randomFromInterval(0,Game.canvasHeight))));
+    Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
   }
 }
 
@@ -198,11 +198,11 @@ class Ship
 {
   constructor()
   {
-    this.pos = createVector(Game.canvasWidth/2,Game.canvasHeight/2);
+    this.pos = createVector(Global.canvasWidth/2,Global.canvasHeight/2);
   }
 
   triggerSound()
   {
-    Game.soundMgr.queueSound('test_sound');
+    Global.soundMgr.queueSound('test_sound');
   }
 }
