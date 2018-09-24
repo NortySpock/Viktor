@@ -19,7 +19,7 @@ Global.canvasWidth = 700;
 Global.canvasHeight = 700;
 Global.points = 0;
 Global.images = {};
-Global.backgroundStars = [];
+Global.backgroundObjects = [];
 Global.foregroundObjects = [];
 
 
@@ -47,7 +47,7 @@ function reset() {
     FPS_string_location = createVector(10,20);
     Game_Over_string_location = createVector(Global.canvasWidth/5,Global.canvasHeight/2);
 
-    Global.backgroundStars = [];
+    Global.backgroundObjects = [];
     preFillBackgroundStars();
     Global.foregroundObjects = [];
     Global.foregroundObjects.push(new PlayerShip());
@@ -74,12 +74,12 @@ function draw() {
     //BACKGROUND
     background(backgroundColor); //black color
 
-    for(let i = Global.backgroundStars.length -1; i >= 0; i--)
+    for(let i = Global.backgroundObjects.length -1; i >= 0; i--)
     {
-      console.assert(typeof Global.backgroundStars[i].render === "function");
-      console.assert(typeof Global.backgroundStars[i].update === "function");
-      Global.backgroundStars[i].render();
-      Global.backgroundStars[i].update();
+      console.assert(typeof Global.backgroundObjects[i].render === "function");
+      console.assert(typeof Global.backgroundObjects[i].update === "function");
+      Global.backgroundObjects[i].render();
+      Global.backgroundObjects[i].update();
 
     }
     //BACKGROUND
@@ -150,7 +150,7 @@ function keyPressed() {
 
   if(key == 'S')
   {
-    Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
+    Global.backgroundObjects.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
   }
 
 
@@ -194,9 +194,9 @@ function halfSecondUpdateLoop(){
 
 function preFillBackgroundStars()
 {
-  while(Global.backgroundStars.length < backgroundStarCount)
+  while(Global.backgroundObjects.length < backgroundStarCount)
   {
-    Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
+    Global.backgroundObjects.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
   }
 }
 
