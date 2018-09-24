@@ -9,7 +9,7 @@ var FPS_string  = '';
 var FPS_string_location;
 let Game_Over_string = 'Global Over. Press [Enter] to start again.';
 let Game_Over_string_location;
-const backgroundStarCount = 20;
+const backgroundStarCount = 25;
 
 let ship;
 
@@ -57,6 +57,8 @@ function preload()
 {
   Global.images.ship1 = loadImage('img/ship1.png');
   Global.images.ship2 = loadImage('img/ship2.png');
+  Global.images.cyan_bolt = loadImage('img/cyan_bolt.png');
+  Global.images.enemy3 = loadImage('img/enemy3.png');
 }
 
 function setup() {
@@ -72,6 +74,8 @@ function draw() {
 
     for(let i = Global.backgroundStars.length -1; i >= 0; i--)
     {
+      console.assert(typeof backgroundStars[i].update === "function"));
+      console.assert(typeof backgroundStars[i].render === "function"));
       Global.backgroundStars[i].update();
       Global.backgroundStars[i].render();
     }
