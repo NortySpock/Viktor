@@ -1,7 +1,9 @@
 "use strict";
 const debugMode = false;
 const frameDebug = false;
+const targetFrameRate = 60;
 const backgroundColor = 0;
+
 
 let points_string = '';
 let points_string_location;
@@ -11,7 +13,6 @@ let Game_Over_string = 'Global Over. Press [Enter] to start again.';
 let Game_Over_string_location;
 const backgroundStarCount = 25;
 
-let ship;
 
 let Global = {};
 Global.canvasWidth = 700;
@@ -19,13 +20,14 @@ Global.canvasHeight = 700;
 Global.points = 0;
 Global.images = {};
 Global.backgroundStars = [];
+Global.foregroundObjects = [];
 
 
 function reset() {
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
     canvas.parent('sketch-holder');
 
-    frameRate(60);
+    frameRate(targetFrameRate);
     background(0);
 
     Global.textColor = color(255);
@@ -38,8 +40,6 @@ function reset() {
 
     Global.points = 0;
 
-    ship = new Ship();
-
     Global.soundMgr = new SoundManager();
 
 
@@ -49,6 +49,8 @@ function reset() {
 
     Global.backgroundStars = [];
     preFillBackgroundStars();
+    Global.foregroundObjects = [];
+    Global.foregroundObjects.push(new PlayerShip());
 
     setInterval(halfSecondUpdateLoop,500);
 }
@@ -74,15 +76,20 @@ function draw() {
 
     for(let i = Global.backgroundStars.length -1; i >= 0; i--)
     {
-      console.assert(typeof backgroundStars[i].update === "function"));
-      console.assert(typeof backgroundStars[i].render === "function"));
-      Global.backgroundStars[i].update();
+      console.assert(typeof Global.backgroundStars[i].render === "function");
+      console.assert(typeof Global.backgroundStars[i].update === "function");
       Global.backgroundStars[i].render();
+      Global.backgroundStars[i].update();
+
     }
     //BACKGROUND
 
     //FOREGROUND
-    image(Global.images.ship2, ship.pos.x, ship.pos.y);
+    for(let i = Global.foregroundObjects.length - 1; i >= 0; i--)
+    {
+      Global.foregroundObjects[i].render();
+      Global.foregroundObjects[i].update();
+    }
     //FOREGROUND
 
     //UI
@@ -109,23 +116,25 @@ function mousePressed()
 //handles continuous presses
 var handleKeyInput = function()
 {
+    let vel = createVector(0,0);
     //key handling
     if(keyIsDown(UP_ARROW) || keyIsDown(87) /* w */)
     {
-      ship.pos.y--;
+      vel.y--;
     }
     if(keyIsDown(DOWN_ARROW) || keyIsDown(83) /* s */)
     {
-      ship.pos.y++;
+      vel.y++;
     }
     if(keyIsDown(LEFT_ARROW) || keyIsDown(65) /* a */)
     {
-      ship.pos.x--;
+      vel.x--;
     }
     if(keyIsDown(RIGHT_ARROW) || keyIsDown(68) /* d */)
     {
-      ship.pos.x++;
+      vel.x++;
     }
+    return vel;
 };
 
 function keyPressed() {
@@ -137,11 +146,6 @@ function keyPressed() {
   if(keyCode == ENTER || keyCode == RETURN)
   {
     reset();
-  }
-
-  if(key == 'P')
-  {
-    ship.triggerSound();
   }
 
   if(key == 'S')
@@ -196,17 +200,15 @@ function preFillBackgroundStars()
   }
 }
 
-
-
-class Ship
+function onCanvas(x,y)
 {
-  constructor()
+  if(x<0 || x > Global.canvasWidth)
   {
-    this.pos = createVector(Global.canvasWidth/2,Global.canvasHeight/2);
+    return false;
   }
-
-  triggerSound()
+  if(y<0 || y > Global.canvasHeight)
   {
-    Global.soundMgr.queueSound('test_sound');
+    return false;
   }
+  return true;
 }
