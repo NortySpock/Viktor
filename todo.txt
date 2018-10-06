@@ -1,3 +1,13 @@
+Bugs
+--------------------
+
+
+Short term
+---------------------
+
+
+Long term
+----------------------
 Figure out proper imports;
 Design explosions and animate/test
 Create space aircraft carrier
