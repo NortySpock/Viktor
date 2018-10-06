@@ -1,5 +1,4 @@
 Figure out proper imports;
-Create ForegroundObject array (quadtree?) and iterate from that
 Design explosions and animate/test
 Create space aircraft carrier
 Create friendly wingmen? 
@@ -10,7 +9,6 @@ AI director
 frame based time calculations?
 Cookies with high-score list
 Hit percentage
-image bucket object
 Spritesheet
 Attract / Demo mode
 Command Pattern for Player to allow flexibility for Attract / Demo mode

@@ -26,6 +26,8 @@ Global.foregroundObjects = [];
 function reset() {
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
     canvas.parent('sketch-holder');
+    canvas.drawingContext.imageSmoothingEnabled = false;
+
 
     frameRate(targetFrameRate);
     background(0);
@@ -59,7 +61,7 @@ function preload()
 {
   Global.images.ship1 = loadImage('img/ship1.png');
   Global.images.ship2 = loadImage('img/ship2.png');
-  Global.images.cyan_bolt = loadImage('img/cyan_bolt.png');
+  Global.images.cyan_bolt = loadImage('img/cyan_bullet2.png');
   Global.images.enemy3 = loadImage('img/enemy3.png');
 }
 

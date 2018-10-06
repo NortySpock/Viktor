@@ -19,7 +19,7 @@ class PlayerShip extends GameObject
   render()
   {
     imageMode(CENTER);
-    image(Global.images.ship2, this.pos.x, this.pos.y);
+    image(Global.images.ship2, this.pos.x, this.pos.y, Global.images.ship2.width*2,Global.images.ship2.height*2);
   }
   
   triggerSound()

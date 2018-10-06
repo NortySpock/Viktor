@@ -1,0 +1,7 @@
+Copyright (c) 2018 Legendary Charizard
+cyan_bullet2.png
+
+Copyright (c) 2018 NortySpock
+ship2.png
+ship1.png
+enemy3.png
