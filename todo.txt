@@ -4,7 +4,8 @@ Bugs
 
 Short term
 ---------------------
-
+Switch to sprites
+Mouse based player movement
 
 Long term
 ----------------------
@@ -19,6 +20,6 @@ AI director
 frame based time calculations?
 Cookies with high-score list
 Hit percentage
-Spritesheet
+Sprite sheet
 Attract / Demo mode
 Command Pattern for Player to allow flexibility for Attract / Demo mode

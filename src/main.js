@@ -19,7 +19,7 @@ Global.canvasWidth = 700;
 Global.canvasHeight = 700;
 Global.points = 0;
 Global.images = {};
-Global.backgroundObjects = [];
+Global.backgroundStars = [];
 Global.foregroundObjects = [];
 
 
@@ -49,7 +49,7 @@ function reset() {
     FPS_string_location = createVector(10,20);
     Game_Over_string_location = createVector(Global.canvasWidth/5,Global.canvasHeight/2);
 
-    Global.backgroundObjects = [];
+    Global.backgroundStars = [];
     preFillBackgroundStars();
     Global.foregroundObjects = [];
     Global.foregroundObjects.push(new PlayerShip());
@@ -76,13 +76,12 @@ function draw() {
     //BACKGROUND
     background(backgroundColor); //black color
 
-    for(let i = Global.backgroundObjects.length -1; i >= 0; i--)
+    for(let i = Global.backgroundStars.length -1; i >= 0; i--)
     {
-      console.assert(typeof Global.backgroundObjects[i].render === "function");
-      console.assert(typeof Global.backgroundObjects[i].update === "function");
-      Global.backgroundObjects[i].render();
-      Global.backgroundObjects[i].update();
-
+      console.assert(typeof Global.backgroundStars[i].render === "function");
+      console.assert(typeof Global.backgroundStars[i].update === "function");
+      Global.backgroundStars[i].render();
+      Global.backgroundStars[i].update();
     }
     //BACKGROUND
 
@@ -92,6 +91,13 @@ function draw() {
       Global.foregroundObjects[i].render();
       Global.foregroundObjects[i].update();
     }
+
+    //test sprite
+    let enemy_sprite = createSprite(200,200,200+Global.images.enemy3.width,200+Global.images.enemy3.height)
+    enemy_sprite.addImage (Global.images.enemy3);
+    drawSprite(enemy_sprite);
+
+    //end test sprite
     //FOREGROUND
 
     //UI
@@ -152,7 +158,7 @@ function keyPressed() {
 
   if(key == 'S')
   {
-    Global.backgroundObjects.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
+    Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
   }
 
 
@@ -196,9 +202,9 @@ function halfSecondUpdateLoop(){
 
 function preFillBackgroundStars()
 {
-  while(Global.backgroundObjects.length < backgroundStarCount)
+  while(Global.backgroundStars.length < backgroundStarCount)
   {
-    Global.backgroundObjects.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
+    Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
   }
 }
 

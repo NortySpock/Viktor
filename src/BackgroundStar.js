@@ -1,10 +1,9 @@
 "use strict";
-class BackgroundStar extends GameObject
+class BackgroundStar
 {
   //create a star at a random position
   constructor(pos)
   {
-    super(pos);
     this.pos = createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight));
 
 

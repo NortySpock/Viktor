@@ -1,9 +1,8 @@
-class PlayerShip extends GameObject
+class PlayerShip
 {
   constructor()
   {
-    super();
-    this.pos = createVector(5,5);
+    this.pos = createVector(400,400);
   }
   
   update()
