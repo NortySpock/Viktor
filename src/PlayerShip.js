@@ -18,7 +18,7 @@ class PlayerShip
   render()
   {
     imageMode(CENTER);
-    image(Global.images.ship2, this.pos.x, this.pos.y, Global.images.ship2.width*2,Global.images.ship2.height*2);
+    image(Global.images.player_ship, this.pos.x, this.pos.y, Global.images.player_ship.width*3,Global.images.player_ship.height*3);
   }
   
   triggerSound()

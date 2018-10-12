@@ -63,6 +63,9 @@ function preload()
   Global.images.ship2 = loadImage('img/ship2.png');
   Global.images.cyan_bolt = loadImage('img/cyan_bullet2.png');
   Global.images.enemy3 = loadImage('img/enemy3.png');
+  Global.images.player_ship = loadImage('img/player_ship.png');
+  Global.images.purple_bolt = loadImage('img/purple_bullet.png');
+  Global.images.enemy1 = loadImage('img/enemy1.png');
 }
 
 function setup() {
@@ -93,8 +96,10 @@ function draw() {
     }
 
     //test sprite
-    let enemy_sprite = createSprite(200,200,200+Global.images.enemy3.width,200+Global.images.enemy3.height)
-    enemy_sprite.addImage (Global.images.enemy3);
+    let enemy_sprite = createSprite(200,200,Global.images.enemy1.width,Global.images.enemy1.height);
+    enemy_sprite.addImage (Global.images.enemy1);
+    enemy_sprite.scale = 3;
+    enemy_sprite.mirrorY(-1);
     drawSprite(enemy_sprite);
 
     //end test sprite
