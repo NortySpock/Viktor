@@ -28,8 +28,8 @@ function reset() {
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
     canvas.parent('sketch-holder');
     canvas.drawingContext.imageSmoothingEnabled = false;
-
-
+    
+  
     frameRate(targetFrameRate);
     background(0);
 
@@ -52,14 +52,19 @@ function reset() {
 
     Global.backgroundStars = [];
     preFillBackgroundStars();
-    Global.foregroundObjects = [];
-    Global.foregroundObjects.push(new PlayerShip());
 
     setInterval(halfSecondUpdateLoop,500);
     Global.sprites.enemy_sprite = createSprite(200,200,Global.images.enemy1.width,Global.images.enemy1.height);
     Global.sprites.enemy_sprite.addImage (Global.images.enemy1);
     Global.sprites.enemy_sprite.scale = 3;
     Global.sprites.enemy_sprite.mirrorY(-1);
+    
+    //create sprite in lower middle of screen,with normal size collision box
+    Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
+    Global.sprites.player_sprite.addImage(Global.images.player_ship);
+    Global.sprites.player_sprite.scale = 3; 
+    
+    //TODO : drop all sprites during reset
 }
 
 function preload()
@@ -80,7 +85,7 @@ function setup() {
 
 function draw() {
 
-    handleKeyInput();
+    //handleKeyInput();
 
     //BACKGROUND
     background(backgroundColor); //black color
@@ -95,16 +100,7 @@ function draw() {
     //BACKGROUND
 
     //FOREGROUND
-    for(let i = Global.foregroundObjects.length - 1; i >= 0; i--)
-    {
-      Global.foregroundObjects[i].render();
-      Global.foregroundObjects[i].update();
-    }
-
-    //test sprite
-
-
-    drawSprite(Global.sprites.enemy_sprite);
+    drawSprites();
 
     //end test sprite
     //FOREGROUND
