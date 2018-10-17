@@ -21,6 +21,7 @@ Global.points = 0;
 Global.images = {};
 Global.backgroundStars = [];
 Global.foregroundObjects = [];
+Global.sprites = {};
 
 
 function reset() {
@@ -55,6 +56,10 @@ function reset() {
     Global.foregroundObjects.push(new PlayerShip());
 
     setInterval(halfSecondUpdateLoop,500);
+    Global.sprites.enemy_sprite = createSprite(200,200,Global.images.enemy1.width,Global.images.enemy1.height);
+    Global.sprites.enemy_sprite.addImage (Global.images.enemy1);
+    Global.sprites.enemy_sprite.scale = 3;
+    Global.sprites.enemy_sprite.mirrorY(-1);
 }
 
 function preload()
@@ -66,6 +71,7 @@ function preload()
   Global.images.player_ship = loadImage('img/player_ship.png');
   Global.images.purple_bolt = loadImage('img/purple_bullet.png');
   Global.images.enemy1 = loadImage('img/enemy1.png');
+
 }
 
 function setup() {
@@ -96,11 +102,9 @@ function draw() {
     }
 
     //test sprite
-    let enemy_sprite = createSprite(200,200,Global.images.enemy1.width,Global.images.enemy1.height);
-    enemy_sprite.addImage (Global.images.enemy1);
-    enemy_sprite.scale = 3;
-    enemy_sprite.mirrorY(-1);
-    drawSprite(enemy_sprite);
+
+
+    drawSprite(Global.sprites.enemy_sprite);
 
     //end test sprite
     //FOREGROUND
