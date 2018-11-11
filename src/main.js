@@ -86,10 +86,11 @@ function setup() {
 function draw() {
 
     //handleKeyInput();
-
+   
     //BACKGROUND
     background(backgroundColor); //black color
 
+    //do physics and render background items
     for(let i = Global.backgroundStars.length -1; i >= 0; i--)
     {
       console.assert(typeof Global.backgroundStars[i].render === "function");
@@ -102,7 +103,14 @@ function draw() {
     //FOREGROUND
     drawSprites();
 
-    //end test sprite
+    //run foreground physics
+    //move player
+    let newPos = createVector(mouseX,mouseY);
+    if(onCanvas(newPos.x,newPos.y))
+    {
+      Global.sprites.player_sprite.position = newPos;
+    }
+
     //FOREGROUND
 
     //UI
@@ -129,7 +137,7 @@ function mousePressed()
 //handles continuous presses
 var handleKeyInput = function()
 {
-    let vel = createVector(0,0);
+    
     //key handling
     if(keyIsDown(UP_ARROW) || keyIsDown(87) /* w */)
     {
@@ -147,7 +155,7 @@ var handleKeyInput = function()
     {
       vel.x++;
     }
-    return vel;
+    
 };
 
 function keyPressed() {

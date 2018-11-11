@@ -7,7 +7,7 @@ class PlayerShip
   
   update()
   {
-    const newPos = p5.Vector.add(this.pos, handleKeyInput());
+    const newPos = createVector(mouseX,mouseY);
     if(onCanvas(newPos.x,newPos.y))
     {
       this.pos = newPos 
@@ -17,8 +17,8 @@ class PlayerShip
 
   render()
   {
-    imageMode(CENTER);
-    image(Global.images.player_ship, this.pos.x, this.pos.y, Global.images.player_ship.width*3,Global.images.player_ship.height*3);
+    // imageMode(CENTER);
+    // image(Global.images.player_ship, this.pos.x, this.pos.y, Global.images.player_ship.width*3,Global.images.player_ship.height*3);
   }
   
   triggerSound()
