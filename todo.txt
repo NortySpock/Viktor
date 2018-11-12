@@ -5,10 +5,6 @@ Bugs
 Short term
 ---------------------
 Switch to sprites
-Mouse based player movement
-- Handle mouse going off canvas but still on page
-- move to edge but don't overlap
-
 
 Long term
 ----------------------

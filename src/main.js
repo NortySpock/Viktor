@@ -28,7 +28,6 @@ function reset() {
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
     canvas.parent('sketch-holder');
     canvas.drawingContext.imageSmoothingEnabled = false;
-    
   
     frameRate(targetFrameRate);
     background(0);
