@@ -23,6 +23,10 @@ Global.backgroundStars = [];
 Global.foregroundObjects = [];
 Global.sprites = {};
 
+//p5.play sprite groups
+var bulletGroup;
+var friendlyGroup;
+var enemyGroup;
 
 function reset() {
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
@@ -44,6 +48,10 @@ function reset() {
 
     Global.soundMgr = new SoundManager();
 
+    bulletGroup = new Group();
+    friendlyGroup = new Group();
+    enemyGroup = new Group();
+    
 
     points_string_location = createVector(Global.canvasWidth*(19/24),20);
     FPS_string_location = createVector(10,20);
@@ -63,6 +71,9 @@ function reset() {
     Global.sprites.player_sprite.addImage(Global.images.player_ship);
     Global.sprites.player_sprite.scale = 3; 
     
+    
+
+    
     //TODO : drop all sprites during reset
 }
 
@@ -75,7 +86,8 @@ function preload()
   Global.images.player_ship = loadImage('img/player_ship.png');
   Global.images.purple_bolt = loadImage('img/purple_bullet.png');
   Global.images.enemy1 = loadImage('img/enemy1.png');
-
+  Global.images.cyan_bolt2 = loadImage('img/cyan_bullet2.png');
+  Global.images.red_bolt = loadImage('img/red_bullet.png');
 }
 
 function setup() {
@@ -111,6 +123,11 @@ function draw() {
     }
 
     //FOREGROUND
+    for(var i = 0; i<bulletGroup.length; i++) 
+    {
+        var b = bulletGroup[i];        
+        b.update();
+    } 
 
     //UI
     renderUI();
@@ -130,37 +147,21 @@ function draw() {
 
 function mousePressed()
 {
-
+    playerShootEvent();
 }
 
 //handles continuous presses
 var handleKeyInput = function()
 {
     
-    //key handling
-    if(keyIsDown(UP_ARROW) || keyIsDown(87) /* w */)
-    {
-      vel.y--;
-    }
-    if(keyIsDown(DOWN_ARROW) || keyIsDown(83) /* s */)
-    {
-      vel.y++;
-    }
-    if(keyIsDown(LEFT_ARROW) || keyIsDown(65) /* a */)
-    {
-      vel.x--;
-    }
-    if(keyIsDown(RIGHT_ARROW) || keyIsDown(68) /* d */)
-    {
-      vel.x++;
-    }
+
     
 };
 
 function keyPressed() {
   if(key == ' ')
-  {
-    Global.soundMgr.queueSound('proton_bolt');
+  {    
+    playerShootEvent();
   }
 
   if(keyCode == ENTER || keyCode == RETURN)
@@ -231,4 +232,29 @@ function onCanvas(x,y)
     return false;
   }
   return true;
+}
+
+function playerShootEvent()
+{
+    let canShoot = true; // will put a rate-limiter here later    
+    if(canShoot)
+    {
+        let posx = Global.sprites.player_sprite.position.x;
+        let posy = Global.sprites.player_sprite.position.y;
+        let h = Global.images.red_bolt.height
+        let w = Global.images.red_bolt.width
+        let new_bullet = createSprite(posx,posy,h,w);
+        new_bullet.addImage(Global.images.red_bolt);
+        new_bullet.scale = 3;
+        bulletGroup.add(new_bullet);
+        new_bullet.update = function(){
+                                        this.position.y -= 2.5;
+                                        if(this.position.y < -50)
+                                        {
+                                            this.remove();
+                                        }
+        };
+        
+        Global.soundMgr.queueSound('proton_bolt');
+    }
 }
