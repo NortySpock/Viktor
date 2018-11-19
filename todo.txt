@@ -4,12 +4,16 @@ Bugs
 
 Short term
 ---------------------
-Switch to sprites
+Make a few text rows to work with flexibly
+Implement collisions / knockback
+Bullet collisions? Yes.
+Look into making game work if player ship is not present (no NPEs).
+
 
 Long term
 ----------------------
-Figure out proper imports;
-Design explosions and animate/test
+Sprite sheet
+animate/test explosions 
 Create space aircraft carrier
 Create friendly wingmen? 
 Wings indicate allegiance? Central color for pilot?
@@ -19,6 +23,5 @@ AI director
 frame based time calculations?
 Cookies with high-score list
 Hit percentage
-Sprite sheet
 Attract / Demo mode
 Command Pattern for Player to allow flexibility for Attract / Demo mode

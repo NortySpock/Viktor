@@ -11,7 +11,7 @@ class GunCooldown
 
   canFire(currentFrame)
   {
-    if(currentFrame >=  this.lastFiredFrame+this.minCooldown)
+    if(currentFrame >=  (this.lastFiredFrame+this.minCooldown))
     {
         return true;
     }    
@@ -20,6 +20,6 @@ class GunCooldown
   
   fire(currentFrame)
   {
-      this.lastFiredFrame;
+      this.lastFiredFrame = currentFrame;
   }  
 }

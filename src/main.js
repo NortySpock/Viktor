@@ -69,7 +69,8 @@ function reset() {
     //create sprite in lower middle of screen,with normal size collision box
     Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
     Global.sprites.player_sprite.addImage(Global.images.player_ship);
-    Global.sprites.player_sprite.scale = 3; 
+    Global.sprites.player_sprite.scale = 3;
+    Global.sprites.player_sprite.GunCooldown = new GunCooldown(15);
     
     
 
@@ -96,7 +97,7 @@ function setup() {
 
 function draw() {
 
-    //handleKeyInput();
+    handleUserInput();
    
     //BACKGROUND
     background(backgroundColor); //black color
@@ -151,19 +152,15 @@ function mousePressed()
 }
 
 //handles continuous presses
-var handleKeyInput = function()
+var handleUserInput = function()
 {
-    
-
-    
-};
-
-function keyPressed() {
-  if(key == ' ')
+  if(keyIsDown(32)/*space*/ || mouseIsPressed)
   {    
     playerShootEvent();
   }
+};
 
+function keyPressed() {
   if(keyCode == ENTER || keyCode == RETURN)
   {
     reset();
@@ -237,8 +234,9 @@ function onCanvas(x,y)
 function playerShootEvent()
 {
     let canShoot = true; // will put a rate-limiter here later    
-    if(canShoot)
+    if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount))
     {
+        Global.sprites.player_sprite.GunCooldown.fire(frameCount);
         let posx = Global.sprites.player_sprite.position.x;
         let posy = Global.sprites.player_sprite.position.y;
         let h = Global.images.red_bolt.height
