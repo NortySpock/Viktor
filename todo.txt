@@ -1,10 +1,9 @@
 Bugs
 --------------------
-
+Sound Manager doesn't work at all
 
 Short term
 ---------------------
-Make a few text rows to work with flexibly
 Implement collisions / knockback
 Bullet collisions? Yes.
 Look into making game work if player ship is not present (no NPEs).
@@ -25,3 +24,6 @@ Cookies with high-score list
 Hit percentage
 Attract / Demo mode
 Command Pattern for Player to allow flexibility for Attract / Demo mode
+Particle effects using background field?
+start player in a safe position and release
+Some sort of story, told simply.

@@ -12,6 +12,15 @@ var FPS_string_location;
 let Game_Over_string = 'Global Over. Press [Enter] to start again.';
 let Game_Over_string_location;
 const backgroundStarCount = 25;
+let overlay_line1_string_location;
+let overlay_line1_string = '';
+let overlay_line2_string_location;
+let overlay_line2_string = '';
+let overlay_line3_string_location;
+let overlay_line3_string= '';
+let overlay_line4_string_location;
+let overlay_line4_string= '';
+
 
 
 let Global = {};
@@ -57,6 +66,11 @@ function reset() {
     FPS_string_location = createVector(10,20);
     Game_Over_string_location = createVector(Global.canvasWidth/5,Global.canvasHeight/2);
 
+    overlay_line1_string_location = createVector(10,Global.canvasHeight*(1/6))
+    overlay_line2_string_location = createVector(10,Global.canvasHeight*(2/6))
+    overlay_line3_string_location = createVector(10,Global.canvasHeight*(3/6))
+    overlay_line4_string_location = createVector(10,Global.canvasHeight*(4/6))
+    
     Global.backgroundStars = [];
     preFillBackgroundStars();
 
@@ -204,6 +218,10 @@ function renderUI()
     fill(Global.textColor);
     text(FPS_string, FPS_string_location.x,FPS_string_location.y);
     text(points_string,points_string_location.x,points_string_location.y);
+    text(overlay_line1_string,overlay_line1_string_location.x,overlay_line1_string_location.y);
+    text(overlay_line2_string,overlay_line2_string_location.x,overlay_line2_string_location.y);
+    text(overlay_line3_string,overlay_line3_string_location.x,overlay_line3_string_location.y);
+    text(overlay_line4_string,overlay_line4_string_location.x,overlay_line4_string_location.y);
 }
 
 function halfSecondUpdateLoop(){
