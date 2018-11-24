@@ -242,7 +242,9 @@ function updateUIstuff()
 
   points_string = "Points: " + Global.points;
 
-  overlay_line1_string = "Total Sprites:"+allSprites.length
+  if(debug){
+    overlay_line1_string = "Total Sprites:"+allSprites.length
+  }
 
 
 }
