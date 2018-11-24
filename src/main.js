@@ -36,12 +36,13 @@ Global.sprites = {};
 var bulletGroup;
 var friendlyGroup;
 var enemyGroup;
+var enemyShipGroup;
 
 function reset() {
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
     canvas.parent('sketch-holder');
     canvas.drawingContext.imageSmoothingEnabled = false;
-  
+
     frameRate(targetFrameRate);
     background(0);
 
@@ -56,11 +57,13 @@ function reset() {
     Global.points = 0;
 
     Global.soundMgr = new SoundManager();
+    Global.soundMgr.mute = true;
 
     bulletGroup = new Group();
     friendlyGroup = new Group();
     enemyGroup = new Group();
-    
+    enemyShipGroup = new Group();
+
 
     points_string_location = createVector(Global.canvasWidth*(19/24),20);
     FPS_string_location = createVector(10,20);
@@ -70,25 +73,29 @@ function reset() {
     overlay_line2_string_location = createVector(10,Global.canvasHeight*(2/6))
     overlay_line3_string_location = createVector(10,Global.canvasHeight*(3/6))
     overlay_line4_string_location = createVector(10,Global.canvasHeight*(4/6))
-    
+
     Global.backgroundStars = [];
     preFillBackgroundStars();
 
     setInterval(halfSecondUpdateLoop,500);
-    Global.sprites.enemy_sprite = createSprite(200,200,Global.images.enemy1.width,Global.images.enemy1.height);
-    Global.sprites.enemy_sprite.addImage (Global.images.enemy1);
-    Global.sprites.enemy_sprite.scale = 3;
-    Global.sprites.enemy_sprite.mirrorY(-1);
-    
+    let enemy_sprite = createSprite(Global.canvasWidth/2,200,Global.images.enemy1.width,Global.images.enemy1.height);
+    enemy_sprite.addImage (Global.images.enemy1);
+    enemy_sprite.scale = 3;
+    enemy_sprite.mirrorY(-1);
+    enemy_sprite.setDefaultCollider();
+    enemyGroup.add(enemy_sprite);
+    enemyShipGroup.add(enemy_sprite);
+
+
     //create sprite in lower middle of screen,with normal size collision box
     Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
     Global.sprites.player_sprite.addImage(Global.images.player_ship);
     Global.sprites.player_sprite.scale = 3;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(15);
-    
-    
 
-    
+
+
+
     //TODO : drop all sprites during reset
 }
 
@@ -112,7 +119,7 @@ function setup() {
 function draw() {
 
     handleUserInput();
-   
+
     //BACKGROUND
     background(backgroundColor); //black color
 
@@ -137,12 +144,30 @@ function draw() {
       Global.sprites.player_sprite.position = newPos;
     }
 
-    //FOREGROUND
-    for(var i = 0; i<bulletGroup.length; i++) 
+    //check all collisions
+    for(let i = allSprites.length - 1; i >= 0; i--)
     {
-        var b = bulletGroup[i];        
-        b.update();
-    } 
+        for(let j = allSprites.length - 1; j >= 0; j--)
+        {
+            let mainSprite = allSprites[i];
+            let targetSprite = allSprites[j]
+
+            if(friendlyGroup.contains(mainSprite) && enemyGroup.contains(targetSprite))
+            {
+                let collides = mainSprite.displace(targetSprite);
+                if(collides && bulletGroup.contains(mainSprite))
+                {
+                    mainSprite.remove();
+                }
+                if(collides && bulletGroup.contains(targetSprite))
+                {
+                    targetSprite.remove();
+                }
+            }
+        }
+    }
+
+    //FOREGROUND
 
     //UI
     renderUI();
@@ -150,7 +175,7 @@ function draw() {
 
 
     //play all the sounds we've built up this frame
-    //soundMgr.playAllQueuedSounds();
+    Global.soundMgr.playAllQueuedSounds();
 
     if(frameDebug)
     {
@@ -169,7 +194,7 @@ function mousePressed()
 var handleUserInput = function()
 {
   if(keyIsDown(32)/*space*/ || mouseIsPressed)
-  {    
+  {
     playerShootEvent();
   }
 };
@@ -207,6 +232,10 @@ function updateUIstuff()
   FPS_string = "FPS:" + fps.toFixed(0);
 
   points_string = "Points: " + Global.points;
+
+  overlay_line1_string = "Total Sprites:"+allSprites.length
+
+
 }
 
 function renderUI()
@@ -251,7 +280,6 @@ function onCanvas(x,y)
 
 function playerShootEvent()
 {
-    let canShoot = true; // will put a rate-limiter here later    
     if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount))
     {
         Global.sprites.player_sprite.GunCooldown.fire(frameCount);
@@ -262,15 +290,12 @@ function playerShootEvent()
         let new_bullet = createSprite(posx,posy,h,w);
         new_bullet.addImage(Global.images.red_bolt);
         new_bullet.scale = 3;
+        let yvel = -4.5
+        new_bullet.setVelocity(0,yvel);
+        new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
         bulletGroup.add(new_bullet);
-        new_bullet.update = function(){
-                                        this.position.y -= 2.5;
-                                        if(this.position.y < -50)
-                                        {
-                                            this.remove();
-                                        }
-        };
-        
+        friendlyGroup.add(new_bullet);
+
         Global.soundMgr.queueSound('proton_bolt');
     }
 }

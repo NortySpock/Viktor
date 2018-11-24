@@ -1,29 +1,30 @@
 Bugs
 --------------------
-Sound Manager doesn't work at all
+
 
 Short term
 ---------------------
-Implement collisions / knockback
+Particle effects using background field?
 Bullet collisions? Yes.
-Look into making game work if player ship is not present (no NPEs).
 
 
 Long term
 ----------------------
+AI director
 Sprite sheet
-animate/test explosions 
+animate/test explosions
+Hit percentage
+Look into making game work if player ship is not present (no NPEs).
 Create space aircraft carrier
-Create friendly wingmen? 
+Create friendly wingmen?
 Wings indicate allegiance? Central color for pilot?
 Small enemies first
 Large enemy ships with health after
-AI director
-frame based time calculations?
 Cookies with high-score list
-Hit percentage
 Attract / Demo mode
 Command Pattern for Player to allow flexibility for Attract / Demo mode
-Particle effects using background field?
 start player in a safe position and release
 Some sort of story, told simply.
+Invulnerability on getting hit or dying
+Health system or "Number of lives" system
+Design sounds for game
