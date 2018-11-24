@@ -2,10 +2,9 @@
 class BackgroundStar
 {
   //create a star at a random position
-  constructor(pos)
+  constructor()
   {
     this.pos = createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight));
-
 
     //set size and fall rate
     this.minStarSize = 1;

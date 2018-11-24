@@ -32,6 +32,7 @@ Global.backgroundStars = [];
 Global.foregroundObjects = [];
 Global.sprites = {};
 
+
 //p5.play sprite groups
 var bulletGroup;
 var friendlyGroup;
@@ -58,6 +59,8 @@ function reset() {
 
     Global.soundMgr = new SoundManager();
     Global.soundMgr.mute = true;
+
+    Global.ParticleSystem = new ParticleSystem();
 
     bulletGroup = new Group();
     friendlyGroup = new Group();
@@ -131,6 +134,8 @@ function draw() {
       Global.backgroundStars[i].render();
       Global.backgroundStars[i].update();
     }
+
+    Global.ParticleSystem.run();
     //BACKGROUND
 
     //FOREGROUND
@@ -155,6 +160,10 @@ function draw() {
             if(friendlyGroup.contains(mainSprite) && enemyGroup.contains(targetSprite))
             {
                 let collides = mainSprite.displace(targetSprite);
+                if(collides)
+                {
+                    Global.ParticleSystem.addParticleSwarm(mainSprite.position,color(0,0,255),3,10);
+                }
                 if(collides && bulletGroup.contains(mainSprite))
                 {
                     mainSprite.remove();
