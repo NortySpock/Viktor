@@ -20,6 +20,8 @@ class Particle
       {
         this.ttl = ttl;
       }
+      let ttlVariation = 10
+      this.ttl = this.ttl + random(-ttlVariation, ttlVariation) //slight variation in particle lifetime
   }
 
   update()
@@ -49,7 +51,7 @@ class ParticleSystem
       this.particles.push(new Particle(pos,color,size));
     }
 
-    addParticleSwarm(pos,color,size,count)
+    addParticleSpray(pos,color,size,count)
     {
         if(count)
         {

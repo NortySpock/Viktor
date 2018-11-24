@@ -162,7 +162,7 @@ function draw() {
                 let collides = mainSprite.displace(targetSprite);
                 if(collides)
                 {
-                    Global.ParticleSystem.addParticleSwarm(mainSprite.position,color(0,0,255),3,10);
+                    Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,3,10);
                 }
                 if(collides && bulletGroup.contains(mainSprite))
                 {
@@ -185,6 +185,15 @@ function draw() {
 
     //play all the sounds we've built up this frame
     Global.soundMgr.playAllQueuedSounds();
+
+    //do some one-per-frame sprite managment work
+    //set the particle color for the sprite, since we can only do that once it's rendered.
+    if(allSprites.length > 0)
+    {
+        let idx = frameCount % allSprites.length
+        let spr = allSprites[idx];
+        spr.shapeColor = get(spr.position.x,spr.position.y);
+    }
 
     if(frameDebug)
     {
@@ -222,7 +231,7 @@ function keyPressed() {
 
   if(key == 'O')
   {
-    console.log('pressed oats')
+    Global.ParticleSystem.addParticleSpray(Global.sprites.player_sprite.position,Global.sprites.player_sprite.shapeColor,3,10);
   }
 };
 
@@ -242,11 +251,10 @@ function updateUIstuff()
 
   points_string = "Points: " + Global.points;
 
-  if(debug){
+  if(debugMode)
+  {
     overlay_line1_string = "Total Sprites:"+allSprites.length
   }
-
-
 }
 
 function renderUI()
