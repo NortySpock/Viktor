@@ -216,9 +216,10 @@ function draw() {
     if(allSprites.length > 0)
     {
         let idx = frameCount % allSprites.length
-        if(!allSprites[idx].hasTrueShapeColor && onCanvas(allSprites[idx].position.x,allSprites[idx].position.y))
+        let spr = allSprites[idx];
+        if(!spr.hasTrueShapeColor && spr.visible && onCanvas(spr.position.x,spr.position.y))
         {
-            let spr = allSprites[idx];
+
             spr.shapeColor = get(spr.position.x,spr.position.y);
             spr.hasTrueShapeColor = true;
         }
