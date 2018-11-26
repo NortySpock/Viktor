@@ -4,8 +4,6 @@ Bugs
 
 Short term
 ---------------------
-Sprite sheet
-animate/test explosions
 Waypoint / rails system for ships to follow
 AI director
 Bullet collisions? Yes.

@@ -32,7 +32,7 @@ Global.backgroundStars = [];
 Global.foregroundObjects = [];
 Global.sprites = {};
 Global.shieldScale = 1.2;
-
+Global.animations = {};
 
 //p5.play sprite groups
 var bulletGroup;
@@ -115,6 +115,10 @@ function preload()
   Global.images.enemy1 = loadImage('img/enemy1.png');
   Global.images.cyan_bolt2 = loadImage('img/cyan_bullet2.png');
   Global.images.red_bolt = loadImage('img/red_bullet.png');
+  let rotary_explosion_images = 5;
+  let rotary_explosion_sprite_sheet = loadSpriteSheet('img/rotary_explosion.png',16,16,rotary_explosion_images);
+  Global.animations.rotary_explosion = loadAnimation(rotary_explosion_sprite_sheet);
+  Global.animations.rotary_explosion.frameDelay  = targetFrameRate/rotary_explosion_images;
 }
 
 function setup() {
@@ -212,7 +216,7 @@ function draw() {
     if(allSprites.length > 0)
     {
         let idx = frameCount % allSprites.length
-        if(!allSprites[idx].hasTrueShapeColor)
+        if(!allSprites[idx].hasTrueShapeColor && onCanvas(allSprites[idx].position.x,allSprites[idx].position.y))
         {
             let spr = allSprites[idx];
             spr.shapeColor = get(spr.position.x,spr.position.y);
@@ -267,6 +271,17 @@ function keyPressed() {
         Global.ParticleSystem.addParticleSpray(player.position,player.shapeColor,3,10);
     }
   }
+
+  if(key == 'P' && debugMode == true)
+  {
+      let player = Global.sprites.player_sprite;
+      let explode_sprite = createSprite(player.position.x+100, player.position.y, 16, 16);
+      explode_sprite.scale = 3
+      explode_sprite.life = 60;
+      explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
+
+  }
+
 };
 
 function randomFromInterval(min,max){
