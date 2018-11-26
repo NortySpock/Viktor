@@ -219,9 +219,12 @@ function draw() {
         let spr = allSprites[idx];
         if(!spr.hasTrueShapeColor && spr.visible && onCanvas(spr.position.x,spr.position.y))
         {
-
-            spr.shapeColor = get(spr.position.x,spr.position.y);
-            spr.hasTrueShapeColor = true;
+            let newColor = get(spr.position.x,spr.position.y);
+            if(isABrightColor(newColor))
+            {
+              spr.shapeColor = newColor;
+              spr.hasTrueShapeColor = true;
+            }
         }
     }
 
@@ -363,4 +366,10 @@ function playerShootEvent()
 
         Global.soundMgr.queueSound('proton_bolt');
     }
+}
+
+function isABrightColor(color)
+{
+  let minColor = 100;
+  return (red(color)+green(color)+blue(color))>minColor;
 }
