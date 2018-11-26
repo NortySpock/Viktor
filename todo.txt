@@ -4,15 +4,15 @@ Bugs
 
 Short term
 ---------------------
-Waypoint / rails system for ships to follow
+Sprite sheet
 animate/test explosions
+Waypoint / rails system for ships to follow
 AI director
 Bullet collisions? Yes.
 
 
 Long term
 ----------------------
-Sprite sheet
 Hit percentage
 Look into making game work if player ship is not present (no NPEs).
 Create space aircraft carrier

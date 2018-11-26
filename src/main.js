@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = false;
+const debugMode = true;
 const frameDebug = false;
 const targetFrameRate = 60;
 const backgroundColor = 0;
@@ -31,7 +31,7 @@ Global.images = {};
 Global.backgroundStars = [];
 Global.foregroundObjects = [];
 Global.sprites = {};
-Global.shieldScale = 1.5;
+Global.shieldScale = 1.2;
 
 
 //p5.play sprite groups
@@ -88,6 +88,7 @@ function reset() {
     enemy_sprite.mirrorY(-1);
     enemy_sprite.setDefaultCollider();
     enemy_sprite.hasShield = true;
+    enemy_sprite.friction = 0.01;
     enemyGroup.add(enemy_sprite);
     enemyShipGroup.add(enemy_sprite);
 
@@ -156,16 +157,13 @@ function draw() {
     {
         let mainSprite = allSprites[i];
         //render shields while we are here
-        if(mainSprite.hasShield)
+        if(mainSprite.hasShield && mainSprite.visible && !mainSprite.removed)
         {
             rectMode(CENTER);
             fill(0,0,0,0);
             stroke(255);
-
-            ellipse(mainSprite.position.x,
-                    mainSprite.position.y,
-                    mainSprite.width*Global.shieldScale,
-                    mainSprite.height*Global.shieldScale)
+            let radius = Math.max(mainSprite.width*Global.shieldScale,mainSprite.height*Global.shieldScale);
+            ellipse(mainSprite.position.x,mainSprite.position.y,radius,radius)
         }
 
         for(let j = allSprites.length - 1; j >= 0; j--)
@@ -174,7 +172,7 @@ function draw() {
 
             if(friendlyGroup.contains(mainSprite) && enemyGroup.contains(targetSprite))
             {
-                let collides = mainSprite.displace(targetSprite);
+                let collides = mainSprite.bounce(targetSprite);
                 if(collides)
                 {
                     if(targetSprite.hasShield)
@@ -256,9 +254,18 @@ function keyPressed() {
   }
 
 
-  if(key == 'O')
+  if(key == 'O' && debugMode == true)
   {
-    Global.ParticleSystem.addParticleSpray(Global.sprites.player_sprite.position,Global.sprites.player_sprite.shapeColor,3,10);
+    let player = Global.sprites.player_sprite;
+    if(player.hasShield)
+    {
+       player.hasShield=false;
+       Global.ParticleSystem.addParticleSpray(player.position,color(255),3,10);
+    }
+    else
+    {
+        Global.ParticleSystem.addParticleSpray(player.position,player.shapeColor,3,10);
+    }
   }
 };
 
@@ -277,11 +284,6 @@ function updateUIstuff()
   FPS_string = "FPS:" + fps.toFixed(0);
 
   points_string = "Points: " + Global.points;
-
-  if(debugMode)
-  {
-    overlay_line1_string = "Total Sprites:"+allSprites.length
-  }
 }
 
 function renderUI()
@@ -338,6 +340,7 @@ function playerShootEvent()
         new_bullet.scale = 3;
         let yvel = -4.5
         new_bullet.setVelocity(0,yvel);
+        new_bullet.mass = 0.2;
         new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
         bulletGroup.add(new_bullet);
         friendlyGroup.add(new_bullet);
