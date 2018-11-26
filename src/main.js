@@ -89,6 +89,8 @@ function reset() {
     enemy_sprite.setDefaultCollider();
     enemy_sprite.hasShield = true;
     enemy_sprite.friction = 0.01;
+    enemy_sprite.health = 5;
+    enemy_sprite.damage = 20
     enemyGroup.add(enemy_sprite);
     enemyShipGroup.add(enemy_sprite);
 
@@ -98,6 +100,8 @@ function reset() {
     Global.sprites.player_sprite.addImage(Global.images.player_ship);
     Global.sprites.player_sprite.setDefaultCollider();
     Global.sprites.player_sprite.scale = 3;
+    Global.sprites.player_sprite.health = 5;
+    Global.sprites.player_sprite.damage = 20;
     Global.sprites.player_sprite.hasShield = true;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(15);
 
@@ -160,6 +164,7 @@ function draw() {
     for(let i = allSprites.length - 1; i >= 0; i--)
     {
         let mainSprite = allSprites[i];
+
         //render shields while we are here
         if(mainSprite.hasShield && mainSprite.visible && !mainSprite.removed)
         {
@@ -187,6 +192,7 @@ function draw() {
                     else
                     {
                         Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,3,10);
+                        targetSprite.health -= mainSprite.damage;
                     }
                 }
                 if(collides && bulletGroup.contains(mainSprite))
@@ -198,6 +204,17 @@ function draw() {
                     targetSprite.remove();
                 }
             }
+
+          //take care of explosions
+          if(targetSprite.health <= 0)
+          {
+            let newpos = targetSprite.position;
+            targetSprite.remove();
+            let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
+            explode_sprite.scale = 3
+            explode_sprite.life = 60;
+            explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
+          }
         }
     }
 
@@ -360,6 +377,7 @@ function playerShootEvent()
         let yvel = -4.5
         new_bullet.setVelocity(0,yvel);
         new_bullet.mass = 0.2;
+        new_bullet.damage = 10;
         new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
         bulletGroup.add(new_bullet);
         friendlyGroup.add(new_bullet);

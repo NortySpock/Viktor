@@ -11,6 +11,7 @@ Bullet collisions? Yes.
 
 Long term
 ----------------------
+bullet "choke" helper function for enemy ships
 Hit percentage
 Look into making game work if player ship is not present (no NPEs).
 Create space aircraft carrier
@@ -22,7 +23,6 @@ Cookies with high-score list
 Attract / Demo mode
 Command Pattern for Player to allow flexibility for Attract / Demo mode
 start player in a safe position and release
-Some sort of story, told simply.
 Invulnerability on getting hit or dying
 "Number of lives" system
 Design sounds for game

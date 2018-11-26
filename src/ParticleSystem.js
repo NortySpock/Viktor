@@ -5,7 +5,7 @@ class Particle
   {
       this.vel = createVector(random(-1, 1), random(-1, 1));
       this.pos = pos.copy();
-      this.ttl = 60;
+      this.ttl = 90;
       this.color = 255;
 
       if(color)
