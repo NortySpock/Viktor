@@ -31,6 +31,7 @@ Global.images = {};
 Global.backgroundStars = [];
 Global.foregroundObjects = [];
 Global.sprites = {};
+Global.shieldScale = 1.5;
 
 
 //p5.play sprite groups
@@ -86,6 +87,7 @@ function reset() {
     enemy_sprite.scale = 3;
     enemy_sprite.mirrorY(-1);
     enemy_sprite.setDefaultCollider();
+    enemy_sprite.hasShield = true;
     enemyGroup.add(enemy_sprite);
     enemyShipGroup.add(enemy_sprite);
 
@@ -93,11 +95,10 @@ function reset() {
     //create sprite in lower middle of screen,with normal size collision box
     Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
     Global.sprites.player_sprite.addImage(Global.images.player_ship);
+    Global.sprites.player_sprite.setDefaultCollider();
     Global.sprites.player_sprite.scale = 3;
+    Global.sprites.player_sprite.hasShield = true;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(15);
-
-
-
 
     //TODO : drop all sprites during reset
 }
@@ -147,14 +148,28 @@ function draw() {
     if(onCanvas(newPos.x,newPos.y))
     {
       Global.sprites.player_sprite.position = newPos;
+      Global.sprites.player_sprite.setDefaultCollider()
     }
 
     //check all collisions
     for(let i = allSprites.length - 1; i >= 0; i--)
     {
+        let mainSprite = allSprites[i];
+        //render shields while we are here
+        if(mainSprite.hasShield)
+        {
+            rectMode(CENTER);
+            fill(0,0,0,0);
+            stroke(255);
+
+            ellipse(mainSprite.position.x,
+                    mainSprite.position.y,
+                    mainSprite.width*Global.shieldScale,
+                    mainSprite.height*Global.shieldScale)
+        }
+
         for(let j = allSprites.length - 1; j >= 0; j--)
         {
-            let mainSprite = allSprites[i];
             let targetSprite = allSprites[j]
 
             if(friendlyGroup.contains(mainSprite) && enemyGroup.contains(targetSprite))
@@ -162,7 +177,15 @@ function draw() {
                 let collides = mainSprite.displace(targetSprite);
                 if(collides)
                 {
-                    Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,3,10);
+                    if(targetSprite.hasShield)
+                    {
+                       targetSprite.hasShield=false;
+                       Global.ParticleSystem.addParticleSpray(mainSprite.position,color(255),3,10);
+                    }
+                    else
+                    {
+                        Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,3,10);
+                    }
                 }
                 if(collides && bulletGroup.contains(mainSprite))
                 {
@@ -191,8 +214,12 @@ function draw() {
     if(allSprites.length > 0)
     {
         let idx = frameCount % allSprites.length
-        let spr = allSprites[idx];
-        spr.shapeColor = get(spr.position.x,spr.position.y);
+        if(!allSprites[idx].hasTrueShapeColor)
+        {
+            let spr = allSprites[idx];
+            spr.shapeColor = get(spr.position.x,spr.position.y);
+            spr.hasTrueShapeColor = true;
+        }
     }
 
     if(frameDebug)

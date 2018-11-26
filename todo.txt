@@ -4,15 +4,15 @@ Bugs
 
 Short term
 ---------------------
-Particle effects using background field?
+Waypoint / rails system for ships to follow
+animate/test explosions
+AI director
 Bullet collisions? Yes.
 
 
 Long term
 ----------------------
-AI director
 Sprite sheet
-animate/test explosions
 Hit percentage
 Look into making game work if player ship is not present (no NPEs).
 Create space aircraft carrier
@@ -26,5 +26,5 @@ Command Pattern for Player to allow flexibility for Attract / Demo mode
 start player in a safe position and release
 Some sort of story, told simply.
 Invulnerability on getting hit or dying
-Health system or "Number of lives" system
+"Number of lives" system
 Design sounds for game
