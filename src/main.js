@@ -91,6 +91,7 @@ function reset() {
     enemy_sprite.friction = 0.01;
     enemy_sprite.health = 5;
     enemy_sprite.damage = 20
+    enemy_sprite.point_value = 10+10;
     enemyGroup.add(enemy_sprite);
     enemyShipGroup.add(enemy_sprite);
 
@@ -208,6 +209,10 @@ function draw() {
           //take care of explosions
           if(targetSprite.health <= 0)
           {
+            if(enemyGroup.contains(targetSprite) && targetSprite.point_value)
+            {
+              Global.points += targetSprite.point_value;
+            }
             let newpos = targetSprite.position;
             targetSprite.remove();
             let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
