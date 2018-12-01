@@ -4,7 +4,6 @@ Bugs
 
 Short term
 ---------------------
-Look into making game work if player ship is not present (no NPEs).
 Waypoint / rails system for ships to follow
 --Linked List for experience
 AI director
