@@ -97,14 +97,14 @@ function reset() {
 
 
     //create sprite in lower middle of screen,with normal size collision box
-    global.sprites.player_sprite = createsprite(global.canvaswidth/2,global.canvasheight*(5/6),global.images.player_ship.width,global.images.player_ship.height)
-    global.sprites.player_sprite.addimage(global.images.player_ship);
-    global.sprites.player_sprite.setdefaultcollider();
-    global.sprites.player_sprite.scale = 3;
-    global.sprites.player_sprite.health = 5;
-    global.sprites.player_sprite.damage = 20;
-    global.sprites.player_sprite.hasshield = true;
-    global.sprites.player_sprite.guncooldown = new guncooldown(15);
+    Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
+    Global.sprites.player_sprite.addImage(Global.images.player_ship);
+    Global.sprites.player_sprite.setDefaultCollider();
+    Global.sprites.player_sprite.scale = 3;
+    Global.sprites.player_sprite.health = 5;
+    Global.sprites.player_sprite.damage = 20;
+    Global.sprites.player_sprite.hasShield = true;
+    Global.sprites.player_sprite.GunCooldown = new GunCooldown(15);
 
     //TODO : drop all sprites during reset
 }
