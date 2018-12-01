@@ -51,13 +51,13 @@ class ParticleSystem
       this.particles.push(new Particle(pos,color,size));
     }
 
-    addParticleSpray(pos,color,size,count)
+    addParticleSpray(pos,color,size,ttl,count)
     {
         if(count)
         {
             for(let i=0;i<count;i++)
             {
-                this.addParticle(pos,color,size);
+                this.addParticle(pos,color,size,ttl);
             }
         }
     }

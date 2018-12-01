@@ -185,14 +185,32 @@ function draw() {
                 let collides = mainSprite.bounce(targetSprite);
                 if(collides)
                 {
+
+                    let particle_ttl = 90;
+                    let particle_count = 10;
+                    let particle_color = targetSprite.shapeColor;
+                    let particle_size = 3;
                     if(targetSprite.hasShield)
                     {
                        targetSprite.hasShield=false;
-                       Global.ParticleSystem.addParticleSpray(mainSprite.position,color(255),3,10);
+                       particle_color=color(255);
+                       Global.ParticleSystem.addParticleSpray(mainSprite.position,particle_color,particle_size,particle_ttl,particle_count);
                     }
                     else
                     {
-                        Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,3,10);
+                        //both are bullets
+                        if(bulletGroup.contains(mainSprite) && bulletGroup.contains(targetSprite))
+                        {
+                            //two sprays
+                            particle_ttl = 30;
+                            particle_count=3;
+                            Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,particle_size,particle_ttl,particle_count);
+                            Global.ParticleSystem.addParticleSpray(mainSprite.position,mainSprite.shapeColor,particle_size,particle_ttl,particle_count);
+                        }
+                        else //both are not bullets
+                        {
+                            Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,particle_size,particle_ttl,particle_count);
+                        }
                         targetSprite.health -= mainSprite.damage;
                     }
                 }
@@ -290,11 +308,11 @@ function keyPressed() {
     if(player.hasShield)
     {
        player.hasShield=false;
-       Global.ParticleSystem.addParticleSpray(player.position,color(255),3,10);
+       Global.ParticleSystem.addParticleSpray(player.position,color(255),3,90,10);
     }
     else
     {
-        Global.ParticleSystem.addParticleSpray(player.position,player.shapeColor,3,10);
+        Global.ParticleSystem.addParticleSpray(player.position,player.shapeColor,3,90,10);
     }
   }
 
