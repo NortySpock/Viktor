@@ -97,14 +97,14 @@ function reset() {
 
 
     //create sprite in lower middle of screen,with normal size collision box
-    Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
-    Global.sprites.player_sprite.addImage(Global.images.player_ship);
-    Global.sprites.player_sprite.setDefaultCollider();
-    Global.sprites.player_sprite.scale = 3;
-    Global.sprites.player_sprite.health = 5;
-    Global.sprites.player_sprite.damage = 20;
-    Global.sprites.player_sprite.hasShield = true;
-    Global.sprites.player_sprite.GunCooldown = new GunCooldown(15);
+    global.sprites.player_sprite = createsprite(global.canvaswidth/2,global.canvasheight*(5/6),global.images.player_ship.width,global.images.player_ship.height)
+    global.sprites.player_sprite.addimage(global.images.player_ship);
+    global.sprites.player_sprite.setdefaultcollider();
+    global.sprites.player_sprite.scale = 3;
+    global.sprites.player_sprite.health = 5;
+    global.sprites.player_sprite.damage = 20;
+    global.sprites.player_sprite.hasshield = true;
+    global.sprites.player_sprite.guncooldown = new guncooldown(15);
 
     //TODO : drop all sprites during reset
 }
@@ -155,7 +155,7 @@ function draw() {
     //run foreground physics
     //move player
     let newPos = createVector(mouseX,mouseY);
-    if(onCanvas(newPos.x,newPos.y))
+    if(onCanvas(newPos.x,newPos.y) && Global.sprites.player_sprite)
     {
       Global.sprites.player_sprite.position = newPos;
       Global.sprites.player_sprite.setDefaultCollider()
@@ -165,7 +165,6 @@ function draw() {
     for(let i = allSprites.length - 1; i >= 0; i--)
     {
         let mainSprite = allSprites[i];
-
         //render shields while we are here
         if(mainSprite.hasShield && mainSprite.visible && !mainSprite.removed)
         {
@@ -302,7 +301,7 @@ function keyPressed() {
   }
 
 
-  if(key == 'O' && debugMode == true)
+  if(key == 'O' && debugMode == true && Global.sprites.player_sprite)
   {
     let player = Global.sprites.player_sprite;
     if(player.hasShield)
@@ -316,7 +315,7 @@ function keyPressed() {
     }
   }
 
-  if(key == 'P' && debugMode == true)
+  if(key == 'P' && debugMode == true && Global.sprites.player_sprite)
   {
       let player = Global.sprites.player_sprite;
       let explode_sprite = createSprite(player.position.x+100, player.position.y, 16, 16);
@@ -387,7 +386,7 @@ function onCanvas(x,y)
 
 function playerShootEvent()
 {
-    if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount))
+    if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount) )
     {
         Global.sprites.player_sprite.GunCooldown.fire(frameCount);
         let posx = Global.sprites.player_sprite.position.x;
