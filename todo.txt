@@ -4,18 +4,21 @@ Bugs
 
 Short term
 ---------------------
+Particle system TTL update
+TTL variance as a percent of age?
+Look into making game work if player ship is not present (no NPEs).
 Waypoint / rails system for ships to follow
+--Linked List for experience
 AI director
 Bullet collisions? Yes.
+
 
 
 Long term
 ----------------------
 Hit percentage
-Look into making game work if player ship is not present (no NPEs).
-Create space aircraft carrier
-Create friendly wingmen?
-Wings indicate allegiance? Central color for pilot?
+Formation Mode
+-- time in formation helps AI Director pick patrol units
 Small enemies first
 Large enemy ships with health after
 Cookies with high-score list
@@ -26,3 +29,14 @@ Some sort of story, told simply.
 Invulnerability on getting hit or dying
 "Number of lives" system
 Design sounds for game
+Powerup Management System
+- Card deck draw style system
+-- so you don't get totally screwed by the RNG
+- optional sprite creation helper tool?
+- types 
+-- shield
+-- extra life
+-- missiles
+-- shotgun blast
+-- minion
+-- bomb
