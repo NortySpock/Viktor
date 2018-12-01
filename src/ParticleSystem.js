@@ -46,9 +46,9 @@ class ParticleSystem
         this.particles = [];
     }
 
-    addParticle(pos,color,size)
+    addParticle(pos,color,size,ttl)
     {
-      this.particles.push(new Particle(pos,color,size));
+      this.particles.push(new Particle(pos,color,size,ttl));
     }
 
     addParticleSpray(pos,color,size,ttl,count)

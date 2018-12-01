@@ -4,8 +4,6 @@ Bugs
 
 Short term
 ---------------------
-Particle system TTL update
-TTL variance as a percent of age?
 Look into making game work if player ship is not present (no NPEs).
 Waypoint / rails system for ships to follow
 --Linked List for experience

@@ -308,11 +308,11 @@ function keyPressed() {
     if(player.hasShield)
     {
        player.hasShield=false;
-       Global.ParticleSystem.addParticleSpray(player.position,color(255),3,90,10);
+       Global.ParticleSystem.addParticleSpray(player.position,color(255),3,20,10);
     }
     else
     {
-        Global.ParticleSystem.addParticleSpray(player.position,player.shapeColor,3,90,10);
+        Global.ParticleSystem.addParticleSpray(player.position,player.shapeColor,3,20,10);
     }
   }
 
