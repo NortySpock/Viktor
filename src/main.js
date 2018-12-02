@@ -153,6 +153,8 @@ function draw() {
     }
 
     Global.ParticleSystem.run();
+
+    renderBackgroundUI();
     //BACKGROUND
 
     //FOREGROUND
@@ -253,11 +255,11 @@ function draw() {
         }
     }
 
+    renderForegroundUI();
     //FOREGROUND
 
-    //UI
-    renderUI();
-    //UI
+
+
 
 
     //play all the sounds we've built up this frame
@@ -362,7 +364,7 @@ function updateUIstuff()
   points_string = "Points: " + Global.points;
 }
 
-function renderUI()
+function renderBackgroundUI()
 {
     textSize(14);
     textStyle(NORMAL);
@@ -371,11 +373,24 @@ function renderUI()
     fill(Global.textColor);
     text(FPS_string, FPS_string_location.x,FPS_string_location.y);
     text(points_string,points_string_location.x,points_string_location.y);
+}
+
+function renderForegroundUI()
+{
+    textSize(14);
+    textStyle(NORMAL);
+    textFont('Courier New');
+    stroke(Global.textColor);
+    fill(Global.textColor);
     text(overlay_line1_string,overlay_line1_string_location.x,overlay_line1_string_location.y);
     text(overlay_line2_string,overlay_line2_string_location.x,overlay_line2_string_location.y);
     text(overlay_line3_string,overlay_line3_string_location.x,overlay_line3_string_location.y);
     text(overlay_line4_string,overlay_line4_string_location.x,overlay_line4_string_location.y);
 }
+
+
+
+
 
 function halfSecondUpdateLoop(){
   updateUIstuff();
