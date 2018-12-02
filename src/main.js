@@ -91,7 +91,13 @@ function reset() {
     enemy_sprite.friction = 0.01;
     enemy_sprite.health = 5;
     enemy_sprite.damage = 20
+    enemy_sprite.baseAccel = 0.2;
+    enemy_sprite.maxSpeed = 2;
     enemy_sprite.point_value = 10+10;
+    enemy_sprite.waypoints = new Deque();
+    enemy_sprite.waypoints.pushBack({x:100,y:100});
+    enemy_sprite.waypoints.pushBack({x:500,y:100});
+    enemy_sprite.waypoints.pushBack({x:500,y:500});
     enemyGroup.add(enemy_sprite);
     enemyShipGroup.add(enemy_sprite);
 
@@ -99,8 +105,8 @@ function reset() {
     //create sprite in lower middle of screen,with normal size collision box
     Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
     Global.sprites.player_sprite.addImage(Global.images.player_ship);
-    Global.sprites.player_sprite.setDefaultCollider();
     Global.sprites.player_sprite.scale = 3;
+    Global.sprites.player_sprite.setDefaultCollider();
     Global.sprites.player_sprite.health = 5;
     Global.sprites.player_sprite.damage = 20;
     Global.sprites.player_sprite.hasShield = true;
@@ -165,6 +171,11 @@ function draw() {
     for(let i = allSprites.length - 1; i >= 0; i--)
     {
         let mainSprite = allSprites[i];
+
+        //tell this sprite to run its waypoint
+        runWaypoints(mainSprite);
+
+
         //render shields while we are here
         if(mainSprite.hasShield && mainSprite.visible && !mainSprite.removed)
         {
@@ -175,6 +186,8 @@ function draw() {
             ellipse(mainSprite.position.x,mainSprite.position.y,radius,radius)
         }
 
+
+        //iterate through other sprites to check for collisions
         for(let j = allSprites.length - 1; j >= 0; j--)
         {
             let targetSprite = allSprites[j]
@@ -256,6 +269,11 @@ function draw() {
     {
         let idx = frameCount % allSprites.length
         let spr = allSprites[idx];
+
+        //Check if this sprite needs something to do
+        //TODO write AI
+
+        //check for colors
         if(!spr.hasTrueShapeColor && spr.visible && onCanvas(spr.position.x,spr.position.y))
         {
             let newColor = get(spr.position.x,spr.position.y);
@@ -412,4 +430,39 @@ function isABrightColor(color)
 {
   let minColor = 100;
   return (red(color)+green(color)+blue(color))>minColor;
+}
+
+function runWaypoints(spr)
+{
+    if(spr.waypoints && !spr.waypoints.isEmpty())
+    {
+        let currentWaypoint = spr.waypoints.peekFront();
+        spr.attractionPoint(spr.baseAccel,currentWaypoint.x,currentWaypoint.y)
+
+        // if we get close enough to the waypoint
+        // we will first check to see if the waypoint says to fire and handle that
+        // then remove the waypoint so we can go to the next waypoint
+        if(dist(spr.position.x,spr.position.y,currentWaypoint.x,currentWaypoint.y) < 4)
+        {
+            if(currentWaypoint.fire) //TODO gunCooldown
+            {
+                //TODO handle firing at waypoints
+            }
+
+            //go to next waypoint
+            spr.waypoints.popFront();
+
+            //if we are now empty set speed to near 0 so we glide to a stop
+            if(spr.waypoints.isEmpty())
+            {
+                spr.limitSpeed(0.1)
+            }
+        }
+    }
+}
+
+function midpoint(x1,y1,x2,y2)
+{
+    let midpoint = {x:(x1+x2)/2,y:(y1+y2)/2}
+    return midpoint;
 }
