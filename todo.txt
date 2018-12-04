@@ -4,25 +4,21 @@ Bugs
 
 Short term
 ---------------------
-Waypoint / rails system for ships to follow
---Linked List for experience
 AI director
 Bullet collisions? Yes.
 
 
-
 Long term
 ----------------------
-bullet "choke" helper function for enemy ships
-Hit percentage
 Formation Mode
 -- time in formation helps AI Director pick patrol units
+bullet "choke" helper function for enemy ships
+Hit percentage
 Small enemies first
 Large enemy ships with health after
 Cookies with high-score list
 Attract / Demo mode
 Command Pattern for Player to allow flexibility for Attract / Demo mode
-start player in a safe position and release
 Invulnerability on getting hit or dying
 "Number of lives" system
 Design sounds for game
