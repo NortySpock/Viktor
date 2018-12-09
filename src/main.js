@@ -517,6 +517,23 @@ function pointOnLine(x1,y1,x2,y2,fraction)
     return newpoint;
 }
 
+function pointOnLineOverPlayer(x1,y1,x2,y2)
+{
+    if(!Global.sprites.player_sprite)
+    {
+      return null
+    }
+    let playerx = Global.sprites.player_sprite.position.x;
+    if((playerx < x1 && playerx < x2)||(playerx > x1 && playerx > x2)) //not between the two given points
+    {
+      return null
+    }
+
+    let newpoint = {x:playerx,y:(y1+y2)/2}
+    return newpoint;
+}
+
+
 function fireEnemyBulletStraightDown(x,y)
 {
   let h = Global.images.cyan_bolt.height
