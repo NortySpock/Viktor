@@ -84,20 +84,31 @@ function reset() {
     setInterval(halfSecondUpdateLoop,500);
     let enemy_sprite = createSprite(Global.canvasWidth/2,200,Global.images.enemy1.width,Global.images.enemy1.height);
     enemy_sprite.addImage (Global.images.enemy1);
-    enemy_sprite.scale = 3;
     enemy_sprite.mirrorY(-1);
-    enemy_sprite.setDefaultCollider();
+    enemyShipCreatorHelper(enemy_sprite);
     enemy_sprite.hasShield = true;
-    enemy_sprite.friction = 0.01;
-    enemy_sprite.health = 5;
-    enemy_sprite.damage = 20
-    enemy_sprite.baseAccel = 0.2;
-    enemy_sprite.maxSpeed = 2;
-    enemy_sprite.point_value = 10+10;
     enemy_sprite.waypoints = new Deque();
-    enemy_sprite.waypoints.pushBack({x:100,y:100});
-    enemy_sprite.waypoints.pushBack({x:500,y:100});
-    enemy_sprite.waypoints.pushBack({x:500,y:500});
+
+    //hack together a longer waypoint system
+    let first_point = {x:100,y:100};
+    let second_point = {x:500,y:100};
+    let shoot1 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.25);
+    shoot1.fire = true;
+    let shoot2 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.75)
+    shoot2.fire = true;
+    let shoot3 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.5)
+    shoot3.fire = true;
+
+    enemy_sprite.waypoints.pushBack(first_point);
+    enemy_sprite.waypoints.pushBack(shoot1);
+    enemy_sprite.waypoints.pushBack(shoot3);
+    enemy_sprite.waypoints.pushBack(shoot2);
+    enemy_sprite.waypoints.pushBack(second_point);
+    enemy_sprite.waypoints.pushBack(shoot2);
+    enemy_sprite.waypoints.pushBack(shoot3);
+    enemy_sprite.waypoints.pushBack(shoot1);
+    enemy_sprite.waypoints.pushBack(first_point);
+
     enemyGroup.add(enemy_sprite);
     enemyShipGroup.add(enemy_sprite);
 
@@ -173,7 +184,10 @@ function draw() {
     for(let i = allSprites.length - 1; i >= 0; i--)
     {
         let mainSprite = allSprites[i];
-
+        if(!mainSprite) //bailout if we failed to find an object
+        {
+          continue;
+        }
         //tell this sprite to run its waypoint
         runWaypoints(mainSprite);
 
@@ -249,7 +263,7 @@ function draw() {
             targetSprite.remove();
             let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
             explode_sprite.scale = 3
-            explode_sprite.life = 60;
+            explode_sprite.life = targetFrameRate;
             explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
           }
         }
@@ -340,12 +354,26 @@ function keyPressed() {
       let player = Global.sprites.player_sprite;
       let explode_sprite = createSprite(player.position.x+100, player.position.y, 16, 16);
       explode_sprite.scale = 3
-      explode_sprite.life = 60;
+      explode_sprite.life = targetFrameRate;
       explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
 
   }
 
 };
+
+function enemyShipCreatorHelper(sprite)
+{
+  sprite.scale = 3;
+  sprite.setDefaultCollider();
+  sprite.hasShield = true;
+  sprite.friction = 0.01;
+  sprite.health = 5;
+  sprite.damage = 20
+  sprite.baseAccel = 0.2;
+  sprite.maxSpeed = 2;
+  sprite.point_value = 10+10;
+  sprite.GunCooldown = new GunCooldown(targetFrameRate/2);
+}
 
 function randomFromInterval(min,max){
     return Math.random()*(max-min+1)+min;
@@ -449,7 +477,7 @@ function isABrightColor(color)
 
 function runWaypoints(spr)
 {
-    if(spr.waypoints && !spr.waypoints.isEmpty())
+    if(spr && spr.waypoints && !spr.waypoints.isEmpty())
     {
         let currentWaypoint = spr.waypoints.peekFront();
         spr.attractionPoint(spr.baseAccel,currentWaypoint.x,currentWaypoint.y)
@@ -459,9 +487,11 @@ function runWaypoints(spr)
         // then remove the waypoint so we can go to the next waypoint
         if(dist(spr.position.x,spr.position.y,currentWaypoint.x,currentWaypoint.y) < 4)
         {
-            if(currentWaypoint.fire) //TODO gunCooldown
+            if(currentWaypoint.fire && spr.GunCooldown.canFire(frameCount)) //TODO gunCooldown
             {
                 //TODO handle firing at waypoints
+                spr.GunCooldown.fire(frameCount);
+                fireEnemyBulletStraightDown(spr.position.x,spr.position.y);
             }
 
             //go to next waypoint
@@ -478,6 +508,30 @@ function runWaypoints(spr)
 
 function midpoint(x1,y1,x2,y2)
 {
-    let midpoint = {x:(x1+x2)/2,y:(y1+y2)/2}
-    return midpoint;
+    return pointOnLine(x1,y1,x2,y2,0.5);
 }
+
+function pointOnLine(x1,y1,x2,y2,fraction)
+{
+    let newpoint = {x:(x1+x2)*fraction,y:(y1+y2)*fraction}
+    return newpoint;
+}
+
+function fireEnemyBulletStraightDown(x,y)
+{
+  let h = Global.images.cyan_bolt.height
+  let w = Global.images.cyan_bolt.width
+  let new_bullet = createSprite(x,y,h,w);
+  new_bullet.addImage(Global.images.cyan_bolt);
+  new_bullet.scale = 3;
+  let yvel = 3.5
+  new_bullet.setVelocity(0,yvel);
+  new_bullet.mass = 0.2;
+  new_bullet.damage = 10;
+  new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
+  bulletGroup.add(new_bullet);
+  enemyGroup.add(new_bullet);
+
+  Global.soundMgr.queueSound('proton_bolt');
+}
+

@@ -6,13 +6,13 @@ Short term
 ---------------------
 AI director
 Bullet collisions? Yes.
-
+bullet "choke" helper function for enemy ships
+slope rise/run calculator to find waypoint for player current position
 
 Long term
 ----------------------
 Formation Mode
 -- time in formation helps AI Director pick patrol units
-bullet "choke" helper function for enemy ships
 Hit percentage
 Small enemies first
 Large enemy ships with health after
@@ -26,7 +26,7 @@ Powerup Management System
 - Card deck draw style system
 -- so you don't get totally screwed by the RNG
 - optional sprite creation helper tool?
-- types 
+- types
 -- shield
 -- extra life
 -- missiles
