@@ -59,7 +59,7 @@ function reset() {
     Global.points = 0;
 
     Global.soundMgr = new SoundManager();
-    Global.soundMgr.mute = true;
+    
 
     Global.ParticleSystem = new ParticleSystem();
 
@@ -156,6 +156,7 @@ function preload()
 
 function setup() {
   reset();
+  Global.soundMgr.mute = true;
 }
 
 function draw() {
