@@ -82,6 +82,17 @@ function reset() {
     preFillBackgroundStars();
 
     setInterval(halfSecondUpdateLoop,500);
+
+    //drop all sprites for reset
+    for(let i = allSprites.length - 1; i >= 0; i--)
+    {
+        let mainSprite = allSprites[i];
+        if(mainSprite)
+        {
+          mainSprite.remove();
+        }
+    }
+
     let enemy_sprite = createSprite(Global.canvasWidth/2,200,Global.images.enemy1.width,Global.images.enemy1.height);
     enemy_sprite.addImage (Global.images.enemy1);
     enemy_sprite.mirrorY(-1);
@@ -123,7 +134,7 @@ function reset() {
     Global.sprites.player_sprite.hasShield = true;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(15);
 
-    //TODO : drop all sprites during reset
+    startStage();
 }
 
 function preload()
@@ -207,6 +218,10 @@ function draw() {
         for(let j = allSprites.length - 1; j >= 0; j--)
         {
             let targetSprite = allSprites[j]
+            if(!targetSprite)
+            {
+                continue;
+            }
 
             if(friendlyGroup.contains(mainSprite) && enemyGroup.contains(targetSprite))
             {
@@ -223,6 +238,7 @@ function draw() {
                        targetSprite.hasShield=false;
                        particle_color=color(255);
                        Global.ParticleSystem.addParticleSpray(mainSprite.position,particle_color,particle_size,particle_ttl,particle_count);
+                       Global.soundMgr.queueSound('shield_fizzle');
                     }
                     else
                     {
@@ -238,6 +254,7 @@ function draw() {
                         else //both are not bullets
                         {
                             Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,particle_size,particle_ttl,particle_count);
+                            Global.soundMgr.queueSound('thud');
                         }
                         targetSprite.health -= mainSprite.damage;
                     }
@@ -311,7 +328,9 @@ function draw() {
 
 function mousePressed()
 {
+    resumeSoundIfContextBlocked();
     playerShootEvent();
+
 }
 
 //handles continuous presses
@@ -327,6 +346,14 @@ function keyPressed() {
   if(keyCode == ENTER || keyCode == RETURN)
   {
     reset();
+    return;
+  }
+
+  resumeSoundIfContextBlocked();
+
+  if(key == 'M' )
+  {
+      Global.soundMgr.mute = !Global.soundMgr.mute
   }
 
   if(key == 'S')
@@ -465,7 +492,7 @@ function playerShootEvent()
         bulletGroup.add(new_bullet);
         friendlyGroup.add(new_bullet);
 
-        Global.soundMgr.queueSound('proton_bolt');
+        Global.soundMgr.queueSound('player_bullet');
     }
 }
 
@@ -543,12 +570,25 @@ function fireEnemyBulletStraightDown(x,y)
   new_bullet.scale = 3;
   let yvel = 3.5
   new_bullet.setVelocity(0,yvel);
-  new_bullet.mass = 0.2;
+  new_bullet.mass = 0.1;
   new_bullet.damage = 10;
   new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
   bulletGroup.add(new_bullet);
   enemyGroup.add(new_bullet);
 
-  Global.soundMgr.queueSound('proton_bolt');
+  Global.soundMgr.queueSound('player_bullet');
 }
 
+
+function resumeSoundIfContextBlocked()
+{
+  if (getAudioContext().state !== 'running')
+  {
+        getAudioContext().resume();
+  }
+}
+
+function startStage()
+{
+    Global.soundMgr.queueSound('giddyup');
+}

@@ -12,7 +12,16 @@
     <script src="src/main.js"></script>
   </head>
   <body style="background-color: black;">
-   <p style="color:orange">Viktor! Mouse to move, spacebar to shoot.</p>
+  <style>
+    canvas
+    {
+      image-rendering: crisp-edges;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      -ms-interpolation-mode: nearest-neighbor;
+    }
+</style>
+   <p style="color:orange">Viktor! Mouse to move, spacebar or Mouse1 to shoot.  M to mute/unmute.</p>
    <div id="sketch-holder" style="width:700px; height:700px; padding: 0px; border: thin solid red">
    </div>
    <p style="color:orange">Made with &#10084; by Legendary Charizard and NortySpock, using p5 and p5.play.</p>
