@@ -3,8 +3,9 @@ class DirectorAI
 {
     constructor()
     {
+
     }
-    
+
     getStage()
     {
         return Global.stage;
@@ -15,12 +16,12 @@ class WaveManager
 {
     constructor()
     {
-        busy=false;
-        waveCount=0;
-        waveDirection = '';
-        waveEnemy = ''
+        this.busy=false;
+        this.waveCount=0;
+        this.waveDirection = '';
+        this.waveEnemy = ''
     }
-    
+
     acceptWaveRequest(enemy,number,direction)
     {
         if(!this.busy)
@@ -35,14 +36,14 @@ class WaveManager
         {
             return false;
         }
-        
+
     }
-    
+
     convertDirectionToXYPoint(direction)
     {
-        
+
     }
-    
+
     run()
     {
         //single tick of adding an enemy
@@ -52,16 +53,16 @@ class WaveManager
         }
         else
         {
-            
+
             waveCount--;
         }
     }
-    
+
     isBusy()
     {
         return this.busy;
     }
-    
+
 }
 
 
@@ -69,32 +70,45 @@ class EnemyCreator
 {
     constructor()
     {
-        
+
     }
-    
+
+
+
     createEnemy(type,posObj,waypointArray)
     {
+        if(!posObj)
+        {
+            console.log('failed to create enemy; posObj is missing:'+JSON.stringify(posObj));
+            return null;
+        }
+
+        let newSprite = null;
         switch(type)
         {
             case 'flat':
-                let newSprite = _createDefaultEnemy(posObj);
-                if(!newSprite)
-                {
-                    console.log('failed to create enemy using posObj:'+JSON.stringify(posObj));
-                    return;
-                }
-                _setFlat(newSprite);
+                newSprite = this._createDefaultEnemy(posObj);
+                this._setFlat(newSprite);
                 break;
             default:
                 console.log('enemy type not found:'+type);
         }
+
+        if(newSprite && waypointArray)
+        {
+            for(let i = 0; i< waypointArray.length; i++)
+            {
+                newSprite.waypoints.pushBack(waypointArray[i]);
+            }
+        }
+        return newSprite;
     }
-    
+
     _createDefaultEnemy(posObj)
     {
         let sprite = createSprite ( posObj.x,posObj.y, 10,10);
         sprite.scale = 3;
-        sprite.friction = 0.01;
+        sprite.friction = 0.02;
         sprite.health = 5;
         sprite.damage = 5;
         sprite.baseAccel = 0.2;
@@ -107,7 +121,7 @@ class EnemyCreator
         enemyShipGroup.add(sprite);
         return sprite;
     }
-    
+
     _setFlat(sprite)
     {
         sprite.addImage(Global.images.enemy1);
@@ -123,4 +137,6 @@ class EnemyCreator
         sprite.point_value = 10+10;
         sprite.GunCooldown = new GunCooldown(targetFrameRate/2);
     }
+
+
 }

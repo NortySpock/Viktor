@@ -62,7 +62,7 @@ function reset() {
     Global.enemyCreator = new EnemyCreator();
     Global.waveManager = new WaveManager();
     Global.director = new DirectorAI();
-    
+
 
     Global.ParticleSystem = new ParticleSystem();
 
@@ -95,15 +95,9 @@ function reset() {
           mainSprite.remove();
         }
     }
-    
-    Global.stage = 1; 
 
-    let enemy_sprite = createSprite(Global.canvasWidth/2,200,Global.images.enemy1.width,Global.images.enemy1.height);
-    enemy_sprite.addImage (Global.images.enemy1);
-    enemy_sprite.mirrorY(-1);
-    enemyShipCreatorHelper(enemy_sprite);
-    enemy_sprite.hasShield = true;
-    enemy_sprite.waypoints = new Deque();
+    Global.stage = 1;
+
 
     //hack together a longer waypoint system
     let first_point = {x:100,y:100};
@@ -115,19 +109,18 @@ function reset() {
     let shoot3 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.5)
     shoot3.fire = true;
 
-    enemy_sprite.waypoints.pushBack(first_point);
-    enemy_sprite.waypoints.pushBack(shoot1);
-    enemy_sprite.waypoints.pushBack(shoot3);
-    enemy_sprite.waypoints.pushBack(shoot2);
-    enemy_sprite.waypoints.pushBack(second_point);
-    enemy_sprite.waypoints.pushBack(shoot2);
-    enemy_sprite.waypoints.pushBack(shoot3);
-    enemy_sprite.waypoints.pushBack(shoot1);
-    enemy_sprite.waypoints.pushBack(first_point);
+    let qwaypoints = [];
 
-    enemyGroup.add(enemy_sprite);
-    enemyShipGroup.add(enemy_sprite);
-
+    qwaypoints.push(first_point);
+    qwaypoints.push(shoot1);
+    qwaypoints.push(shoot3);
+    qwaypoints.push(shoot2);
+    qwaypoints.push(second_point);
+    qwaypoints.push(shoot2);
+    qwaypoints.push(shoot3);
+    qwaypoints.push(shoot1);
+    qwaypoints.push(first_point);
+    let enemy_sprite = Global.enemyCreator.createEnemy('flat', {x:Global.canvasWidth/2,y:200},qwaypoints);
 
     //create sprite in lower middle of screen,with normal size collision box
     Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
