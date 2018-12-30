@@ -59,6 +59,9 @@ function reset() {
     Global.points = 0;
 
     Global.soundMgr = new SoundManager();
+    Global.enemyCreator = new EnemyCreator();
+    Global.waveManager = new WaveManager();
+    Global.director = new DirectorAI();
     
 
     Global.ParticleSystem = new ParticleSystem();
@@ -92,6 +95,8 @@ function reset() {
           mainSprite.remove();
         }
     }
+    
+    Global.stage = 1; 
 
     let enemy_sprite = createSprite(Global.canvasWidth/2,200,Global.images.enemy1.width,Global.images.enemy1.height);
     enemy_sprite.addImage (Global.images.enemy1);

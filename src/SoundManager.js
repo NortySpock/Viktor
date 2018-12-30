@@ -34,7 +34,7 @@ class SoundManager
     {
         if(this.mute)
         {
-            this.soundQueue = []; //clear queue
+            this.soundQueue = []; //clear queue from the last frame
         }
         else
         {
