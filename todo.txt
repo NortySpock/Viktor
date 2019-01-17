@@ -5,14 +5,13 @@ Bugs
 Short term
 ---------------------
 AI director
+Formation: each Sprite is assigned a home point on creation; which is used to set final waypoint. Sprites without waypoints are idle and in formation.
+AI: at timed intervals, flip a flag that says "the next n enemy ships will be part of a raid / will fire in place, if idle"
 bullet "choke" helper function for enemy ships
 
 Long term
 ----------------------
-Formation Mode
--- time in formation helps AI Director pick patrol units
 Hit percentage
-Small enemies first
 Large enemy ships with health after
 Cookies with high-score list
 Attract / Demo mode

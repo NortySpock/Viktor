@@ -34,6 +34,7 @@ Global.sprites = {};
 Global.shieldScale = 1.2;
 Global.animations = {};
 
+
 //p5.play sprite groups
 var bulletGroup;
 var friendlyGroup;
@@ -97,6 +98,8 @@ function reset() {
     }
 
     Global.stage = 1;
+    Global.PlayerShotsHit = 0;
+    Global.PlayerShotsTotal = 0;
 
 
     //hack together a longer waypoint system
@@ -256,6 +259,10 @@ function draw() {
                             Global.soundMgr.queueSound('thud');
                         }
                         targetSprite.health -= mainSprite.damage;
+                    }
+                    if(mainSprite.isPlayerShot)
+                    {
+                      Global.PlayerShotsHit += 1;
                     }
                 }
                 if(collides && bulletGroup.contains(mainSprite))
@@ -476,6 +483,7 @@ function playerShootEvent()
     if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount) )
     {
         Global.sprites.player_sprite.GunCooldown.fire(frameCount);
+        Global.PlayerShotsTotal += 1;
         let posx = Global.sprites.player_sprite.position.x;
         let posy = Global.sprites.player_sprite.position.y;
         let h = Global.images.red_bolt.height
@@ -488,6 +496,7 @@ function playerShootEvent()
         new_bullet.mass = 0.2;
         new_bullet.damage = 10;
         new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
+        new_bullet.isPlayerShot = true;
         bulletGroup.add(new_bullet);
         friendlyGroup.add(new_bullet);
 
