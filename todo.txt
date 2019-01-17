@@ -5,7 +5,7 @@ Bugs
 Short term
 ---------------------
 AI director
-Formation: each Sprite is assigned a home point on creation; which is used to set final waypoint. Sprites without waypoints are idle and in formation.
+Sprites without waypoints are idle and in formation.
 AI: at timed intervals, flip a flag that says "the next n enemy ships will be part of a raid / will fire in place, if idle"
 bullet "choke" helper function for enemy ships
 

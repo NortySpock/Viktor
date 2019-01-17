@@ -3,12 +3,53 @@ class DirectorAI
 {
     constructor()
     {
-
+      this.formationPoints=[];
     }
 
     getStage()
     {
         return Global.stage;
+    }
+
+    nextStage()
+    {
+        this.createFormationPoints();
+    }
+
+    createFormationPoints()
+    {
+      this.formationPoints = [];
+
+      let buffer = 60;
+      let ylevel = buffer
+      //top level
+      for(let i = buffer; i<Global.canvasWidth-buffer; i+=buffer)
+      {
+          this.formationPoints.push({x:i,y:ylevel})
+      }
+
+      //mid level
+      ylevel+=buffer;
+      let offset = buffer/2;
+      for(let i = buffer+offset; i<Global.canvasWidth-buffer-offset; i+=buffer)
+      {
+          this.formationPoints.push({x:i,y:ylevel})
+      }
+
+      // next level
+      ylevel+=buffer;
+      for(let i = buffer; i<Global.canvasWidth-buffer; i+=buffer)
+      {
+          this.formationPoints.push({x:i,y:ylevel})
+      }
+
+      // flip it so we allocate arrays from the top rather than the bottom.
+      this.formationPoints.reverse();
+    }
+
+    getFormationPoint()
+    {
+      return this.formationPoints.pop();
     }
 }
 
@@ -53,7 +94,6 @@ class WaveManager
         }
         else
         {
-
             waveCount--;
         }
     }
@@ -94,12 +134,16 @@ class EnemyCreator
                 console.log('enemy type not found:'+type);
         }
 
-        if(newSprite && waypointArray)
+        if(newSprite)
         {
-            for(let i = 0; i< waypointArray.length; i++)
-            {
-                newSprite.waypoints.pushBack(waypointArray[i]);
-            }
+          if(waypointArray)
+          {
+              for(let i = 0; i< waypointArray.length; i++)
+              {
+                  newSprite.waypoints.pushBack(waypointArray[i]);
+              }
+          }
+          newSprite.waypoints.pushBack(newSprite.formationPoint);
         }
         return newSprite;
     }
@@ -119,6 +163,7 @@ class EnemyCreator
         sprite.waypoints = new Deque();
         enemyGroup.add(sprite);
         enemyShipGroup.add(sprite);
+        sprite.formationPoint = Global.director.getFormationPoint();
         return sprite;
     }
 

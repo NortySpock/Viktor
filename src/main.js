@@ -63,6 +63,7 @@ function reset() {
     Global.enemyCreator = new EnemyCreator();
     Global.waveManager = new WaveManager();
     Global.director = new DirectorAI();
+    Global.director.nextStage();
 
 
     Global.ParticleSystem = new ParticleSystem();
@@ -123,6 +124,7 @@ function reset() {
     qwaypoints.push(shoot3);
     qwaypoints.push(shoot1);
     qwaypoints.push(first_point);
+
     let enemy_sprite = Global.enemyCreator.createEnemy('flat', {x:Global.canvasWidth/2,y:200},qwaypoints);
 
     //create sprite in lower middle of screen,with normal size collision box
