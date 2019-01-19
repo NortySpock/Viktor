@@ -22,13 +22,13 @@ class DirectorAI
 
       let buffer = 60;
       let ylevel = buffer
-      //top level
+      //first level
       for(let i = buffer; i<Global.canvasWidth-buffer; i+=buffer)
       {
           this.formationPoints.push({x:i,y:ylevel})
       }
 
-      //mid level
+      //second level
       ylevel+=buffer;
       let offset = buffer/2;
       for(let i = buffer+offset; i<Global.canvasWidth-buffer-offset; i+=buffer)
@@ -36,9 +36,17 @@ class DirectorAI
           this.formationPoints.push({x:i,y:ylevel})
       }
 
-      // next level
+      // third level
       ylevel+=buffer;
       for(let i = buffer; i<Global.canvasWidth-buffer; i+=buffer)
+      {
+          this.formationPoints.push({x:i,y:ylevel})
+      }
+
+      //4th level
+      ylevel+=buffer;
+      offset = buffer/2;
+      for(let i = buffer+offset; i<Global.canvasWidth-buffer-offset; i+=buffer)
       {
           this.formationPoints.push({x:i,y:ylevel})
       }
