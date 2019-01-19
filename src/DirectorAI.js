@@ -28,11 +28,11 @@ class DirectorAI
       let offset = 65
       this.bottomLeftAngle=[];
       this.bottomLeftAngle.push({x:-offset,y:Global.canvasHeight+offset});
-      this.bottomLeftAngle.push({x:Global.canvasWidth*0.3,y:Global.canvasHeight*0.7});
+      this.bottomLeftAngle.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
 
       this.bottomRightAngle=[];
       this.bottomRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
-      this.bottomRightAngle.push({x:Global.canvasWidth*0.7,y:Global.canvasHeight*0.7});
+      this.bottomRightAngle.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
     }
 
     createFormationPoints()
@@ -156,7 +156,7 @@ class WaveManager
        let _size = 3;
        let _ttl = 45;
        let _count = 80;
-       let pos = createVector(-100,-100);
+       let pos = createVector(-1000,-1000); //default to offscreen
        switch(loc)
        {
           case 'bottom left':
@@ -165,6 +165,24 @@ class WaveManager
 
           case 'bottom right':
             pos = createVector(Global.canvasWidth,Global.canvasHeight);
+            break;
+
+          case 'mid left':
+            pos = createVector(0,Global.canvasHeight/2);
+            _count=40;
+            break;
+
+          case 'mid right':
+            pos = createVector(Global.canvasWidth,Global.canvasHeight/2);
+            _count=40;
+            break;
+
+          case 'top left':
+            pos =  createVector(0,0);
+            break;
+
+          case 'top right':
+            pos = createVector(Global.canvasWidth,0);
             break;
 
           default:

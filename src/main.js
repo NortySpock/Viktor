@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = false;
+const debugMode = true;
 const frameDebug = false;
 const targetFrameRate = 60;
 const backgroundColor = 0;
@@ -400,13 +400,35 @@ function keyPressed() {
 
   }
 
-  if(key=='K' && debugMode)
+
+  if(key=='T' && debugMode)
+  {
+    Global.waveManager._warningSpray('top left')
+  }
+
+  if(key=='Y' && debugMode)
+  {
+    Global.waveManager._warningSpray('top right')
+  }
+
+  if(key=='G' && debugMode)
+  {
+    Global.waveManager._warningSpray('mid left')
+  }
+
+
+  if(key=='H' && debugMode)
+  {
+    Global.waveManager._warningSpray('mid right')
+  }
+
+  if(key=='B' && debugMode)
   {
     Global.waveManager._warningSpray('bottom left')
   }
 
 
-  if(key=='L' && debugMode)
+  if(key=='N' && debugMode)
   {
     Global.waveManager._warningSpray('bottom right')
   }
