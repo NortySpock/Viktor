@@ -69,9 +69,6 @@ class DirectorAI
       {
           this.formationPoints.push({x:i,y:ylevel})
       }
-
-      // flip it so we allocate arrays from the top rather than the bottom.
-      this.formationPoints.reverse();
     }
 
     getFormationPoint()
@@ -79,8 +76,9 @@ class DirectorAI
       if(this.formationPoints.length == 0)
       {
         console.log("ERROR: ran out of formation points!")
+        return {x:Global.canvasWidth/2,y:Global.canvasHeight/2}; //return a default center point
       }
-      return this.formationPoints.pop();
+      return this.formationPoints.shift(); //shift gives FIFO behavior
     }
 
     _renderArrayOfPoints(arrayOfPoints)
