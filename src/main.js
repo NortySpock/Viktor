@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = true;
+const debugMode = false;
 const frameDebug = false;
 const targetFrameRate = 60;
 const backgroundColor = 0;
@@ -105,7 +105,7 @@ function reset() {
 
     //hack together a longer waypoint system
     let first_point = {x:100,y:100};
-    let second_point = {x:500,y:100};
+    let second_point = {x:Global.canvasWidth*0.9,y:100};
     let shoot1 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.25);
     shoot1.fire = true;
     let shoot2 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.75)
@@ -135,7 +135,7 @@ function reset() {
     Global.sprites.player_sprite.health = 5;
     Global.sprites.player_sprite.damage = 20;
     Global.sprites.player_sprite.hasShield = true;
-    Global.sprites.player_sprite.GunCooldown = new GunCooldown(15);
+    Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
 
     startStage();
 }
@@ -274,6 +274,7 @@ function draw() {
                 if(collides && bulletGroup.contains(targetSprite))
                 {
                     targetSprite.remove();
+                    Global.points += 1; //a point for shooting enemy bullets
                 }
             }
 
@@ -324,6 +325,11 @@ function draw() {
               spr.hasTrueShapeColor = true;
             }
         }
+    }
+
+    if(debugMode)
+    {
+      Global.director._renderMyPoints();
     }
 
     if(frameDebug)
@@ -394,26 +400,24 @@ function keyPressed() {
 
   }
 
-};
+  if(key=='K' && debugMode)
+  {
+    Global.waveManager._warningSpray('bottom left')
+  }
 
-function enemyShipCreatorHelper(sprite)
-{
-  sprite.scale = 3;
-  sprite.setDefaultCollider();
-  sprite.hasShield = true;
-  sprite.friction = 0.01;
-  sprite.health = 5;
-  sprite.damage = 20
-  sprite.baseAccel = 0.2;
-  sprite.maxSpeed = 2;
-  sprite.point_value = 10+10;
-  sprite.GunCooldown = new GunCooldown(targetFrameRate/2);
-}
+
+  if(key=='L' && debugMode)
+  {
+    Global.waveManager._warningSpray('bottom right')
+  }
+
+};
 
 function randomFromInterval(min,max){
     return Math.random()*(max-min+1)+min;
 }
 
+//true-false coin-flip
 function coinFlip()
 {
   return (int(Math.random() * 2) == 0);
@@ -451,10 +455,6 @@ function renderForegroundUI()
     text(overlay_line4_string,overlay_line4_string_location.x,overlay_line4_string_location.y);
 }
 
-
-
-
-
 function halfSecondUpdateLoop(){
   updateUIstuff();
 }
@@ -463,7 +463,7 @@ function preFillBackgroundStars()
 {
   while(Global.backgroundStars.length < backgroundStarCount)
   {
-    Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
+    Global.backgroundStars.push(new BackgroundStar());
   }
 }
 

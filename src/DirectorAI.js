@@ -4,6 +4,12 @@ class DirectorAI
     constructor()
     {
       this.formationPoints=[];
+
+      this.bottomLeftAngle=[];
+
+      this.bottomRightAngle=[];
+
+      this._createOnRamps();
     }
 
     getStage()
@@ -14,13 +20,26 @@ class DirectorAI
     nextStage()
     {
         this.createFormationPoints();
+
+    }
+
+    _createOnRamps()
+    {
+      let offset = 65
+      this.bottomLeftAngle=[];
+      this.bottomLeftAngle.push({x:-offset,y:Global.canvasHeight+offset});
+      this.bottomLeftAngle.push({x:Global.canvasWidth*0.3,y:Global.canvasHeight*0.7});
+
+      this.bottomRightAngle=[];
+      this.bottomRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
+      this.bottomRightAngle.push({x:Global.canvasWidth*0.7,y:Global.canvasHeight*0.7});
     }
 
     createFormationPoints()
     {
       this.formationPoints = [];
 
-      let buffer = 60;
+      let buffer = 65;
       let ylevel = buffer
       //first level
       for(let i = buffer; i<Global.canvasWidth-buffer; i+=buffer)
@@ -33,7 +52,7 @@ class DirectorAI
       let offset = buffer/2;
       for(let i = buffer+offset; i<Global.canvasWidth-buffer-offset; i+=buffer)
       {
-          this.formationPoints.push({x:i,y:ylevel})
+          this.formationPoints.push({x:i,y:ylevel});
       }
 
       // third level
@@ -57,7 +76,32 @@ class DirectorAI
 
     getFormationPoint()
     {
+      if(this.formationPoints.length == 0)
+      {
+        console.log("ERROR: ran out of formation points!")
+      }
       return this.formationPoints.pop();
+    }
+
+    _renderArrayOfPoints(arrayOfPoints)
+    {
+      stroke(color(0,255,0));
+      strokeWeight(3);
+      for(let i = 0; i<arrayOfPoints.length;i++)
+      {
+        point(arrayOfPoints[i].x,arrayOfPoints[i].y);
+      }
+    }
+
+    _renderFormationPoints()
+    {
+      this._renderArrayOfPoints(this.formationPoints);
+    }
+
+    _renderMyPoints()
+    {
+      this._renderArrayOfPoints(this.bottomLeftAngle);
+      this._renderArrayOfPoints(this.bottomRightAngle);
     }
 }
 
@@ -96,14 +140,37 @@ class WaveManager
     run()
     {
         //single tick of adding an enemy
-        if(waveCount <= 0)
+        if(this.waveCount <= 0)
         {
-            busy=false;
+            this.busy=false;
         }
         else
         {
-            waveCount--;
+            this.waveCount--;
         }
+    }
+
+    _warningSpray(loc)
+    {
+       let warnColor = color(0, 255, 255);
+       let _size = 3;
+       let _ttl = 45;
+       let _count = 80;
+       let pos = createVector(-100,-100);
+       switch(loc)
+       {
+          case 'bottom left':
+            pos =  createVector(0,Global.canvasHeight);
+            break;
+
+          case 'bottom right':
+            pos = createVector(Global.canvasWidth,Global.canvasHeight);
+            break;
+
+          default:
+              console.log('warning spay location not found:'+loc);
+       }
+       Global.ParticleSystem.addParticleSpray(pos,warnColor,_size,_ttl,_count);
     }
 
     isBusy()
