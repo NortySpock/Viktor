@@ -329,7 +329,7 @@ function draw() {
 
     if(debugMode)
     {
-      Global.director._renderMyPoints();
+      Global.waveManager._renderMyPoints();
     }
 
     if(frameDebug)
