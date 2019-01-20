@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = true;
+const debugMode = false;
 const frameDebug = false;
 const targetFrameRate = 60;
 const backgroundColor = 0;
