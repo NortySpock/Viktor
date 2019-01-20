@@ -34,7 +34,7 @@ class DirectorAI
           }
           else
           {
-            Global.waveManager.waveRequest('flat_shield',5,'bottom left',60);
+            Global.waveManager.waveRequest('flat_shield',5,'bottom right',60);
           }
           this.toggle = !this.toggle;
           this.framesToNextWave = this.constant_FramesUntilNextWave;
@@ -258,7 +258,7 @@ class WaveManager
       if(this.formationPoints.length == 0)
       {
         console.log("ERROR: ran out of formation points!")
-        return {x:Global.canvasWidth/2,y:Global.canvasHeight/2}; //return a default center point
+        this.createFormationPoints(); //regenerate the formation points and hope
       }
       return this.formationPoints.shift(); //shift gives FIFO behavior
     }
