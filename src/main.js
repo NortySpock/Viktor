@@ -327,6 +327,9 @@ function draw() {
         }
     }
 
+    Global.director.run();
+    Global.waveManager.run();
+
     if(debugMode)
     {
       Global.waveManager._renderMyPoints();
@@ -390,48 +393,12 @@ function keyPressed() {
     }
   }
 
-  if(key == 'P' && debugMode == true && Global.sprites.player_sprite)
-  {
-      let player = Global.sprites.player_sprite;
-      let explode_sprite = createSprite(player.position.x+100, player.position.y, 16, 16);
-      explode_sprite.scale = 3
-      explode_sprite.life = targetFrameRate;
-      explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
-
-  }
-
-
   if(key=='T' && debugMode)
   {
-    Global.waveManager._warningSpray('top left')
-  }
-
-  if(key=='Y' && debugMode)
-  {
-    Global.waveManager._warningSpray('top right')
-  }
-
-  if(key=='G' && debugMode)
-  {
-    Global.waveManager._warningSpray('mid left')
+    console.log("wave request:"+Global.waveManager.waveRequest('flat',5,'bottom left',60));
   }
 
 
-  if(key=='H' && debugMode)
-  {
-    Global.waveManager._warningSpray('mid right')
-  }
-
-  if(key=='B' && debugMode)
-  {
-    Global.waveManager._warningSpray('bottom left')
-  }
-
-
-  if(key=='N' && debugMode)
-  {
-    Global.waveManager._warningSpray('bottom right')
-  }
 
 };
 

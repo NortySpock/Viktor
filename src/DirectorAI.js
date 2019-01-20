@@ -3,6 +3,8 @@ class DirectorAI
 {
     constructor()
     {
+      this.framesToNextWave = 0;
+      this.constant_FramesUntilNextWave = 60*10;
     }
 
     getStage()
@@ -12,8 +14,23 @@ class DirectorAI
 
     nextStage()
     {
+      this.framesToNextWave
 
+    }
 
+    run()
+    {
+
+      this.framesToNextWave--;
+
+      if(this.framesToNextWave  <= 0)
+      {
+        if(!Global.waveManager.isBusy()) //will check each frame until this works
+        {
+          Global.waveManager.waveRequest('flat',5,'bottom left',60);
+          this.framesToNextWave = this.constant_FramesUntilNextWave;
+        }
+      }
     }
 }
 
@@ -41,7 +58,7 @@ class WaveManager
         this.createFormationPoints();
     }
 
-    acceptWaveRequest(enemy,count,direction,delayTiming)
+    waveRequest(enemy,count,direction,delayTiming)
     {
         if(!this.busy)
         {
@@ -61,9 +78,43 @@ class WaveManager
 
     }
 
-    convertDirectionToXYSpawnPoint(direction)
+    convertDirectionToSpawn(enemy,direction)
     {
+      let pos = createVector(-1000,-1000); //default to offscreen
+      let waypointArray = [];
+      let offset = 65;
+      switch(direction)
+       {
+          case 'bottom left':
+            pos =  createVector(0-offset,Global.canvasHeight+offset);
+            waypointArray = this.bottomLeftAngle.slice();
+            break;
 
+          case 'bottom right':
+            pos = createVector(Global.canvasWidth+offset,Global.canvasHeight+offset);
+            waypointArray = this.bottomRightAngle.slice()
+            break;
+
+          case 'mid left':
+            pos = createVector(0-offset,Global.canvasHeight/2);
+            break;
+
+          case 'mid right':
+            pos = createVector(Global.canvasWidth+offset,Global.canvasHeight/2);
+            break;
+
+          case 'top left':
+            pos =  createVector(0-offset,0-offset);
+            break;
+
+          case 'top right':
+            pos = createVector(Global.canvasWidth+offset,0-offset);
+            break;
+
+          default:
+              console.log('Spawn Direction not found:'+direction);
+       }
+      Global.enemyCreator.createEnemy(enemy,pos,waypointArray);
     }
 
     run()
@@ -87,20 +138,20 @@ class WaveManager
             if(this.delay <= 0)
             {
               this.delay = this.delayTiming;
-
+              this.convertDirectionToSpawn(this.waveEnemy,this.waveDirection);
               this.waveCount--;
             }
         }
     }
 
-    _warningSpray(loc)
+    _warningSpray(direction)
     {
        let warnColor = color(0, 255, 255);
        let _size = 3;
        let _ttl = 45;
        let _count = 80;
        let pos = createVector(-1000,-1000); //default to offscreen
-       switch(loc)
+       switch(direction)
        {
           case 'bottom left':
             pos =  createVector(0,Global.canvasHeight);
@@ -129,7 +180,7 @@ class WaveManager
             break;
 
           default:
-              console.log('warning spay location not found:'+loc);
+              console.log('warning spay location not found:'+direction);
        }
        Global.ParticleSystem.addParticleSpray(pos,warnColor,_size,_ttl,_count);
     }
