@@ -5,6 +5,7 @@ class DirectorAI
     {
       this.framesToNextWave = 0;
       this.constant_FramesUntilNextWave = 60*10;
+      this.toggle = true;
     }
 
     getStage()
@@ -27,7 +28,15 @@ class DirectorAI
       {
         if(!Global.waveManager.isBusy()) //will check each frame until this works
         {
-          Global.waveManager.waveRequest('flat',5,'bottom left',60);
+          if(this.toggle)
+          {
+            Global.waveManager.waveRequest('flat',5,'bottom left',60);
+          }
+          else
+          {
+            Global.waveManager.waveRequest('flat_shield',5,'bottom left',60);
+          }
+          this.toggle = !this.toggle;
           this.framesToNextWave = this.constant_FramesUntilNextWave;
         }
       }
@@ -295,6 +304,11 @@ class EnemyCreator
                 newSprite = this._createDefaultEnemy(posObj);
                 this._setFlat(newSprite);
                 break;
+            case 'flat_shield':
+                newSprite = this._createDefaultEnemy(posObj);
+                this._setFlat(newSprite);
+                newSprite.hasShield=true;
+                break;
             default:
                 console.log('enemy type not found:'+type);
         }
@@ -338,12 +352,12 @@ class EnemyCreator
         sprite.mirrorY(-1);
         sprite.scale = 3;
         sprite.setDefaultCollider();
-        sprite.hasShield = true;
+        sprite.hasShield = false;
         sprite.shieldScale = 1.2;
         sprite.health = 5;
         sprite.damage = 20
-        sprite.baseAccel = 0.2;
-        sprite.maxSpeed = 2;
+        sprite.baseAccel = 0.3;
+        sprite.maxSpeed = 3;
         sprite.point_value = 10+10;
         sprite.GunCooldown = new GunCooldown(targetFrameRate/2);
     }
