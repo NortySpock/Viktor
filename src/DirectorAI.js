@@ -4,8 +4,10 @@ class DirectorAI
     constructor()
     {
       this.framesToNextWave = 0;
-      this.constant_FramesUntilNextWave = 60*10;
+      this.framesUntilNextWave = 60*10;
       this.toggle = true;
+      this.enemies_per_stage = 10;
+      this.enemies_left_in_this_stage;
     }
 
     getStage()
@@ -15,7 +17,9 @@ class DirectorAI
 
     nextStage()
     {
-      this.framesToNextWave
+      Global.stage += 1;
+      this.enemies_left_in_this_stage = this.enemies_per_stage * Global.stage;
+      this.framesToNextWave = 60;
 
     }
 
@@ -24,21 +28,28 @@ class DirectorAI
 
       this.framesToNextWave--;
 
-      if(this.framesToNextWave  <= 0)
+      if(this.framesToNextWave  <= 0 )
       {
-        if(!Global.waveManager.isBusy()) //will check each frame until this works
+        if(!Global.waveManager.isBusy() && Global.waveManager.formationPoints.length >= 5 ) //will check each frame until this works
         {
+          let waveCount = 5;
           if(this.toggle)
           {
-            Global.waveManager.waveRequest('flat',5,'bottom left',60);
+            Global.waveManager.waveRequest('flat',waveCount ,'bottom left',60);
           }
           else
           {
-            Global.waveManager.waveRequest('flat_shield',5,'bottom right',60);
+            Global.waveManager.waveRequest('flat_shield',waveCount ,'bottom right',60);
           }
           this.toggle = !this.toggle;
-          this.framesToNextWave = this.constant_FramesUntilNextWave;
+          this.framesToNextWave = this.framesUntilNextWave;
+          this.enemies_left_in_this_stage -= waveCount;
         }
+      }
+      
+      if(this.enemies_left_in_this_stage <= 0)
+      {
+        this.nextStage();
       }
     }
 }
@@ -65,6 +76,7 @@ class WaveManager
         this.fireWarningShot=false;
 
         this.createFormationPoints();
+        this.maxFormationPoints = 0;
     }
 
     waveRequest(enemy,count,direction,delayTiming)
@@ -251,6 +263,9 @@ class WaveManager
       {
           this.formationPoints.push({x:i,y:ylevel})
       }
+      
+      this.maxFormationPoints = this.formationPoints.length;
+      console.log("max formation points:"+this.formationPoints.length);
     }
 
     getFormationPoint()
@@ -340,8 +355,8 @@ class EnemyCreator
         sprite.hasShield = false;
         sprite.shieldScale = 1.2;
         sprite.waypoints = new Deque();
-        enemyGroup.add(sprite);
-        enemyShipGroup.add(sprite);
+        Global.enemyGroup.add(sprite);
+        Global.enemyShipGroup.add(sprite);
         sprite.formationPoint = Global.waveManager.getFormationPoint();
         return sprite;
     }

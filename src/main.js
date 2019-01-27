@@ -34,12 +34,11 @@ Global.sprites = {};
 Global.shieldScale = 1.2;
 Global.animations = {};
 
-
 //p5.play sprite groups
-var bulletGroup;
-var friendlyGroup;
-var enemyGroup;
-var enemyShipGroup;
+Global.bulletGroup;
+Global.friendlyGroup;
+Global.enemyGroup;
+Global.enemyShipGroup;
 
 function reset() {
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
@@ -68,10 +67,10 @@ function reset() {
 
     Global.ParticleSystem = new ParticleSystem();
 
-    bulletGroup = new Group();
-    friendlyGroup = new Group();
-    enemyGroup = new Group();
-    enemyShipGroup = new Group();
+    Global.bulletGroup = new Group();
+    Global.friendlyGroup = new Group();
+    Global.enemyGroup = new Group();
+    Global.enemyShipGroup = new Group();
 
 
     points_string_location = createVector(Global.canvasWidth*(19/24),20);
@@ -227,7 +226,7 @@ function draw() {
                 continue;
             }
 
-            if(friendlyGroup.contains(mainSprite) && enemyGroup.contains(targetSprite))
+            if(Global.friendlyGroup.contains(mainSprite) && Global.enemyGroup.contains(targetSprite))
             {
                 let collides = mainSprite.bounce(targetSprite);
                 if(collides)
@@ -247,7 +246,7 @@ function draw() {
                     else
                     {
                         //both are bullets
-                        if(bulletGroup.contains(mainSprite) && bulletGroup.contains(targetSprite))
+                        if(Global.bulletGroup.contains(mainSprite) && Global.bulletGroup.contains(targetSprite))
                         {
                             //two sprays
                             particle_ttl = 30;
@@ -267,11 +266,11 @@ function draw() {
                       Global.PlayerShotsHit += 1;
                     }
                 }
-                if(collides && bulletGroup.contains(mainSprite))
+                if(collides && Global.bulletGroup.contains(mainSprite))
                 {
                     mainSprite.remove();
                 }
-                if(collides && bulletGroup.contains(targetSprite))
+                if(collides && Global.bulletGroup.contains(targetSprite))
                 {
                     targetSprite.remove();
                     Global.points += 1; //a point for shooting enemy bullets
@@ -281,7 +280,7 @@ function draw() {
           //take care of explosions
           if(targetSprite.health <= 0)
           {
-            if(enemyGroup.contains(targetSprite) && targetSprite.point_value)
+            if(Global.enemyGroup.contains(targetSprite) && targetSprite.point_value)
             {
               Global.points += targetSprite.point_value;
             }
@@ -488,8 +487,8 @@ function playerShootEvent()
         new_bullet.damage = 10;
         new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
         new_bullet.isPlayerShot = true;
-        bulletGroup.add(new_bullet);
-        friendlyGroup.add(new_bullet);
+        Global.bulletGroup.add(new_bullet);
+        Global.friendlyGroup.add(new_bullet);
 
         Global.soundMgr.queueSound('player_bullet');
     }
@@ -572,8 +571,8 @@ function fireEnemyBulletStraightDown(x,y)
   new_bullet.mass = 0.1;
   new_bullet.damage = 10;
   new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
-  bulletGroup.add(new_bullet);
-  enemyGroup.add(new_bullet);
+  Global.bulletGroup.add(new_bullet);
+  Global.enemyGroup.add(new_bullet);
 
   Global.soundMgr.queueSound('player_bullet');
 }

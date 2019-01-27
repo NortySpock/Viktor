@@ -67,12 +67,17 @@ class ParticleSystem
         for (var i = this.particles.length-1; i >= 0; i--)
         {
             var p = this.particles[i];
-            p.update();
-            p.render();
-
-            if (p.ttl <= 0)
+            if(p)
             {
+              if(p.ttl > 0)
+              {
+                p.update();
+                p.render();
+              }
+              else
+              {
                 this.particles.splice(i, 1);
+              }
             }
         }
     }
