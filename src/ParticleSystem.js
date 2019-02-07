@@ -48,23 +48,7 @@ class ParticleSystem
 
     addParticle(pos,color,size,ttl)
     {
-      //search for an open spot
-      let nativeDrop = false
-      for(let i = 0; i< this.particles.length; i++)
-      {
-        if(this.particles[i] && this.particles[i].ttl <= 0)
-        {
-          nativeDrop = true;
-          this.particles[i] = new Particle(pos,color,size,ttl);
-          break;
-        }
-      }
-
-      //didn't find it; have to push
-      if(!nativeDrop)
-      {
-        this.particles.push(new Particle(pos,color,size,ttl));
-      }
+      this.particles.push(new Particle(pos,color,size,ttl));
     }
 
     addParticleSpray(pos,color,size,ttl,count)
@@ -73,7 +57,7 @@ class ParticleSystem
         {
             for(let i=0;i<count;i++)
             {
-                this.addParticle(pos,color,size,ttl);
+                this.particles.push(new Particle(pos,color,size,ttl));
             }
         }
     }
@@ -87,13 +71,11 @@ class ParticleSystem
           {
             p.update();
             p.render();
+          } else //dead particle or didn't exist
+          {
+            this.particles.splice(i, 1);
           }
-        }
-        //slowly shrink the particle array each frame if it's not being used
-        let p = this.particles[this.particles.length-1]
-        if(p && p.ttl <= 0 )
-        {
-          this.particles.pop();
+
         }
     }
 }
