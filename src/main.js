@@ -124,7 +124,7 @@ function reset() {
     qwaypoints.push(shoot1);
     qwaypoints.push(first_point);
 
-    let enemy_sprite = Global.enemyCreator.createEnemy('flat', {x:Global.canvasWidth/2,y:200},qwaypoints);
+    let enemy_sprite = Global.enemyCreator.createEnemy('flat_shield', {x:Global.canvasWidth/2,y:200},qwaypoints);
 
     //create sprite in lower middle of screen,with normal size collision box
     Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
@@ -502,9 +502,9 @@ function isABrightColor(color)
 
 function runWaypoints(spr)
 {
-    if(spr && spr.waypoints && !spr.waypoints.isEmpty())
+    if(spr && spr.waypoints && spr.waypoints.length > 0)
     {
-        let currentWaypoint = spr.waypoints.peekFront();
+        let currentWaypoint = spr.waypoints[0];
         spr.attractionPoint(spr.baseAccel,currentWaypoint.x,currentWaypoint.y)
 
         // if we get close enough to the waypoint
@@ -520,12 +520,12 @@ function runWaypoints(spr)
             }
 
             //go to next waypoint
-            spr.waypoints.popFront();
+            spr.waypoints.shift();
 
             //if we are now empty set speed to near 0 so we glide to a stop
-            if(spr.waypoints.isEmpty())
+            if(spr.waypoints.length <= 0)
             {
-                spr.limitSpeed(0.1)
+                spr.limitSpeed(0.05)
             }
         }
     }

@@ -331,13 +331,10 @@ class EnemyCreator
         if(newSprite)
         {
           if(waypointArray)
-          {
-              for(let i = 0; i< waypointArray.length; i++)
-              {
-                  newSprite.waypoints.pushBack(waypointArray[i]);
-              }
+          {    
+            newSprite.waypoints = JSON.parse(JSON.stringify(waypointArray));
           }
-          newSprite.waypoints.pushBack(newSprite.formationPoint);
+          newSprite.waypoints.push(newSprite.formationPoint);
         }
         return newSprite;
     }
@@ -354,7 +351,7 @@ class EnemyCreator
         sprite.point_value = 0;
         sprite.hasShield = false;
         sprite.shieldScale = 1.2;
-        sprite.waypoints = new Deque();
+        sprite.waypoints = [];
         Global.enemyGroup.add(sprite);
         Global.enemyShipGroup.add(sprite);
         sprite.formationPoint = Global.waveManager.getFormationPoint();
