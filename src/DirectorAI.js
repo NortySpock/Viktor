@@ -73,7 +73,7 @@ class WaveManager
         this.waveEnemy = '';
         this.delayTiming = 0;
         this.delay;
-        this.fireWarningShot=false;
+        this.fireWarningSpray=false;
 
         this.createFormationPoints();
         this.maxFormationPoints = 0;
@@ -89,7 +89,7 @@ class WaveManager
             this.waveDirection = direction;
             this.delayTiming = delayTiming; //40-60 is probably the best delay timing
             this.delay = delayTiming;
-            this.fireWarningShot = true;
+            this.fireWarningSpray = true;
             return true;
         }
         else
@@ -148,9 +148,9 @@ class WaveManager
         else
         {
             //first, fire the warning shot / spray
-            if(this.fireWarningShot)
+            if(this.fireWarningSpray)
             {
-              this.fireWarningShot = false;
+              this.fireWarningSpray = false;
               this._warningSpray(this.waveDirection);
             }
 

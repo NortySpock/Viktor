@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = false;
+const debugMode = true;
 const frameDebug = false;
 const targetFrameRate = 60;
 const backgroundColor = 0;
@@ -150,10 +150,16 @@ function preload()
   Global.images.enemy1 = loadImage('img/enemy1.png');
   Global.images.cyan_bolt2 = loadImage('img/cyan_bullet2.png');
   Global.images.red_bolt = loadImage('img/red_bullet.png');
+
   let rotary_explosion_images = 5;
   let rotary_explosion_sprite_sheet = loadSpriteSheet('img/rotary_explosion.png',16,16,rotary_explosion_images);
   Global.animations.rotary_explosion = loadAnimation(rotary_explosion_sprite_sheet);
   Global.animations.rotary_explosion.frameDelay  = targetFrameRate/rotary_explosion_images;
+
+  let blue_explosion_images = 5;
+  let blue_explosion_sprite_sheet = loadSpriteSheet('img/blue_explosion.png',16,16,blue_explosion_images);
+  Global.animations.blue_explosion = loadAnimation(blue_explosion_sprite_sheet);
+  Global.animations.blue_explosion.frameDelay  = targetFrameRate/blue_explosion_images;
 }
 
 function setup() {
@@ -329,7 +335,7 @@ function draw() {
     Global.director.run();
     Global.waveManager.run();
 
-    if(debugMode)
+    if(false)
     {
       Global.waveManager._renderMyPoints();
     }
@@ -394,7 +400,11 @@ function keyPressed() {
 
   if(key=='T' && debugMode)
   {
-    console.log("wave request:"+Global.waveManager.waveRequest('flat',5,'bottom left',60));
+   let pos = Global.sprites.player_sprite.position;
+    let explode_sprite = createSprite(pos.x, pos.y+100, 16, 16);
+    explode_sprite.scale = 3
+    explode_sprite.life = targetFrameRate;
+    explode_sprite.addAnimation('explode', Global.animations.blue_explosion);
   }
 
 
@@ -483,7 +493,7 @@ function playerShootEvent()
         new_bullet.scale = 3;
         let yvel = -4.5
         new_bullet.setVelocity(0,yvel);
-        new_bullet.mass = 0.2;
+        new_bullet.mass = 0.09;
         new_bullet.damage = 10;
         new_bullet.life = Math.floor(Math.abs(Global.canvasHeight / yvel)+h);
         new_bullet.isPlayerShot = true;
