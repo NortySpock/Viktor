@@ -3,7 +3,7 @@ const debugMode = true;
 const frameDebug = false;
 const targetFrameRate = 60;
 const backgroundColor = 0;
-
+const playerVulnerableDebug = true;
 
 let points_string = '';
 let points_string_location;
@@ -135,6 +135,10 @@ function reset() {
     Global.sprites.player_sprite.damage = 20;
     Global.sprites.player_sprite.hasShield = true;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
+    if(playerVulnerableDebug)
+    {
+        Global.friendlyGroup.add(Global.sprites.player_sprite);
+    }
 
     startStage();
 }
@@ -232,13 +236,14 @@ function draw() {
                 continue;
             }
 
-            if(Global.friendlyGroup.contains(mainSprite) && Global.enemyGroup.contains(targetSprite))
+            if(i != j && ((Global.friendlyGroup.contains(mainSprite) && Global.enemyGroup.contains(targetSprite)) ||
+                          (Global.friendlyGroup.contains(targetSprite) && Global.enemyGroup.contains(mainSprite)) ))
             {
                 let collides = mainSprite.bounce(targetSprite);
                 if(collides)
                 {
 
-                    let particle_ttl = 90;
+                    let particle_ttl = targetFrameRate*1.5;
                     let particle_count = 10;
                     let particle_color = targetSprite.shapeColor;
                     let particle_size = 3;
@@ -255,7 +260,7 @@ function draw() {
                         if(Global.bulletGroup.contains(mainSprite) && Global.bulletGroup.contains(targetSprite))
                         {
                             //two sprays
-                            particle_ttl = 30;
+                            particle_ttl = targetFrameRate/2;
                             particle_count=3;
                             Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,particle_size,particle_ttl,particle_count);
                             Global.ParticleSystem.addParticleSpray(mainSprite.position,mainSprite.shapeColor,particle_size,particle_ttl,particle_count);
@@ -281,21 +286,35 @@ function draw() {
                     targetSprite.remove();
                     Global.points += 1; //a point for shooting enemy bullets
                 }
+
             }
 
           //take care of explosions
           if(targetSprite.health <= 0)
           {
-            if(Global.enemyGroup.contains(targetSprite) && targetSprite.point_value)
+            if(Global.enemyGroup.contains(targetSprite))
             {
-              Global.points += targetSprite.point_value;
+              if(targetSprite.point_value)
+              {
+                Global.points += targetSprite.point_value;
+              }
+              let newpos = targetSprite.position;
+              targetSprite.remove();
+              let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
+              explode_sprite.scale = 3
+              explode_sprite.life = targetFrameRate;
+              explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
             }
-            let newpos = targetSprite.position;
-            targetSprite.remove();
-            let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
-            explode_sprite.scale = 3
-            explode_sprite.life = targetFrameRate;
-            explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
+
+            if(Global.friendlyGroup.contains(targetSprite))
+            {
+              let newpos = targetSprite.position;
+              targetSprite.remove();
+              let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
+              explode_sprite.scale = 3
+              explode_sprite.life = targetFrameRate;
+              explode_sprite.addAnimation('explode', Global.animations.blue_explosion);
+            }
           }
         }
     }
@@ -480,7 +499,7 @@ function onCanvas(x,y)
 
 function playerShootEvent()
 {
-    if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount) )
+    if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount) && !Global.sprites.player_sprite.removed )
     {
         Global.sprites.player_sprite.GunCooldown.fire(frameCount);
         Global.PlayerShotsTotal += 1;
