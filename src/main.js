@@ -5,11 +5,13 @@ const targetFrameRate = 60;
 const backgroundColor = 0;
 const playerVulnerableDebug = true;
 
-let points_string = '';
-let points_string_location;
-var FPS_string  = '';
-var FPS_string_location;
-let Game_Over_string = 'Global Over. Press [Enter] to start again.';
+let pointsString = '';
+let pointsStringLocation;
+var FPSstring  = '';
+var FPSstringLocation;
+var livesString = '';
+var livesStringLocation;
+let Game_Over_string = 'Game Over. Press [Enter] to start again.';
 let Game_Over_string_location;
 const backgroundStarCount = 25;
 let overlay_line1_string_location;
@@ -73,9 +75,10 @@ function reset() {
     Global.enemyShipGroup = new Group();
 
 
-    points_string_location = createVector(Global.canvasWidth*(19/24),20);
-    FPS_string_location = createVector(10,20);
+    pointsStringLocation = createVector(Global.canvasWidth*(19/24),20);
+    FPSstringLocation = createVector(10,20);
     Game_Over_string_location = createVector(Global.canvasWidth/5,Global.canvasHeight/2);
+    livesStringLocation = createVector(10,Global.canvasHeight - 14);
 
     overlay_line1_string_location = createVector(10,Global.canvasHeight*(1/6))
     overlay_line2_string_location = createVector(10,Global.canvasHeight*(2/6))
@@ -295,7 +298,7 @@ function draw() {
               explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
             }
 
-            if(Global.friendlyGroup.contains(targetSprite))
+            if(Global.friendlyGroup.contains(targetSprite) && playerVulnerableDebug)
             {
               let newpos = targetSprite.position;
               targetSprite.remove();
@@ -303,6 +306,12 @@ function draw() {
               explode_sprite.scale = 3
               explode_sprite.life = targetFrameRate;
               explode_sprite.addAnimation('explode', Global.animations.blue_explosion);
+
+              //whoops, you died
+              if(Global.playerLives > 0)
+              {
+                Global.playerLives--;
+              }
             }
           }
         }
@@ -432,9 +441,18 @@ function coinFlip()
 function updateUIstuff()
 {
   var fps = frameRate();
-  FPS_string = "FPS:" + fps.toFixed(0);
+  FPSstring = "FPS:" + fps.toFixed(0);
 
-  points_string = "Points: " + Global.points;
+  pointsString = "Points: " + Global.points;
+
+  if(Global.playerLives > 0)
+  {
+    livesString = "Lives: " + Global.playerLives;
+  }
+  else
+  {
+    livesString = "Lives: 0"
+  }
 }
 
 function renderBackgroundUI()
@@ -444,8 +462,9 @@ function renderBackgroundUI()
     textFont('Courier New');
     stroke(Global.textColor);
     fill(Global.textColor);
-    text(FPS_string, FPS_string_location.x,FPS_string_location.y);
-    text(points_string,points_string_location.x,points_string_location.y);
+    text(FPSstring, FPSstringLocation.x,FPSstringLocation.y);
+    text(pointsString,pointsStringLocation.x,pointsStringLocation.y);
+    text(livesString,livesStringLocation.x,livesStringLocation.y)
 }
 
 function renderForegroundUI()
