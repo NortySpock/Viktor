@@ -22,7 +22,6 @@ let overlay_line4_string_location;
 let overlay_line4_string= '';
 
 
-
 let Global = {};
 Global.canvasWidth = 700;
 Global.canvasHeight = 700;
@@ -33,6 +32,7 @@ Global.foregroundObjects = [];
 Global.sprites = {};
 Global.shieldScale = 1.2;
 Global.animations = {};
+Global.playerLives = 2;
 
 //p5.play sprite groups
 Global.bulletGroup;
@@ -126,19 +126,7 @@ function reset() {
 
     let enemy_sprite = Global.enemyCreator.createEnemy('flat_shield', {x:Global.canvasWidth/2,y:200},qwaypoints);
 
-    //create sprite in lower middle of screen,with normal size collision box
-    Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
-    Global.sprites.player_sprite.addImage(Global.images.player_ship);
-    Global.sprites.player_sprite.scale = 3;
-    Global.sprites.player_sprite.setDefaultCollider();
-    Global.sprites.player_sprite.health = 5;
-    Global.sprites.player_sprite.damage = 20;
-    Global.sprites.player_sprite.hasShield = true;
-    Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
-    if(playerVulnerableDebug)
-    {
-        Global.friendlyGroup.add(Global.sprites.player_sprite);
-    }
+    createPlayerSprite();
 
     startStage();
 }
@@ -236,6 +224,7 @@ function draw() {
                 continue;
             }
 
+            //so long as they are not the same object and on opposite teams, they can collide
             if(i != j && ((Global.friendlyGroup.contains(mainSprite) && Global.enemyGroup.contains(targetSprite)) ||
                           (Global.friendlyGroup.contains(targetSprite) && Global.enemyGroup.contains(mainSprite)) ))
             {
@@ -618,4 +607,21 @@ function resumeSoundIfContextBlocked()
 function startStage()
 {
     Global.soundMgr.queueSound('giddyup');
+}
+
+function createPlayerSprite()
+{
+     //create sprite in lower middle of screen,with normal size collision box
+    Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
+    Global.sprites.player_sprite.addImage(Global.images.player_ship);
+    Global.sprites.player_sprite.scale = 3;
+    Global.sprites.player_sprite.setDefaultCollider();
+    Global.sprites.player_sprite.health = 5;
+    Global.sprites.player_sprite.damage = 20;
+    Global.sprites.player_sprite.hasShield = true;
+    Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
+    if(playerVulnerableDebug)
+    {
+        Global.friendlyGroup.add(Global.sprites.player_sprite);
+    }
 }
