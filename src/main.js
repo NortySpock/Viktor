@@ -158,7 +158,7 @@ function preload()
 
 function setup() {
   reset();
-  Global.soundMgr.mute = true;
+  Global.soundMgr.mute = false;
 }
 
 function draw() {
@@ -241,7 +241,10 @@ function draw() {
                        targetSprite.hasShield=false;
                        particle_color=color(255);
                        Global.ParticleSystem.addParticleSpray(mainSprite.position,particle_color,particle_size,particle_ttl,particle_count);
-                       Global.soundMgr.queueSound('shield_fizzle');
+                       if(Global.enemyGroup.contains(targetSprite))
+                       {
+                          Global.soundMgr.queueSound('enemy_shield_pop');
+                       }
                     }
                     else
                     {

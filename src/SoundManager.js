@@ -23,6 +23,28 @@ class SoundManager
 
         this.thudEnvelope = new p5.Env();
         this.thudEnvelope.setADSR(0.005, 0.07, 1, 0.005);
+
+        this.playerShieldPopNoise = new p5.Noise();
+        this.playerShieldPopNoise.setType('pink');
+        this.playerShieldPopNoise.amp(0);
+        this.playerShieldPopNoise.start()
+
+        this.playerShieldPopEnvelope = new p5.Env()
+        // set attackTime, decayTime, sustainRatio, releaseTime
+        this.playerShieldPopEnvelope.setADSR(0.001,0.15,0.2,0.05);
+
+
+        this.enemyShieldPopNoise = new p5.Noise();
+        this.enemyShieldPopNoise.setType('brown');
+        this.enemyShieldPopNoise.amp(0);
+        this.enemyShieldPopNoise.start()
+
+        this.enemyShieldPopEnvelope = new p5.Env()
+        // set attackTime, decayTime, sustainRatio, releaseTime
+        this.enemyShieldPopEnvelope.setADSR(0.01,0.15,0.2,0.1);
+        let attackLevel = 0.3
+        let releaseLevel = 0;
+        this.enemyShieldPopEnvelope.setRange(attackLevel,releaseLevel);
     }
 
     queueSound(sound)
@@ -67,6 +89,14 @@ class SoundManager
 
           case 'giddyup':
             this.giddyupMusic()
+            break;
+
+          case 'player_shield_pop':
+            this.playerShieldPopEnvelope.play(this.playerShieldPopNoise);
+            break;
+
+          case 'enemy_shield_pop':
+            this.enemyShieldPopEnvelope.play(this.enemyShieldPopNoise);
             break;
 
           default:
