@@ -140,5 +140,59 @@ class SoundManager
 
 
     }
+
+    boss_one_Music()
+    {
+      (function () {
+        let a = new AudioContext
+        let G=a.createGain()
+        let D = [];
+        for(let i in D=[24,25,,,25,24,,,24,,,24,,,24,25,24,25,24,25])
+        {
+          let o = a.createOscillator()
+          if(D[i])
+          {
+              o.connect(G)
+              G.connect(a.destination)
+              o.start(i*.2)
+              o.frequency.setValueAtTime(440*1.06**(13-D[i]),i*.2)
+
+              G.gain.setValueAtTime(1,i*.2)
+              G.gain.setTargetAtTime(.0001,i*.2+.18,.005)
+              o.stop(i*.2+.19);
+          }
+        }
+
+        })();
+
+    }
+
+
+    boss_two_music()
+    {
+      (function () {
+        let a = new AudioContext
+        let G=a.createGain()
+        let D = [];
+        for(let i in D=[22,22,,,23,23,,,24,24,,,25,25])
+        {
+          let o = a.createOscillator()
+          if(D[i])
+          {
+              o.connect(G)
+              G.connect(a.destination)
+              o.start(i*.2)
+              o.frequency.setValueAtTime(440*1.06**(13-D[i]),i*.2)
+
+              G.gain.setValueAtTime(1,i*.2)
+              G.gain.setTargetAtTime(.0001,i*.2+.18,.005)
+              o.stop(i*.2+.19);
+          }
+        }
+
+        })();
+
+
+    }
 }
 
