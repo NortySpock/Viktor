@@ -30,3 +30,7 @@ Powerup Management System
 -- minion
 -- bomb
 Data Driven Design? Is that possible with P5?
+
+sounds
+----------------------------
+env.setADSR(0.1,0.1,.5,0.1) //white or pink noise. Sounds like a candle being blown out
