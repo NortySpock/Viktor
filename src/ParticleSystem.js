@@ -28,6 +28,11 @@ class Particle
   {
     this.pos.add(this.vel);
     this.ttl--;
+    
+    if(!onCanvas(this.pos.x,this.pos.y))
+    {
+        this.ttl=0;
+    }
    }
 
   //render with the size at the position
