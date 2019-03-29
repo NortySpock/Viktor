@@ -26,21 +26,27 @@ class Particle
 
   update()
   {
-    this.pos.add(this.vel);
-    this.ttl--;
-    
-    if(!onCanvas(this.pos.x,this.pos.y))
+    if(this.ttl > 0)
     {
-        this.ttl=0;
+        this.ttl--;
+        this.pos.add(this.vel);
+
+        if(!onCanvas(this.pos.x,this.pos.y))
+        {
+            this.ttl=0;
+        }
     }
-   }
+  }
 
   //render with the size at the position
   render()
   {
-    stroke(this.color);
-    strokeWeight(this.size);
-    point(this.pos.x,this.pos.y);
+    if(this.ttl > 0)
+    {
+      stroke(this.color);
+      strokeWeight(this.size);
+      point(this.pos.x,this.pos.y);
+    }
   }
 }
 
@@ -48,7 +54,7 @@ class ParticleSystem
 {
     constructor()
     {
-        this.particles =  new Array(200);
+        this.particles = [];
     }
 
     addParticle(pos,color,size,ttl)
@@ -69,18 +75,32 @@ class ParticleSystem
 
     run()
     {
-        for (let i = this.particles.length-1; i >= 0; i--)
+        //to reduce memory and CPU thrashing, we're just going to delete off the pop end.
+        //this does mean memory usage will grow until all particles are dead
+        //but I don't care much at the moment as particles are used sparingly.
+        let done = false
+        while(this.particles.length > 0 && !done)
+        {
+            let lastParticle = this.particles[this.particles.length-1]
+            if(lastParticle && lastParticle.ttl <= 0)
+            {
+                this.particles.pop();
+            }
+            else
+            {
+                done = true;
+            }
+        }
+
+       //now that we've tried to cheaply discard some dead particles, run the rest.
+       for (let i = 0; i < this.particles.length; i++)
         {
           let p = this.particles[i];
-          if(p && p.ttl > 0)
+          if(p)
           {
             p.update();
             p.render();
-          } else //dead particle or didn't exist
-          {
-            this.particles.splice(i, 1);
           }
-
         }
     }
 }
