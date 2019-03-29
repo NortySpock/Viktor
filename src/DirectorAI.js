@@ -265,7 +265,6 @@ class WaveManager
       }
       
       this.maxFormationPoints = this.formationPoints.length;
-      console.log("max formation points:"+this.formationPoints.length);
     }
 
     getFormationPoint()
