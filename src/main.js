@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = true;
+const debugMode = false;
 const frameDebug = false;
 const targetFrameRate = 60;
 const backgroundColor = 0;
@@ -61,6 +61,7 @@ function reset() {
     Global.soundMgr = new SoundManager();
     Global.enemyCreator = new EnemyCreator();
     Global.waveManager = new WaveManager();
+    Global.waypointManager = new WaypointManager();
     Global.director = new DirectorAI();
     Global.director.nextStage();
 
@@ -338,9 +339,9 @@ function draw() {
     Global.director.run();
     Global.waveManager.run();
 
-    if(false)
+    if(debugMode===true)
     {
-      Global.waveManager._renderMyPoints();
+      Global.waypointManager._renderMyPoints();
     }
 
     if(frameDebug)
