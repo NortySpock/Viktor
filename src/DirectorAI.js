@@ -375,93 +375,117 @@ class WaypointManager
 {
     constructor()
     {
-        this.bottomLeftAngle=[];
-        this.bottomRightAngle=[];
-        this.midRightAngle=[];
-        this.midLeftAngle=[];
+        this._bottomLeftAngle=[];
+        this._bottomRightAngle=[];
+        this._midRightAngle=[];
+        this._midLeftAngle=[];
+        this._bottomCircleLeft=[];
+        this._bottomCircleRight=[];
+        this._bottomCircleCenter=[];
         this._generateWaypoints();
     }
 
-    getBasicWaypointArrayFromDirection(direction)
+    get(direction)
     {
       let waypointArray = [];
       switch(direction)
        {
-          case 'bottom left':
-            waypointArray = this.bottomLeftAngle.slice();
+          case 'bottomLeft':
+            waypointArray = this._bottomLeftAngle.slice();
             break;
 
-          case 'bottom right':
-            waypointArray = this.bottomRightAngle.slice()
+          case 'bottomRight':
+            waypointArray = this._bottomRightAngle.slice()
             break;
 
-          case 'mid left':
+          case 'midLeft':
+            waypointArray = this._midLeftAngle.slice()
+            break;
+
+          case 'midRight':
+            waypointArray = this._midRightAngle.slice()
+            break;
+
+          case 'topLeft':
             1==0;
             break;
 
-          case 'mid right':
+          case 'topRight':
             1==0;
             break;
 
-          case 'top left':
-            1==0;
-            break;
-
-          case 'top right':
+          case 'bottomCircleLeft':
             1==0;
             break;
 
           default:
-              console.log('WaypointArray Direction not found:'+direction);
+              console.log('waypoint type not found:'+direction);
        }
        return this._deepCopy(waypointArray);
     }
 
-    getCircleWaypoint(place)
+    interleaveAttacks(arrayOfPoints)
     {
-        let waypointArray = [];
-        switch(direction)
+        if(arrayOfPoints.length < 2)
         {
-          case 'bottom left':
-            waypointArray = this.bottomLeftAngle.slice();
-            break;
-
-          case 'bottom right':
-            waypointArray = this.bottomRightAngle.slice()
-            break;
-
-          case 'top left':
-            1==0;
-            break;
-
-          case 'top right':
-            1==0;
-            break;
-
-          default:
-              console.log('Circle Waypoint place not found:'+direction);
+            return arrayOfPoints; //bail out.
         }
-        return this._deepCopy(waypointArray);
+
+        let index = null;
+        let hook = null; //follows just behind
+        let lastAttackIndex = null;
+
+        return arrayOfPoints;
     }
 
     _generateWaypoints()
     {
       let offset = 65
-      this.bottomLeftAngle=[];
-      this.bottomLeftAngle.push({x:-offset,y:Global.canvasHeight+offset});
-      this.bottomLeftAngle.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
+      this._bottomLeftAngle=[];
+      this._bottomLeftAngle.push({x:-offset,y:Global.canvasHeight+offset});
+      this._bottomLeftAngle.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
 
-      this.bottomRightAngle=[];
-      this.bottomRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
-      this.bottomRightAngle.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
+      let circleOffset = Global.canvasWidth*0.15;
+      let circleCenterX = Global.canvasWidth * 0.25;
+      let circleCenterY = Global.canvasHeight * 0.5;
+      this._bottomCircleLeft=[];
+      this._bottomCircleLeft.push({x:circleCenterX,y:circleCenterY-circleOffset});
+      this._bottomCircleLeft.push({x:circleCenterX+circleOffset,y:circleCenterY});
+      this._bottomCircleLeft.push({x:circleCenterX,y:circleCenterY+circleOffset});
+      this._bottomCircleLeft.push({x:circleCenterX-circleOffset,y:circleCenterY});
+      this._bottomCircleLeft.push(this._bottomCircleLeft[0]); //gotta repeat
 
-      this.midRightAngle=[];
-      this.midRightAngle.push({x:Global.canvasWidth-offset,y:Global.canvasHeight*0.5});
-      this.midRightAngle.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.5});
+      circleOffset = Global.canvasWidth*0.15;
+      circleCenterX = Global.canvasWidth * 0.75;
+      circleCenterY = Global.canvasHeight * 0.5;
+      this._bottomCircleRight=[]
+      this._bottomCircleRight.push({x:circleCenterX,y:circleCenterY-circleOffset});
+      this._bottomCircleRight.push({x:circleCenterX+circleOffset,y:circleCenterY});
+      this._bottomCircleRight.push({x:circleCenterX,y:circleCenterY+circleOffset});
+      this._bottomCircleRight.push({x:circleCenterX-circleOffset,y:circleCenterY});
+      this._bottomCircleRight.push(this._bottomCircleRight[0]); //gotta repeat
 
-      this.midLeftAngle=[];
-      this.midLeftAngle.push({x:0+offset,y:Global.canvasHeight*0.5});
-      this.midLeftAngle.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.5});
+      circleOffset = Global.canvasWidth*0.15;
+      circleCenterX = Global.canvasWidth * 0.5;
+      circleCenterY = Global.canvasHeight * 0.5;
+      this._bottomCircleCenter=[]
+      this._bottomCircleCenter.push({x:circleCenterX,y:circleCenterY-circleOffset});
+      this._bottomCircleCenter.push({x:circleCenterX+circleOffset,y:circleCenterY});
+      this._bottomCircleCenter.push({x:circleCenterX,y:circleCenterY+circleOffset});
+      this._bottomCircleCenter.push({x:circleCenterX-circleOffset,y:circleCenterY});
+      this._bottomCircleCenter.push(this._bottomCircleCenter[0]); //gotta repeat
+
+      this._bottomRightAngle=[];
+      this._bottomRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
+      this._bottomRightAngle.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
+
+      this._midRightAngle=[];
+      this._midRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight*0.5});
+      this._midRightAngle.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.5});
+
+      this._midLeftAngle=[];
+      this._midLeftAngle.push({x:0-offset,y:Global.canvasHeight*0.5});
+      this._midLeftAngle.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.5});
     }
 
     _deepCopy(waypointArray)
@@ -470,21 +494,24 @@ class WaypointManager
     }
     _renderMyPoints()
     {
-      this._renderArrayOfPoints(this.bottomLeftAngle, color(255,0,0));
-      this._renderArrayOfPoints(this.bottomRightAngle, color(0,0,255));
-      this._renderArrayOfPoints(this.midRightAngle, color(0,255,0));
-      this._renderArrayOfPoints(this.midLeftAngle, color(255,255,0));
+      //this._renderArrayOfPoints(this._bottomLeftAngle, color("HotPink"));
+      //this._renderArrayOfPoints(this._bottomCircleLeft ,color("FireBrick"));
+      this._renderArrayOfPoints(this._bottomCircleRight ,color("LightBlue"));
+      this._renderArrayOfPoints(this._bottomCircleCenter ,color("Olive"));
+
     }
 
     _renderArrayOfPoints(arrayOfPoints, color)
     {
-        stroke(color);
+      stroke(color);
       strokeWeight(3);
       for(let i = 0; i<arrayOfPoints.length;i++)
       {
         point(arrayOfPoints[i].x,arrayOfPoints[i].y);
       }
     }
+
+
 
 
 }
