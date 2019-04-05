@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = false;
+const debugMode = true;
 const frameDebug = false;
 const targetFrameRate = 60;
 const backgroundColor = 0;
@@ -20,6 +20,7 @@ let overlay_line3_string_location;
 let overlay_line3_string= '';
 let overlay_line4_string_location;
 let overlay_line4_string= '';
+let attackAIcounter = 0;
 
 
 
@@ -321,8 +322,12 @@ function draw() {
         let idx = frameCount % allSprites.length
         let spr = allSprites[idx];
 
-        //Check if this sprite needs something to do
-        //TODO write AI
+        //Check if an enemy sprite needs to be scheduled
+        if(attackAIcounter>0 && Global.enemyShipGroup.contains(spr))
+        {
+            attackAIcounter--;
+            updateAttackAI(spr);
+        }
 
         //check for colors
         if(!spr.hasTrueShapeColor && spr.visible && onCanvas(spr.position.x,spr.position.y))
@@ -339,7 +344,7 @@ function draw() {
     Global.director.run();
     Global.waveManager.run();
 
-    if(debugMode===true)
+    if(false)
     {
       Global.waypointManager._renderMyPoints();
     }
@@ -402,7 +407,7 @@ function keyPressed() {
     }
   }
 
-  if(key=='T' && debugMode)
+  if(key=='T' && debugMode===true)
   {
    let pos = Global.sprites.player_sprite.position;
     let explode_sprite = createSprite(pos.x, pos.y+100, 16, 16);
@@ -411,7 +416,10 @@ function keyPressed() {
     explode_sprite.addAnimation('explode', Global.animations.blue_explosion);
   }
 
-
+  if(key=='K' && debugMode===true)
+  {
+      attackAIcounter += 2;
+  }
 
 };
 
@@ -542,6 +550,17 @@ function runWaypoints(spr)
                 spr.limitSpeed(0.05)
             }
         }
+    }
+}
+
+function updateAttackAI(spr)
+{
+    if(spr)
+    {
+        let newWaypoints = Global.waypointManager.get('bottomCircleRight');
+        newWaypoints = Global.waypointManager.markAllWaypointsToAttack(newWaypoints);
+        newWaypoints.push(spr.formationPoint);
+        spr.waypoints = newWaypoints;
     }
 }
 

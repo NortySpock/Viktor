@@ -415,7 +415,11 @@ class WaypointManager
             break;
 
           case 'bottomCircleLeft':
-            1==0;
+            waypointArray = this._bottomCircleLeft.slice()
+            break;
+
+          case 'bottomCircleRight':
+            waypointArray = this._bottomCircleRight.slice()
             break;
 
           default:
@@ -424,18 +428,49 @@ class WaypointManager
        return this._deepCopy(waypointArray);
     }
 
-    interleaveAttacks(arrayOfPoints)
+    //we may have multiple points where we want to mix in attacks, here is where we do that
+    interleaveAttacks(arrayOfPointsIn)
     {
+        let arrayOfPoints = this._deepCopy(arrayOfPointsIn); //don't want to alter the source
+
         if(arrayOfPoints.length < 2)
         {
-            return arrayOfPoints; //bail out.
+            return arrayOfPoints;
         }
 
-        let index = null;
-        let hook = null; //follows just behind
-        let lastAttackIndex = null;
+        let newArray = [];
+        while(arrayOfPoints.length > 0)
+        {
+           if(arrayOfPoints.length < 2) //done, finish up
+           {
+               newArray.push(arrayOfPoints.shift());
+           }
+           else
+           {
+               let first = arrayOfPoints.shift();
+               let second = arrayOfPoints[0];
+               //create midpoint as a fire point
+               let midpoint = this._midpoint(first.x,first.y,second.x,second.y)
+               midpoint.fire = true;
 
-        return arrayOfPoints;
+               newArray.push(first);
+               newArray.push(midpoint);
+           }
+        }
+        return newArray;
+    }
+
+    markAllWaypointsToAttack(waypointList)
+    {
+        let newWaypointList = this._deepCopy(waypointList);
+        for(let i = 0; i < newWaypointList.length; i++)
+        {
+            if(newWaypointList[i])
+            {
+                newWaypointList[i].fire = true;
+            }
+        }
+        return newWaypointList;
     }
 
     _generateWaypoints()
@@ -453,7 +488,7 @@ class WaypointManager
       this._bottomCircleLeft.push({x:circleCenterX+circleOffset,y:circleCenterY});
       this._bottomCircleLeft.push({x:circleCenterX,y:circleCenterY+circleOffset});
       this._bottomCircleLeft.push({x:circleCenterX-circleOffset,y:circleCenterY});
-      this._bottomCircleLeft.push(this._bottomCircleLeft[0]); //gotta repeat
+
 
       circleOffset = Global.canvasWidth*0.15;
       circleCenterX = Global.canvasWidth * 0.75;
@@ -463,7 +498,7 @@ class WaypointManager
       this._bottomCircleRight.push({x:circleCenterX+circleOffset,y:circleCenterY});
       this._bottomCircleRight.push({x:circleCenterX,y:circleCenterY+circleOffset});
       this._bottomCircleRight.push({x:circleCenterX-circleOffset,y:circleCenterY});
-      this._bottomCircleRight.push(this._bottomCircleRight[0]); //gotta repeat
+
 
       circleOffset = Global.canvasWidth*0.15;
       circleCenterX = Global.canvasWidth * 0.5;
@@ -473,7 +508,6 @@ class WaypointManager
       this._bottomCircleCenter.push({x:circleCenterX+circleOffset,y:circleCenterY});
       this._bottomCircleCenter.push({x:circleCenterX,y:circleCenterY+circleOffset});
       this._bottomCircleCenter.push({x:circleCenterX-circleOffset,y:circleCenterY});
-      this._bottomCircleCenter.push(this._bottomCircleCenter[0]); //gotta repeat
 
       this._bottomRightAngle=[];
       this._bottomRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
@@ -511,7 +545,16 @@ class WaypointManager
       }
     }
 
+    _midpoint(x1,y1,x2,y2)
+    {
+        return this._pointOnLine(x1,y1,x2,y2,0.5);
+    }
 
+    _pointOnLine(x1,y1,x2,y2,fraction)
+    {
+        let newpoint = {x:(x1+x2)*fraction,y:(y1+y2)*fraction}
+        return newpoint;
+    }
 
 
 }
