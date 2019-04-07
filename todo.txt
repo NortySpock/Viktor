@@ -5,23 +5,18 @@ Bugs
 Short term
 ---------------------
 AI director
-Sprites without waypoints are idle and in formation.
-AI: at timed intervals, flip a flag that says "the next n enemy ships will be part of a raid / will fire in place, if idle"
 bullet "choke" helper function for enemy ships
 
 Long term
 ----------------------
 Hit percentage
-Large enemy ships with health after
+Large enemy ships with health
 Cookies with high-score list
 Attract / Demo mode
 Command Pattern for Player to allow flexibility for Attract / Demo mode
-Invulnerability on getting hit or dying
-"Number of lives" system
 Powerup Management System
 - Card deck draw style system
 -- so you don't get totally screwed by the RNG
-- optional sprite creation helper tool?
 - types
 -- shield
 -- extra life

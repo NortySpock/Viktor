@@ -58,13 +58,6 @@ class WaveManager
     {
         this.formationPoints=[];
 
-        this.bottomLeftAngle=[];
-
-        this.bottomRightAngle=[];
-
-        this._createOnRamps();
-
-
         this.busy=false;
         this.waveCount=0;
         this.waveDirection = '';
@@ -105,12 +98,12 @@ class WaveManager
        {
           case 'bottom left':
             pos =  createVector(0-offset,Global.canvasHeight+offset);
-            waypointArray = this.bottomLeftAngle.slice();
+            waypointArray = Global.waypointManager.get('bottomLeft');
             break;
 
           case 'bottom right':
             pos = createVector(Global.canvasWidth+offset,Global.canvasHeight+offset);
-            waypointArray = this.bottomRightAngle.slice()
+            waypointArray = Global.waypointManager.get('bottomRight')
             break;
 
           case 'mid left':
@@ -214,18 +207,6 @@ class WaveManager
       this._renderArrayOfPoints(this.bottomRightAngle);
     }
 
-    _createOnRamps()
-    {
-      let offset = 65
-      this.bottomLeftAngle=[];
-      this.bottomLeftAngle.push({x:-offset,y:Global.canvasHeight+offset});
-      this.bottomLeftAngle.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
-
-      this.bottomRightAngle=[];
-      this.bottomRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
-      this.bottomRightAngle.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
-    }
-
     createFormationPoints()
     {
       this.formationPoints = [];
@@ -249,14 +230,6 @@ class WaveManager
       // third level
       ylevel+=buffer;
       for(let i = buffer; i<Global.canvasWidth-buffer; i+=buffer)
-      {
-          this.formationPoints.push({x:i,y:ylevel})
-      }
-
-      //4th level
-      ylevel+=buffer;
-      offset = buffer/2;
-      for(let i = buffer+offset; i<Global.canvasWidth-buffer-offset; i+=buffer)
       {
           this.formationPoints.push({x:i,y:ylevel})
       }
@@ -291,13 +264,6 @@ class WaveManager
 
 class EnemyCreator
 {
-    constructor()
-    {
-
-    }
-
-
-
     createEnemy(type,posObj,waypointArray)
     {
         if(!posObj)
@@ -326,7 +292,7 @@ class EnemyCreator
         {
           if(waypointArray)
           {
-            newSprite.waypoints = JSON.parse(JSON.stringify(waypointArray));
+            newSprite.waypoints = this._deepcopy(waypointArray);
           }
           newSprite.waypoints.push(newSprite.formationPoint);
         }
@@ -368,71 +334,90 @@ class EnemyCreator
         sprite.GunCooldown = new GunCooldown(targetFrameRate/2);
     }
 
-
+    _deepcopy(thing)
+    {
+      return JSON.parse(JSON.stringify(thing));
+    }
 }
 
 class WaypointManager
 {
-    constructor()
-    {
-        this._bottomLeftAngle=[];
-        this._bottomRightAngle=[];
-        this._midRightAngle=[];
-        this._midLeftAngle=[];
-        this._bottomCircleLeft=[];
-        this._bottomCircleRight=[];
-        this._bottomCircleCenter=[];
-        this._generateWaypoints();
-    }
-
     get(direction)
     {
-      let waypointArray = [];
-      switch(direction)
-       {
-          case 'bottomLeft':
-            waypointArray = this._bottomLeftAngle.slice();
-            break;
+      let offset = 65;
 
-          case 'bottomRight':
-            waypointArray = this._bottomRightAngle.slice()
-            break;
+      if(direction == 'bottomLeft')
+      {
+        let waypoints = [];
+        waypoints.push({x:-offset,y:Global.canvasHeight+offset});
+        waypoints.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
+        return waypoints;
+      }
+      if(direction == 'bottomRight')
+      {
+        let waypoints = [];
+        waypoints.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
+        waypoints.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
+        return waypoints;
+      }
+      if(direction == 'midLeft')
+      {
+        let waypoints = [];
+        waypoints.push({x:0-offset,y:Global.canvasHeight*0.5});
+        waypoints.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.5});
+        return waypoints;
+      }
+      if(direction == 'midRight')
+      {
+        let waypoints = [];
+        waypoints.push({x:Global.canvasWidth+offset,y:Global.canvasHeight*0.5});
+        waypoints.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.5});
+        return waypoints;
+      }
+      if(direction=='bottomCircleLeft')
+      {
+        let circleOffset = Global.canvasWidth*0.15;
+        let circleCenterX = Global.canvasWidth * 0.25;
+        let circleCenterY = Global.canvasHeight * 0.5;
+        let waypoints=[];
+        waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
+        waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
+        waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
+        waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
+        return waypoints;
+      }
+      if(direction == 'bottomCircleCenter')
+      {
+        let circleOffset = Global.canvasWidth*0.15;
+        let circleCenterX = Global.canvasWidth * 0.5;
+        let circleCenterY = Global.canvasHeight * 0.5;
+        let waypoints=[];
+        waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
+        waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
+        waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
+        waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
+        return waypoints;
+      }
+      if(direction == 'bottomCircleRight')
+      {
+        let circleOffset = Global.canvasWidth*0.15;
+        let circleCenterX = Global.canvasWidth * 0.75;
+        let circleCenterY = Global.canvasHeight * 0.5;
+        let waypoints=[];
+        waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
+        waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
+        waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
+        waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
+        return waypoints;
+      }
 
-          case 'midLeft':
-            waypointArray = this._midLeftAngle.slice()
-            break;
-
-          case 'midRight':
-            waypointArray = this._midRightAngle.slice()
-            break;
-
-          case 'topLeft':
-            1==0;
-            break;
-
-          case 'topRight':
-            1==0;
-            break;
-
-          case 'bottomCircleLeft':
-            waypointArray = this._bottomCircleLeft.slice()
-            break;
-
-          case 'bottomCircleRight':
-            waypointArray = this._bottomCircleRight.slice()
-            break;
-
-          default:
-              console.log('waypoint type not found:'+direction);
-       }
-       return this._deepCopy(waypointArray);
+       console.log('waypoint type not found:'+direction);
+       return [];
     }
 
     //we may have multiple points where we want to mix in attacks, here is where we do that
-    interleaveAttacks(arrayOfPointsIn)
+    interleaveAttacks(arrayOfPoints)
     {
-        let arrayOfPoints = this._deepCopy(arrayOfPointsIn); //don't want to alter the source
-
         if(arrayOfPoints.length < 2)
         {
             return arrayOfPoints;
@@ -460,79 +445,25 @@ class WaypointManager
         return newArray;
     }
 
-    markAllWaypointsToAttack(waypointList)
+    // if you want simple attacks
+    markAllWaypointsToAttack(waypoints)
     {
-        let newWaypointList = this._deepCopy(waypointList);
-        for(let i = 0; i < newWaypointList.length; i++)
+        for(let i = 0; i < waypoints.length; i++)
         {
-            if(newWaypointList[i])
+            if(waypoints[i])
             {
-                newWaypointList[i].fire = true;
+                waypoints[i].fire = true;
             }
         }
-        return newWaypointList;
+        return waypoints;
     }
 
-    _generateWaypoints()
-    {
-      let offset = 65
-      this._bottomLeftAngle=[];
-      this._bottomLeftAngle.push({x:-offset,y:Global.canvasHeight+offset});
-      this._bottomLeftAngle.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
-
-      let circleOffset = Global.canvasWidth*0.15;
-      let circleCenterX = Global.canvasWidth * 0.25;
-      let circleCenterY = Global.canvasHeight * 0.5;
-      this._bottomCircleLeft=[];
-      this._bottomCircleLeft.push({x:circleCenterX,y:circleCenterY-circleOffset});
-      this._bottomCircleLeft.push({x:circleCenterX+circleOffset,y:circleCenterY});
-      this._bottomCircleLeft.push({x:circleCenterX,y:circleCenterY+circleOffset});
-      this._bottomCircleLeft.push({x:circleCenterX-circleOffset,y:circleCenterY});
-
-
-      circleOffset = Global.canvasWidth*0.15;
-      circleCenterX = Global.canvasWidth * 0.75;
-      circleCenterY = Global.canvasHeight * 0.5;
-      this._bottomCircleRight=[]
-      this._bottomCircleRight.push({x:circleCenterX,y:circleCenterY-circleOffset});
-      this._bottomCircleRight.push({x:circleCenterX+circleOffset,y:circleCenterY});
-      this._bottomCircleRight.push({x:circleCenterX,y:circleCenterY+circleOffset});
-      this._bottomCircleRight.push({x:circleCenterX-circleOffset,y:circleCenterY});
-
-
-      circleOffset = Global.canvasWidth*0.15;
-      circleCenterX = Global.canvasWidth * 0.5;
-      circleCenterY = Global.canvasHeight * 0.5;
-      this._bottomCircleCenter=[]
-      this._bottomCircleCenter.push({x:circleCenterX,y:circleCenterY-circleOffset});
-      this._bottomCircleCenter.push({x:circleCenterX+circleOffset,y:circleCenterY});
-      this._bottomCircleCenter.push({x:circleCenterX,y:circleCenterY+circleOffset});
-      this._bottomCircleCenter.push({x:circleCenterX-circleOffset,y:circleCenterY});
-
-      this._bottomRightAngle=[];
-      this._bottomRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
-      this._bottomRightAngle.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
-
-      this._midRightAngle=[];
-      this._midRightAngle.push({x:Global.canvasWidth+offset,y:Global.canvasHeight*0.5});
-      this._midRightAngle.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.5});
-
-      this._midLeftAngle=[];
-      this._midLeftAngle.push({x:0-offset,y:Global.canvasHeight*0.5});
-      this._midLeftAngle.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.5});
-    }
-
-    _deepCopy(waypointArray)
-    {
-        return JSON.parse(JSON.stringify(waypointArray));
-    }
     _renderMyPoints()
     {
       //this._renderArrayOfPoints(this._bottomLeftAngle, color("HotPink"));
       //this._renderArrayOfPoints(this._bottomCircleLeft ,color("FireBrick"));
-      this._renderArrayOfPoints(this._bottomCircleRight ,color("LightBlue"));
-      this._renderArrayOfPoints(this._bottomCircleCenter ,color("Olive"));
-
+      this._renderArrayOfPoints(this.get('bottomCircleRight') ,color("LightBlue"));
+      this._renderArrayOfPoints(this.get('bottomCircleCenter'),color("Olive"));
     }
 
     _renderArrayOfPoints(arrayOfPoints, color)
@@ -555,6 +486,4 @@ class WaypointManager
         let newpoint = {x:(x1+x2)*fraction,y:(y1+y2)*fraction}
         return newpoint;
     }
-
-
 }
