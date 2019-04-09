@@ -12,19 +12,12 @@ var FPS_string_location;
 let Game_Over_string = 'Global Over. Press [Enter] to start again.';
 let Game_Over_string_location;
 const backgroundStarCount = 25;
-let overlay_line1_string_location;
-let overlay_line1_string = '';
-let overlay_line2_string_location;
-let overlay_line2_string = '';
-let overlay_line3_string_location;
-let overlay_line3_string= '';
-let overlay_line4_string_location;
-let overlay_line4_string= '';
 let attackAIcounter = 0;
 
 
 
 let Global = {};
+Global.enableStory = true;
 Global.canvasWidth = 700;
 Global.canvasHeight = 700;
 Global.points = 0;
@@ -54,8 +47,8 @@ function reset() {
     textSize(14);
     textStyle(NORMAL);
     textFont('Courier New');
-    stroke(Global.textColor);
-    fill(Global.textColor);
+    stroke(color(255));
+    fill(color(255));
 
     Global.points = 0;
 
@@ -68,6 +61,7 @@ function reset() {
 
 
     Global.ParticleSystem = new ParticleSystem();
+    Global.textHandler = new TextHandler();
 
     Global.bulletGroup = new Group();
     Global.friendlyGroup = new Group();
@@ -78,11 +72,6 @@ function reset() {
     points_string_location = createVector(Global.canvasWidth*(19/24),20);
     FPS_string_location = createVector(10,20);
     Game_Over_string_location = createVector(Global.canvasWidth/5,Global.canvasHeight/2);
-
-    overlay_line1_string_location = createVector(10,Global.canvasHeight*(1/6))
-    overlay_line2_string_location = createVector(10,Global.canvasHeight*(2/6))
-    overlay_line3_string_location = createVector(10,Global.canvasHeight*(3/6))
-    overlay_line4_string_location = createVector(10,Global.canvasHeight*(4/6))
 
     Global.backgroundStars = [];
     preFillBackgroundStars();
@@ -177,7 +166,7 @@ function draw() {
     background(backgroundColor); //black color
 
     //do physics and render background items
-    for(let i = Global.backgroundStars.length -1; i >= 0; i--)
+    for(let i = 0; i < Global.backgroundStars.length;i++)
     {
       console.assert(typeof Global.backgroundStars[i].render === "function");
       console.assert(typeof Global.backgroundStars[i].update === "function");
@@ -305,17 +294,9 @@ function draw() {
         }
     }
 
-    renderForegroundUI();
-    //FOREGROUND
+    //TODO PUT FOREGROUND UI HERE
 
-
-
-
-
-    //play all the sounds we've built up this frame
-    Global.soundMgr.playAllQueuedSounds();
-
-    //do some one-per-frame sprite managment work
+    //do some one-per-frame sprite management work
     //set the particle color for the sprite, since we can only do that once it's rendered.
     if(allSprites.length > 0)
     {
@@ -343,6 +324,10 @@ function draw() {
 
     Global.director.run();
     Global.waveManager.run();
+    Global.textHandler.updateAndRender();
+
+    //play all the sounds we've built up this frame
+    Global.soundMgr.playAllQueuedSounds();
 
     if(false)
     {
@@ -409,7 +394,7 @@ function keyPressed() {
 
   if(key=='T' && debugMode===true)
   {
-   let pos = Global.sprites.player_sprite.position;
+    let pos = Global.sprites.player_sprite.position;
     let explode_sprite = createSprite(pos.x, pos.y+100, 16, 16);
     explode_sprite.scale = 3
     explode_sprite.life = targetFrameRate;
@@ -450,19 +435,6 @@ function renderBackgroundUI()
     fill(Global.textColor);
     text(FPS_string, FPS_string_location.x,FPS_string_location.y);
     text(points_string,points_string_location.x,points_string_location.y);
-}
-
-function renderForegroundUI()
-{
-    textSize(14);
-    textStyle(NORMAL);
-    textFont('Courier New');
-    stroke(Global.textColor);
-    fill(Global.textColor);
-    text(overlay_line1_string,overlay_line1_string_location.x,overlay_line1_string_location.y);
-    text(overlay_line2_string,overlay_line2_string_location.x,overlay_line2_string_location.y);
-    text(overlay_line3_string,overlay_line3_string_location.x,overlay_line3_string_location.y);
-    text(overlay_line4_string,overlay_line4_string_location.x,overlay_line4_string_location.y);
 }
 
 function halfSecondUpdateLoop(){
@@ -622,4 +594,69 @@ function resumeSoundIfContextBlocked()
 function startStage()
 {
     Global.soundMgr.queueSound('giddyup');
+}
+
+class TextHandler
+{
+  constructor()
+  {
+    this.msgList=[];
+  }
+
+  addMessage(msg,color,spot,ttl)
+  {
+    if(Global.enableStory == false)
+    {
+      return; //don't accept messages
+    }
+
+    switch(spot)
+    {
+      case 'top':
+      case 'high':
+        this.msgList.push({msg:msg, color:color, ttl:ttl, pos:createVector(Global.canvasWidth/2,Global.canvasHeight*(2/6))});
+        break;
+
+      case 'mid':
+      case 'center':
+        this.msgList.push({msg:msg, color:color, ttl:ttl, pos:createVector(Global.canvasWidth/2,Global.canvasHeight*(3/6))});
+        break;
+
+      case 'bottom':
+      case 'low':
+        this.msgList.push({msg:msg, color:color, ttl:ttl, pos:createVector(Global.canvasWidth/2,Global.canvasHeight*(4/6))});
+        break;
+
+      default:
+          console.log('text spot not found:'+spot);
+    }
+  }
+
+  updateAndRender()
+  {
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    textStyle(NORMAL);
+    textFont('Palatino');
+
+    if(this.msgList.length > 2)
+    {
+      console.log("warning, long message list:"+this.msgList.length);
+    }
+    for(let i = 0; i < this.msgList.length; i++)
+    {
+      let msg = msgList[i];
+      if(msg.ttl > 0)
+      {
+        msg.ttl--;
+        stroke(msg.color);
+        fill(msg.color);
+      }
+    }
+    //delete end if it's too old
+    if(this.msgList.length > 0 && (this.msgList[0] == null || this.msgList[0].ttl == 0))
+    {
+      this.msgList.shift();
+    }
+  }
 }

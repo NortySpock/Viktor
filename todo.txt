@@ -4,6 +4,11 @@ Bugs
 
 Short term
 ---------------------
+rewrite ForegroundUI text system to be more modular and less global
+Write a two line story to drive the player
+Bake the story into the director.
+Write a skip debug button
+Write a skip story feature flag
 AI director
 bullet "choke" helper function for enemy ships
 
