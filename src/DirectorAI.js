@@ -8,14 +8,15 @@ class DirectorAI
       this.toggle = true;
       this.enemies_per_stage = 10;
       this.enemies_left_in_this_stage;
+      this.timeline = [];
+      this.timeline.push({attack: 0,msg:"Get your ship though the blockade to the Solar Federation base!",color:color('orange'),spot:
+      "top",ttl:120});
+      this.timeline.push({attack:0,msg:"Stage 1!",color:color('orange'),spot:
+      "low",ttl:120});
+      this.timeline.push({attack:1,count:10,types:['flat','flat_shield']});
     }
 
-    getStage()
-    {
-        return Global.stage;
-    }
-
-    nextStage()
+    nextTimelineItem()
     {
       Global.stage += 1;
       this.enemies_left_in_this_stage = this.enemies_per_stage * Global.stage;
@@ -23,6 +24,11 @@ class DirectorAI
     }
 
     run()
+    {
+      this._runWave();
+    }
+
+    _runWave()
     {
       this.framesToNextWave--;
 
