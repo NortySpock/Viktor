@@ -57,7 +57,7 @@ function reset() {
     Global.waveManager = new WaveManager();
     Global.waypointManager = new WaypointManager();
     Global.director = new DirectorAI();
-    Global.director.nextStage();
+    Global.director.nextTimelineItem();
 
 
     Global.ParticleSystem = new ParticleSystem();
