@@ -14,6 +14,7 @@ class BackgroundStar
 
     this.size = randomFromInterval(this.minStarSize,this.maxStarSize);
     this.fallSpeed = randomFromInterval(this.minFallSpeed,this.maxFallSpeed);
+    this.color = color(255);
   }
 
   //manually make the star fall, because it only falls down
@@ -32,7 +33,7 @@ class BackgroundStar
   //render with the size at the position
   render()
   {
-    stroke(255);
+    stroke(this.color);
     strokeWeight(this.size);
     point(this.pos.x,this.pos.y);
   }
