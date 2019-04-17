@@ -54,12 +54,19 @@ class ParticleSystem
 {
     constructor()
     {
-        this.particles = [];
+        this._size = 160;
+        this._particles =  Array(this._size).fill(null); //probably the largest it will ever be
+        this._nextPos = 0;
     }
 
     addParticle(pos,color,size,ttl)
     {
-      this.particles.push(new Particle(pos,color,size,ttl));
+      this._particles[this._nextPos] = new Particle(pos,color,size,ttl);
+      this._nextPos++;
+      if(this._nextPos >= this._size)
+      {
+        this._nextPos = 0;
+      }
     }
 
     addParticleSpray(pos,color,size,ttl,count)
@@ -68,39 +75,21 @@ class ParticleSystem
         {
             for(let i=0;i<count;i++)
             {
-                this.particles.push(new Particle(pos,color,size,ttl));
+                this.addParticle(pos,color,size,ttl);
             }
         }
     }
 
     run()
     {
-        //to reduce memory and CPU thrashing, we're just going to delete off the pop end.
-        //this does mean memory usage will grow until all particles are dead
-        //but I don't care much at the moment as particles are used sparingly.
-        let done = false
-        while(this.particles.length > 0 && !done)
-        {
-            let lastParticle = this.particles[this.particles.length-1]
-            if(lastParticle && lastParticle.ttl <= 0)
-            {
-                this.particles.pop();
-            }
-            else
-            {
-                done = true;
-            }
-        }
-
-       //now that we've tried to cheaply discard some dead particles, run the rest.
-       for (let i = 0; i < this.particles.length; i++)
-        {
-          let p = this.particles[i];
-          if(p)
-          {
-            p.update();
-            p.render();
-          }
-        }
+       for(let i = 0; i < this._particles.length; i++)
+       {
+         let p = this._particles[i];
+         if(p != null)
+         {
+           p.update();
+           p.render();
+         }
+       }
     }
 }
