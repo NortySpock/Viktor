@@ -6,26 +6,63 @@ class DirectorAI
       this.framesToNextWave = 0;
       this.framesUntilNextWave = 60*10;
       this.toggle = true;
-      this.enemies_per_stage = 10;
-      this.enemies_left_in_this_stage;
+      this.enemiesPerStage = 10;
+      this.enemiesLeftInThisStage;
+      this.currentBatch = 0;
       this.timeline = [];
-      this.timeline.push({attack: 0,msg:"Get your ship though the blockade to the Solar Federation base!",color:color('orange'),spot:
-      "top",ttl:120});
-      this.timeline.push({attack:0,msg:"Stage 1!",color:color('orange'),spot:
-      "low",ttl:120});
-      this.timeline.push({attack:1,count:10,types:['flat','flat_shield']});
+      this.enemyTypesThisStage = [];
+      this.enemiesPerWave;
+
+      this._setupStages(); //creates the master timeline
+      this.storyTTL = 0
     }
 
     nextTimelineItem()
     {
       Global.stage += 1;
-      this.enemies_left_in_this_stage = this.enemies_per_stage * Global.stage;
+      this.enemiesLeftInThisStage = this.enemiesPerStage * Global.stage;
       this.framesToNextWave = 60;
     }
 
     run()
     {
       this._runWave();
+    }
+
+    readyForNextStage()
+    {
+        if(this.storyTTL > 0 || Global.enemyShipGroup.length > 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    getNextStage()
+    {
+        if(this.timeline.length == 0) //nothing to get
+        {
+            return;
+        }
+
+        this.currentBatch = this.timeline[0].batch;
+        while(this.timeline.length > 0 && this.currentBatch == this.timeline[0].batch)
+        {
+            let next = this.timeline.shift();
+            if(next.attack == 0)
+            {
+                if(next.ttl > this.storyTTL)
+                {
+                    this.storyTTL = next.ttl;
+                }
+                Global.textHandler.addMessage(next.msg,next.color,next.spot,next.ttl);
+            }
+            if(next.attack == 1)
+            {
+                this.enemyTypesThisStage = next.types;
+                this.enemiesPerWave = next.perWave;
+            }
+        }
     }
 
     _runWave()
@@ -47,14 +84,41 @@ class DirectorAI
           }
           this.toggle = !this.toggle;
           this.framesToNextWave = this.framesUntilNextWave;
-          this.enemies_left_in_this_stage -= waveCount;
+          this.enemiesLeftInThisStage -= waveCount;
         }
       }
 
-      if(this.enemies_left_in_this_stage <= 0)
+      if(this.enemiesLeftInThisStage <= 0)
       {
         this.nextStage();
       }
+    }
+
+    _setupStages()
+    {
+      this.timeline.push({batch:1,
+                          attack: 0,
+                          msg:"Get your ship though the blockade to the Solar Federation base!",
+                          color:color('orange'),
+                          spot:"top",
+                          ttl:120});
+      this.timeline.push({batch:1,
+                          attack:0,
+                          msg:"Stage 1",
+                          color:color('orange'),
+                          spot:"low",
+                          ttl:120});
+      this.timeline.push({batch:2,
+                          attack:1,
+                          count:10,
+                          perWave:5,
+                          types:['flat','flat_shield']});
+      this.timeline.push({batch:3,
+                          attack:0,
+                          msg:"Final Stage",
+                          color:color('orange'),
+                          spot:"low",
+                          ttl:120});
     }
 }
 
@@ -492,4 +556,69 @@ class WaypointManager
         let newpoint = {x:(x1+x2)*fraction,y:(y1+y2)*fraction}
         return newpoint;
     }
+}
+
+class TextHandler
+{
+  constructor()
+  {
+    this.msgList=[];
+  }
+
+  addMessage(msg,color,spot,ttl)
+  {
+    if(Global.enableStory == false)
+    {
+      return; //don't accept messages
+    }
+
+    switch(spot)
+    {
+      case 'top':
+      case 'high':
+        this.msgList.push({msg:msg, color:color, ttl:ttl, pos:createVector(Global.canvasWidth/2,Global.canvasHeight*(2/6))});
+        break;
+
+      case 'mid':
+      case 'center':
+        this.msgList.push({msg:msg, color:color, ttl:ttl, pos:createVector(Global.canvasWidth/2,Global.canvasHeight*(3/6))});
+        break;
+
+      case 'bottom':
+      case 'low':
+        this.msgList.push({msg:msg, color:color, ttl:ttl, pos:createVector(Global.canvasWidth/2,Global.canvasHeight*(4/6))});
+        break;
+
+      default:
+          console.log('text spot not found:'+spot);
+    }
+  }
+
+  updateAndRender()
+  {
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    textStyle(NORMAL);
+    textFont('Palatino');
+
+    if(this.msgList.length > 2)
+    {
+      console.log("warning, long message list:"+this.msgList.length);
+    }
+    for(let i = 0; i < this.msgList.length; i++)
+    {
+      let msg = msgList[i];
+      if(msg.ttl > 0)
+      {
+        msg.ttl--;
+        stroke(msg.color);
+        fill(msg.color);
+      }
+    }
+    //delete end if it's too old
+    if(this.msgList.length > 0 && (this.msgList[0] == null || this.msgList[0].ttl == 0))
+    {
+      this.msgList.shift();
+    }
+  }
 }

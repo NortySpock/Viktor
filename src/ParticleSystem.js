@@ -54,8 +54,8 @@ class ParticleSystem
 {
     constructor()
     {
-        this._size = 160;
-        this._particles =  Array(this._size).fill(null); //probably the largest it will ever be
+        this._size = 160; //2*80, where 80 is the biggest use of particles at once, and other effects are ~10 particles per burst.
+        this._particles =  Array(this._size).fill(null);
         this._nextPos = 0;
     }
 
