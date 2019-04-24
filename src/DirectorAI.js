@@ -11,7 +11,7 @@ class DirectorAI
       this.currentBatch = 0;
       this.timeline = [];
       this.enemyTypesThisStage = [];
-      this.enemiesPerWave;
+      this.enemiesPerWave = 5;
 
       this._setupStages(); //creates the master timeline
       this.storyTTL = 0
@@ -68,23 +68,25 @@ class DirectorAI
     _runWave()
     {
       this.framesToNextWave--;
+      let typePosition = 0;
 
       if(this.framesToNextWave  <= 0 )
       {
-        if(!Global.waveManager.isBusy() && Global.waveManager.formationPoints.length >= 5 ) //will check each frame until this works
+        if(!Global.waveManager.isBusy() && Global.waveManager.formationPoints.length >= 5 && this.enemyTypesThisStage.length > 0) //will check each frame until this works
         {
-          let waveCount = 5;
-          if(this.toggle)
-          {
-            Global.waveManager.waveRequest('flat',waveCount ,'bottom left',60);
-          }
-          else
-          {
-            Global.waveManager.waveRequest('flat_shield',waveCount ,'bottom right',60);
-          }
-          this.toggle = !this.toggle;
+          let waveCount = this.enemiesPerWave;
+          let enemyType = this.enemyTypesThisStage[typePosition];
+          Global.waveManager.waveRequest(enemyType,waveCount ,'bottom left',60);
+
           this.framesToNextWave = this.framesUntilNextWave;
           this.enemiesLeftInThisStage -= waveCount;
+
+          typePosition++; //cycling the enemy type
+
+          if(typePosition >= this.enemyTypesThisStage.length)
+          {
+              this.typePosition = 0;
+          }
         }
       }
 
