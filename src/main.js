@@ -9,12 +9,11 @@ let points_string = '';
 let points_string_location;
 var FPS_string  = '';
 var FPS_string_location;
-let Game_Over_string = 'Global Over. Press [Enter] to start again.';
+let Game_Over_string = 'You died. Game Over. Press [Enter] to start again.';
 let Game_Over_string_location;
+let Game_Over_status = false;
 const backgroundStarCount = 25;
 let attackAIcounter = 0;
-
-
 
 let Global = {};
 Global.enableStory = true;
@@ -168,8 +167,6 @@ function draw() {
     //do physics and render background items
     for(let i = 0; i < Global.backgroundStars.length;i++)
     {
-      console.assert(typeof Global.backgroundStars[i].render === "function");
-      console.assert(typeof Global.backgroundStars[i].update === "function");
       Global.backgroundStars[i].render();
       Global.backgroundStars[i].update();
     }

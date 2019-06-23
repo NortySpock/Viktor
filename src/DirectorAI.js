@@ -26,7 +26,12 @@ class DirectorAI
 
     run()
     {
-      this._runWave();
+      if(this.readyForNextStage())
+      {
+          console.log("Getting next stage!")
+          this.getNextStage()
+      }
+      //this._runWave();
     }
 
     readyForNextStage()
@@ -90,9 +95,9 @@ class DirectorAI
         }
       }
 
-      if(this.enemiesLeftInThisStage <= 0)
+      if(this.readyForNextStage())
       {
-        this.nextStage();
+        this.getNextStage();
       }
     }
 
@@ -100,16 +105,16 @@ class DirectorAI
     {
       this.timeline.push({batch:1,
                           attack: 0,
-                          msg:"Get your ship though the blockade to the Solar Federation base!",
+                          msg:"Get your ship through the blockade to the Solar Federation base!",
                           color:color('orange'),
                           spot:"top",
-                          ttl:120});
+                          ttl:300});
       this.timeline.push({batch:1,
                           attack:0,
                           msg:"Stage 1",
                           color:color('orange'),
                           spot:"low",
-                          ttl:120});
+                          ttl:300});
       this.timeline.push({batch:2,
                           attack:1,
                           count:10,
@@ -121,6 +126,14 @@ class DirectorAI
                           color:color('orange'),
                           spot:"low",
                           ttl:120});
+    }
+
+    _debugTimelineItem(item)
+    {
+        if(debugMode===true)
+        {
+            console.log(item)
+        }
     }
 }
 
@@ -598,7 +611,7 @@ class TextHandler
 
   updateAndRender()
   {
-    textSize(20);
+    textSize(22);
     textAlign(CENTER, CENTER);
     textStyle(NORMAL);
     textFont('Palatino');
@@ -609,12 +622,13 @@ class TextHandler
     }
     for(let i = 0; i < this.msgList.length; i++)
     {
-      let msg = msgList[i];
+      let msg = this.msgList[i];
       if(msg.ttl > 0)
       {
         msg.ttl--;
         stroke(msg.color);
         fill(msg.color);
+        text(msg.msg,msg.pos.x,msg.pos.y);
       }
     }
     //delete end if it's too old
