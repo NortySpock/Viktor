@@ -14,7 +14,7 @@ class DirectorAI
       this.enemiesPerWave = 5;
 
       this._setupStages(); //creates the master timeline
-      this.storyTTL = 0
+      this.waitTTL = 0
     }
 
     nextTimelineItem()
@@ -31,12 +31,16 @@ class DirectorAI
           console.log("Getting next stage!")
           this.getNextStage()
       }
-      //this._runWave();
+
+      if(this.waitTTL > 0)
+      {
+          this.waitTTL--;
+      }
     }
 
     readyForNextStage()
     {
-        if(this.storyTTL > 0 || Global.enemyShipGroup.length > 0)
+        if(this.waitTTL > 0 || Global.enemyShipGroup.length > 0 || this.timeline.length == 0)
         {
             return false;
         }
@@ -54,12 +58,13 @@ class DirectorAI
         while(this.timeline.length > 0 && this.currentBatch == this.timeline[0].batch)
         {
             let next = this.timeline.shift();
+            if(next.ttl > this.waitTTL)
+            {
+                this.waitTTL = next.ttl;
+            }
+
             if(next.attack == 0)
             {
-                if(next.ttl > this.storyTTL)
-                {
-                    this.storyTTL = next.ttl;
-                }
                 Global.textHandler.addMessage(next.msg,next.color,next.spot,next.ttl);
             }
             if(next.attack == 1)
@@ -116,6 +121,7 @@ class DirectorAI
                           spot:"low",
                           ttl:300});
       this.timeline.push({batch:2,
+                          ttl:300,
                           attack:1,
                           count:10,
                           perWave:5,
@@ -125,7 +131,7 @@ class DirectorAI
                           msg:"Final Stage",
                           color:color('orange'),
                           spot:"low",
-                          ttl:120});
+                          ttl:300});
     }
 
     _debugTimelineItem(item)
@@ -328,6 +334,11 @@ class WaveManager
         this.createFormationPoints(); //regenerate the formation points and hope
       }
       return this.formationPoints.shift(); //shift gives FIFO behavior
+    }
+
+    reset()
+    {
+        this.createFormationPoints()
     }
 
     _renderArrayOfPoints(arrayOfPoints)
@@ -547,8 +558,8 @@ class WaypointManager
     {
       //this._renderArrayOfPoints(this._bottomLeftAngle, color("HotPink"));
       //this._renderArrayOfPoints(this._bottomCircleLeft ,color("FireBrick"));
-      this._renderArrayOfPoints(this.get('bottomCircleRight') ,color("LightBlue"));
-      this._renderArrayOfPoints(this.get('bottomCircleCenter'),color("Olive"));
+      //this._renderArrayOfPoints(this.get('bottomCircleRight') ,color("LightBlue"));
+      //this._renderArrayOfPoints(this.get('bottomCircleCenter'),color("Olive"));
     }
 
     _renderArrayOfPoints(arrayOfPoints, color)
@@ -626,7 +637,7 @@ class TextHandler
       if(msg.ttl > 0)
       {
         msg.ttl--;
-        stroke(msg.color);
+        stroke(Global.backgroundColor);
         fill(msg.color);
         text(msg.msg,msg.pos.x,msg.pos.y);
       }

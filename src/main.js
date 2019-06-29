@@ -2,8 +2,6 @@
 const debugMode = true;
 const frameDebug = false;
 const targetFrameRate = 60;
-const backgroundColor = 0;
-
 
 let points_string = '';
 let points_string_location;
@@ -41,13 +39,8 @@ function reset() {
     frameRate(targetFrameRate);
     background(0);
 
+    Global.backgroundColor = color(0);
     Global.textColor = color(255);
-
-    textSize(14);
-    textStyle(NORMAL);
-    textFont('Courier New');
-    stroke(color(255));
-    fill(color(255));
 
     Global.points = 0;
 
@@ -87,36 +80,9 @@ function reset() {
         }
     }
 
-    Global.stage = 1;
     Global.PlayerShotsHit = 0;
     Global.PlayerShotsTotal = 0;
 
-
-    //hack together a longer waypoint system
-    let first_point = {x:100,y:100};
-    let second_point = {x:Global.canvasWidth*0.9,y:100};
-    let shoot1 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.25);
-    shoot1.fire = true;
-    let shoot2 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.75)
-    shoot2.fire = true;
-    let shoot3 = pointOnLine(first_point.x,first_point.y,second_point.x,second_point.y,0.5)
-    shoot3.fire = true;
-
-    let qwaypoints = [];
-
-    qwaypoints.push(first_point);
-    qwaypoints.push(shoot1);
-    qwaypoints.push(shoot3);
-    qwaypoints.push(shoot2);
-    qwaypoints.push(second_point);
-    qwaypoints.push(shoot2);
-    qwaypoints.push(shoot3);
-    qwaypoints.push(shoot1);
-    qwaypoints.push(first_point);
-
-    let enemy_sprite = Global.enemyCreator.createEnemy('flat_shield', {x:Global.canvasWidth/2,y:200},qwaypoints);
-
-    //create sprite in lower middle of screen,with normal size collision box
     Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
     Global.sprites.player_sprite.addImage(Global.images.player_ship);
     Global.sprites.player_sprite.scale = 3;
@@ -126,7 +92,7 @@ function reset() {
     Global.sprites.player_sprite.hasShield = true;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
 
-    startStage();
+    startGameMusic();
 }
 
 function preload()
@@ -162,7 +128,7 @@ function draw() {
     handleUserInput();
 
     //BACKGROUND
-    background(backgroundColor); //black color
+    background(Global.backgroundColor); //black color
 
     //do physics and render background items
     for(let i = 0; i < Global.backgroundStars.length;i++)
@@ -205,7 +171,7 @@ function draw() {
         {
             rectMode(CENTER);
             fill(0,0,0,0);
-            stroke(255);
+            stroke(255); //TODO change this to use the sprite's color for the shield
             let radius = Math.max(mainSprite.width*Global.shieldScale,mainSprite.height*Global.shieldScale);
             ellipse(mainSprite.position.x,mainSprite.position.y,radius,radius)
         }
@@ -428,7 +394,7 @@ function renderBackgroundUI()
     textSize(14);
     textStyle(NORMAL);
     textFont('Courier New');
-    stroke(Global.textColor);
+    stroke(Global.backgroundColor);
     fill(Global.textColor);
     text(FPS_string, FPS_string_location.x,FPS_string_location.y);
     text(points_string,points_string_location.x,points_string_location.y);
@@ -588,7 +554,7 @@ function resumeSoundIfContextBlocked()
   }
 }
 
-function startStage()
+function startGameMusic()
 {
     Global.soundMgr.queueSound('giddyup');
 }
