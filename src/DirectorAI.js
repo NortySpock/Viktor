@@ -18,14 +18,17 @@ class DirectorAI
           console.log("Getting next stage!")
           this.getNextStage()
       }
-      
+
       //If we have an attack ready, busy-loop until the waveManager is ready.
       if(this.attackScheduled && !Global.waveManager.isBusy())
       {
-          //Global.waveManager.waveRequest(enemy,count,direction,delayTiming)          
-          this.attackScheduled = false;
+          let a = this.attackObj;
+          Global.waveManager.waveRequest(a.type,a.count,a.direction,a.timing);
+
           //bump the waitTTL to give the waveManager some time to generate the wave
-          this.waitTTL += (60*2) //TODO compute a better estimate
+          this.waitTTL += 30
+          this.attackScheduled = false;
+          this.attackObj = null;
       }
 
       if(this.waitTTL > 0)
@@ -51,7 +54,7 @@ class DirectorAI
         }
 
         this.currentBatch = this.timeline[0].batch;
-        while(this.timeline.length > 0 && this.currentBatch == this.timeline[0].batch)
+        while(this.timeline.length > 0 && !this.attackScheduled && this.currentBatch == this.timeline[0].batch)
         {
             let next = this.timeline.shift();
             if(next.ttl > this.waitTTL)
@@ -117,12 +120,40 @@ class DirectorAI
                           spot:"low",
                           ttl:300});
       this.timeline.push({batch:2,
-                          ttl:300,
+                          ttl:120,
                           attack:1,
-                          count:10,
-                          perWave:5,
-                          types:['flat','flat_shield']});
+                          count:5,
+                          type:'flat',
+                          timing:60,
+                          direction:'bottom left'});
+      this.timeline.push({batch:2,
+                          ttl:120,
+                          attack:1,
+                          count:5,
+                          type:'flat_shield',
+                          timing:60,
+                          direction:'bottom right'});
+      this.timeline.push({batch:2,
+                          ttl:120,
+                          attack:1,
+                          count:5,
+                          type:'flat_shield',
+                          timing:60,
+                          direction:'bottom left'});
+      this.timeline.push({batch:2,
+                          ttl:120,
+                          attack:1,
+                          count:5,
+                          type:'flat',
+                          timing:60,
+                          direction:'bottom right'});
       this.timeline.push({batch:3,
+                          attack:0,
+                          msg:"Another wave off the starboard side!",
+                          color:color('orange'),
+                          spot:"low",
+                          ttl:300});
+      this.timeline.push({batch:4,
                           attack:0,
                           msg:"Final Stage",
                           color:color('orange'),
