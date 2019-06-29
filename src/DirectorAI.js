@@ -3,25 +3,12 @@ class DirectorAI
 {
     constructor()
     {
-      this.framesToNextWave = 0;
-      this.framesUntilNextWave = 60*10;
-      this.toggle = true;
-      this.enemiesPerStage = 10;
-      this.enemiesLeftInThisStage;
-      this.currentBatch = 0;
       this.timeline = [];
-      this.enemyTypesThisStage = [];
-      this.enemiesPerWave = 5;
-
+      this.attackScheduled = false;
+      this.attackObj = {};
       this._setupStages(); //creates the master timeline
-      this.waitTTL = 0
-    }
-
-    nextTimelineItem()
-    {
-      Global.stage += 1;
-      this.enemiesLeftInThisStage = this.enemiesPerStage * Global.stage;
-      this.framesToNextWave = 60;
+      this.waitTTL = 0;
+      this.attackScheduled = false;
     }
 
     run()
@@ -30,6 +17,15 @@ class DirectorAI
       {
           console.log("Getting next stage!")
           this.getNextStage()
+      }
+      
+      //If we have an attack ready, busy-loop until the waveManager is ready.
+      if(this.attackScheduled && !Global.waveManager.isBusy())
+      {
+          //Global.waveManager.waveRequest(enemy,count,direction,delayTiming)          
+          this.attackScheduled = false;
+          //bump the waitTTL to give the waveManager some time to generate the wave
+          this.waitTTL += (60*2) //TODO compute a better estimate
       }
 
       if(this.waitTTL > 0)
@@ -40,7 +36,7 @@ class DirectorAI
 
     readyForNextStage()
     {
-        if(this.waitTTL > 0 || Global.enemyShipGroup.length > 0 || this.timeline.length == 0)
+        if(this.waitTTL > 0 || Global.enemyShipGroup.length > 0 || this.timeline.length == 0 || this.attackScheduled)
         {
             return false;
         }
@@ -69,8 +65,8 @@ class DirectorAI
             }
             if(next.attack == 1)
             {
-                this.enemyTypesThisStage = next.types;
-                this.enemiesPerWave = next.perWave;
+                this.attackObj = next;
+                this.attackScheduled = true;
             }
         }
     }
