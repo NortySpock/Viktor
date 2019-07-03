@@ -474,14 +474,14 @@ class WaypointManager
         let waypoints = [];
         waypoints.push({x:-offset,y:Global.canvasHeight+offset});
         waypoints.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
-        return waypoints;
+        return this.markLastWaypointToAttack(waypoints);
       }
       if(direction == 'bottomRight')
       {
         let waypoints = [];
         waypoints.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
         waypoints.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
-        return waypoints;
+        return this.markLastWaypointToAttack(waypoints);
       }
       if(direction == 'midLeft')
       {
@@ -580,6 +580,30 @@ class WaypointManager
         }
         return waypoints;
     }
+    
+    markLastWaypointToAttack(waypoints)
+    {
+        if(waypoints == null || waypoints.length == null || waypoints.length <= 0)
+        {
+            return waypoints
+        }
+
+        waypoints[waypoints.length-1].fire = true;
+
+        return waypoints;
+    }
+    
+    markFirstWaypointToAttack(waypoints)
+    {
+        if(waypoints == null || waypoints.length == null || waypoints.length <= 0)
+        {
+            return waypoints
+        }
+
+        waypoints[0].fire = true;
+
+        return waypoints;
+    }
 
     _renderMyPoints()
     {
@@ -609,6 +633,12 @@ class WaypointManager
         let newpoint = {x:(x1+x2)*fraction,y:(y1+y2)*fraction}
         return newpoint;
     }
+    
+    _deepcopy(thing)
+    {
+      return JSON.parse(JSON.stringify(thing));
+    }
+    
 }
 
 class TextHandler
