@@ -14,7 +14,7 @@ const backgroundStarCount = 25;
 let attackAIcounter = 0;
 
 let Global = {};
-Global.enableStory = false;
+Global.enableStory = true;
 Global.canvasWidth = 700;
 Global.canvasHeight = 700;
 Global.points = 0;

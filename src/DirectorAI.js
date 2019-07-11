@@ -95,40 +95,41 @@ class DirectorAI
       this.timeline.push({batch:2,
                           ttl:waveTTL,
                           attack:1,
-                          count:5,
+                          count:2,
                           type:'flat',
                           timing:60,
                           direction:'bottom left'});
       this.timeline.push({batch:2,
                           ttl:waveTTL,
                           attack:1,
-                          count:5,
-                          type:'flat_shield',
-                          timing:60,
-                          direction:'bottom right'});
-      this.timeline.push({batch:2,
-                          ttl:waveTTL,
-                          attack:1,
-                          count:5,
-                          type:'flat_shield',
-                          timing:60,
-                          direction:'bottom left'});
-      this.timeline.push({batch:2,
-                          ttl:waveTTL,
-                          attack:1,
-                          count:5,
+                          count:2,
                           type:'flat',
                           timing:60,
                           direction:'bottom right'});
+
+      this.timeline.push({batch:2,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:2,
+                          type:'flat',
+                          timing:60,
+                          direction:'bottom left'});
       this.timeline.push({batch:3,
                           attack:0,
                           msg:"Another wave off the starboard side!",
                           color:color('orange'),
                           spot:"low",
                           ttl:storyTTL});
-      this.timeline.push({batch:4,
+    this.timeline.push({batch:4,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:6,
+                          type:'flat_shield',
+                          timing:60,
+                          direction:'mid right'});
+      this.timeline.push({batch:9,
                           attack:0,
-                          msg:"Final Stage",
+                          msg:"<that's all the stages for now>",
                           color:color('orange'),
                           spot:"low",
                           ttl:storyTTL});
@@ -198,10 +199,12 @@ class WaveManager
 
           case 'mid left':
             pos = createVector(0-offset,Global.canvasHeight/2);
+            waypointArray = Global.waypointManager.get('midLeft')
             break;
 
           case 'mid right':
             pos = createVector(Global.canvasWidth+offset,Global.canvasHeight/2);
+            waypointArray = Global.waypointManager.get('midRight')
             break;
 
           case 'top left':
@@ -460,14 +463,14 @@ class WaypointManager
         let waypoints = [];
         waypoints.push({x:0-offset,y:Global.canvasHeight*0.5});
         waypoints.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.5});
-        return waypoints;
+        return this.markLastWaypointToAttack(waypoints);
       }
       if(direction == 'midRight')
       {
         let waypoints = [];
         waypoints.push({x:Global.canvasWidth+offset,y:Global.canvasHeight*0.5});
         waypoints.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.5});
-        return waypoints;
+        return this.markLastWaypointToAttack(waypoints);
       }
       if(direction=='bottomCircleLeft')
       {
