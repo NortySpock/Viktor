@@ -4,11 +4,13 @@ class DirectorAI
     constructor()
     {
       this.timeline = [];
-      this.attackScheduled = false;
       this.attackObj = {};
       this._setupStages(); //creates the master timeline
       this.waitTTL = 0;
-      this.attackScheduled = false;
+      this.waveScheduled = false;
+      this.diveAttack = false;
+      this.diveAttackRandomSkipCount = 0;
+      this.diveAttackShipCounter = 0;
     }
 
     run()
@@ -20,14 +22,14 @@ class DirectorAI
       }
 
       //If we have an attack ready, busy-loop until the waveManager is ready.
-      if(this.attackScheduled && !Global.waveManager.isBusy())
+      if(this.waveScheduled && !Global.waveManager.isBusy())
       {
           let a = this.attackObj;
           Global.waveManager.waveRequest(a.type,a.count,a.direction,a.timing);
 
           //bump the waitTTL to give the waveManager some time to generate the wave
           this.waitTTL += 30
-          this.attackScheduled = false;
+          this.waveScheduled = false;
           this.attackObj = null;
       }
 
@@ -39,7 +41,7 @@ class DirectorAI
 
     readyForNextStage()
     {
-        if(this.waitTTL > 0 || Global.enemyShipGroup.length > 0 || this.timeline.length == 0 || this.attackScheduled)
+        if(this.waitTTL > 0 ||  this.timeline.length == 0 ||  this.waveScheduled || (Global.enemyShipGroup.length > 0 && this.currentBatch != this.timeline[0].batch))
         {
             return false;
         }
@@ -54,7 +56,7 @@ class DirectorAI
         }
 
         this.currentBatch = this.timeline[0].batch;
-        while(this.timeline.length > 0 && !this.attackScheduled && this.currentBatch == this.timeline[0].batch)
+        while(this.timeline.length > 0 && !this.waveScheduled && this.currentBatch == this.timeline[0].batch)
         {
             let next = this.timeline.shift();
             if(next.ttl > this.waitTTL)
@@ -69,79 +71,50 @@ class DirectorAI
             if(next.attack == 1)
             {
                 this.attackObj = next;
-                this.attackScheduled = true;
+                this.waveScheduled = true;
             }
         }
     }
 
-    _runWave()
-    {
-      this.framesToNextWave--;
-      let typePosition = 0;
-
-      if(this.framesToNextWave  <= 0 )
-      {
-        if(!Global.waveManager.isBusy() && Global.waveManager.formationPoints.length >= 5 && this.enemyTypesThisStage.length > 0) //will check each frame until this works
-        {
-          let waveCount = this.enemiesPerWave;
-          let enemyType = this.enemyTypesThisStage[typePosition];
-          Global.waveManager.waveRequest(enemyType,waveCount ,'bottom left',60);
-
-          this.framesToNextWave = this.framesUntilNextWave;
-          this.enemiesLeftInThisStage -= waveCount;
-
-          typePosition++; //cycling the enemy type
-
-          if(typePosition >= this.enemyTypesThisStage.length)
-          {
-              this.typePosition = 0;
-          }
-        }
-      }
-
-      if(this.readyForNextStage())
-      {
-        this.getNextStage();
-      }
-    }
-
     _setupStages()
     {
+      let storyTTL = Global.enableStory ? 300 : 0;
+      let waveTTL = 180;
       this.timeline.push({batch:1,
                           attack: 0,
                           msg:"Get your ship through the blockade to the Solar Federation base!",
                           color:color('orange'),
                           spot:"top",
-                          ttl:300});
+                          ttl:storyTTL});
       this.timeline.push({batch:1,
                           attack:0,
                           msg:"Stage 1",
                           color:color('orange'),
                           spot:"low",
-                          ttl:300});
+                          ttl:storyTTL});
       this.timeline.push({batch:2,
-                          ttl:120,
+                          ttl:waveTTL,
                           attack:1,
                           count:5,
                           type:'flat',
                           timing:60,
                           direction:'bottom left'});
       this.timeline.push({batch:2,
-                          ttl:120,
+                          ttl:waveTTL,
                           attack:1,
                           count:5,
                           type:'flat_shield',
                           timing:60,
                           direction:'bottom right'});
       this.timeline.push({batch:2,
-                          ttl:120,
+                          ttl:waveTTL,
                           attack:1,
                           count:5,
                           type:'flat_shield',
                           timing:60,
                           direction:'bottom left'});
       this.timeline.push({batch:2,
-                          ttl:120,
+                          ttl:waveTTL,
                           attack:1,
                           count:5,
                           type:'flat',
@@ -152,13 +125,13 @@ class DirectorAI
                           msg:"Another wave off the starboard side!",
                           color:color('orange'),
                           spot:"low",
-                          ttl:300});
+                          ttl:storyTTL});
       this.timeline.push({batch:4,
                           attack:0,
                           msg:"Final Stage",
                           color:color('orange'),
                           spot:"low",
-                          ttl:300});
+                          ttl:storyTTL});
     }
 
     _debugTimelineItem(item)
@@ -185,7 +158,6 @@ class WaveManager
         this.fireWarningSpray=false;
 
         this.createFormationPoints();
-
     }
 
     waveRequest(enemy,count,direction,delayTiming)
@@ -541,9 +513,9 @@ class WaypointManager
     //we may have multiple points where we want to mix in attacks, here is where we do that
     interleaveAttacks(arrayOfPoints)
     {
-        if(arrayOfPoints.length < 2)
+        if(arrayOfPoints == null || arrayOfPoints.length == null || arrayOfPoints.length < 2)
         {
-            return arrayOfPoints;
+            return arrayOfPoints
         }
 
         let newArray = [];
@@ -571,6 +543,11 @@ class WaypointManager
     // if you want simple attacks
     markAllWaypointsToAttack(waypoints)
     {
+        if(waypoints == null || waypoints.length == null || waypoints.length <= 0)
+        {
+            return waypoints
+        }
+
         for(let i = 0; i < waypoints.length; i++)
         {
             if(waypoints[i])
@@ -580,7 +557,24 @@ class WaypointManager
         }
         return waypoints;
     }
-    
+
+    markMiddleWaypointsToAttack(waypoints)
+    {
+        if(waypoints == null || waypoints.length == null || waypoints.length <= 0)
+        {
+            return waypoints
+        }
+
+        for(let i = 1; i < waypoints.length-1; i++)
+        {
+            if(waypoints[i])
+            {
+                waypoints[i].fire = true;
+            }
+        }
+        return waypoints;
+    }
+
     markLastWaypointToAttack(waypoints)
     {
         if(waypoints == null || waypoints.length == null || waypoints.length <= 0)
@@ -592,7 +586,7 @@ class WaypointManager
 
         return waypoints;
     }
-    
+
     markFirstWaypointToAttack(waypoints)
     {
         if(waypoints == null || waypoints.length == null || waypoints.length <= 0)
@@ -633,12 +627,12 @@ class WaypointManager
         let newpoint = {x:(x1+x2)*fraction,y:(y1+y2)*fraction}
         return newpoint;
     }
-    
+
     _deepcopy(thing)
     {
       return JSON.parse(JSON.stringify(thing));
     }
-    
+
 }
 
 class TextHandler
