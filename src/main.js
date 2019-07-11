@@ -3,11 +3,14 @@ const debugMode = true;
 const frameDebug = false;
 const targetFrameRate = 60;
 
-let points_string = '';
-let points_string_location;
-var FPS_string  = '';
-var FPS_string_location;
-let Game_Over_string = 'You died. Game Over. Press [Enter] to start again.';
+const backgroundColor = 0;
+const playerVulnerableDebug = true;
+
+let pointsString = '';
+let pointsStringLocation;
+var FPSstring  = '';
+var FPSstringLocation;
+const Game_Over_string = 'Game Over. Press [Enter] to start again.';
 let Game_Over_string_location;
 let Game_Over_status = false;
 const backgroundStarCount = 25;
@@ -24,6 +27,7 @@ Global.foregroundObjects = [];
 Global.sprites = {};
 Global.shieldScale = 1.2;
 Global.animations = {};
+Global.playerDead = false;
 
 //p5.play sprite groups
 Global.bulletGroup;
@@ -41,6 +45,7 @@ function reset() {
 
     Global.backgroundColor = color(0);
     Global.textColor = color(255);
+    Global.playerDead = false;
 
     Global.points = 0;
 
@@ -59,8 +64,8 @@ function reset() {
     Global.enemyShipGroup = new Group();
 
 
-    points_string_location = createVector(Global.canvasWidth*(19/24),20);
-    FPS_string_location = createVector(10,20);
+    pointsStringLocation = createVector(Global.canvasWidth*(19/24),20);
+    FPSstringLocation = createVector(10,20);
     Game_Over_string_location = createVector(Global.canvasWidth/5,Global.canvasHeight/2);
 
     Global.backgroundStars = [];
@@ -81,14 +86,7 @@ function reset() {
     Global.PlayerShotsHit = 0;
     Global.PlayerShotsTotal = 0;
 
-    Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
-    Global.sprites.player_sprite.addImage(Global.images.player_ship);
-    Global.sprites.player_sprite.scale = 3;
-    Global.sprites.player_sprite.setDefaultCollider();
-    Global.sprites.player_sprite.health = 5;
-    Global.sprites.player_sprite.damage = 20;
-    Global.sprites.player_sprite.hasShield = true;
-    Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
+    createPlayerSprite();
 
     startGameMusic();
 }
@@ -146,7 +144,7 @@ function draw() {
     //run foreground physics
     //move player
     let newPos = createVector(mouseX,mouseY);
-    if(onCanvas(newPos.x,newPos.y) && Global.sprites.player_sprite)
+    if(onCanvas(newPos.x,newPos.y) && Global.sprites.player_sprite && !Global.playerDead)
     {
       Global.sprites.player_sprite.position = newPos;
       Global.sprites.player_sprite.setDefaultCollider()
@@ -184,13 +182,15 @@ function draw() {
                 continue;
             }
 
-            if(Global.friendlyGroup.contains(mainSprite) && Global.enemyGroup.contains(targetSprite))
+            //so long as they are not the same object and on opposite teams, they can collide
+            if(i != j && ((Global.friendlyGroup.contains(mainSprite) && Global.enemyGroup.contains(targetSprite)) ||
+                          (Global.friendlyGroup.contains(targetSprite) && Global.enemyGroup.contains(mainSprite)) ))
             {
                 let collides = mainSprite.bounce(targetSprite);
                 if(collides)
                 {
 
-                    let particle_ttl = 90;
+                    let particle_ttl = targetFrameRate*1.5;
                     let particle_count = 10;
                     let particle_color = targetSprite.shapeColor;
                     let particle_size = 3;
@@ -210,7 +210,7 @@ function draw() {
                         if(Global.bulletGroup.contains(mainSprite) && Global.bulletGroup.contains(targetSprite))
                         {
                             //two sprays
-                            particle_ttl = 30;
+                            particle_ttl = targetFrameRate/2;
                             particle_count=3;
                             Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,particle_size,particle_ttl,particle_count);
                             Global.ParticleSystem.addParticleSpray(mainSprite.position,mainSprite.shapeColor,particle_size,particle_ttl,particle_count);
@@ -236,26 +236,43 @@ function draw() {
                     targetSprite.remove();
                     Global.points += 1; //a point for shooting enemy bullets
                 }
+
             }
 
           //take care of explosions
           if(targetSprite.health <= 0)
           {
-            if(Global.enemyGroup.contains(targetSprite) && targetSprite.point_value)
+            if(Global.enemyGroup.contains(targetSprite))
             {
-              Global.points += targetSprite.point_value;
+              if(targetSprite.point_value)
+              {
+                Global.points += targetSprite.point_value;
+              }
+              let newpos = targetSprite.position;
+              targetSprite.remove();
+              let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
+              explode_sprite.scale = 3
+              explode_sprite.life = targetFrameRate;
+              explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
             }
-            let newpos = targetSprite.position;
-            targetSprite.remove();
-            let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
-            explode_sprite.scale = 3
-            explode_sprite.life = targetFrameRate;
-            explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
+
+            if(Global.friendlyGroup.contains(targetSprite) && playerVulnerableDebug)
+            {
+              let newpos = targetSprite.position;
+              targetSprite.remove();
+              let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
+              explode_sprite.scale = 3
+              explode_sprite.life = targetFrameRate;
+              explode_sprite.addAnimation('explode', Global.animations.blue_explosion);
+
+              //whoops, you died
+              playerDeathEvents();
+            }
           }
         }
     }
 
-    //TODO PUT FOREGROUND UI HERE
+    renderForegroundUI();
 
     //do some one-per-frame sprite management work
     //set the particle color for the sprite, since we can only do that once it's rendered.
@@ -306,14 +323,16 @@ function draw() {
 function mousePressed()
 {
     resumeSoundIfContextBlocked();
-    playerShootEvent();
-
+    if(!Global.playerDead)
+    {
+        playerShootEvent();
+    }
 }
 
 //handles continuous presses
 var handleUserInput = function()
 {
-  if(keyIsDown(32)/*space*/ || mouseIsPressed)
+  if((keyIsDown(32)/*space*/ || mouseIsPressed) && !Global.playerDead)
   {
     playerShootEvent();
   }
@@ -382,9 +401,9 @@ function coinFlip()
 function updateUIstuff()
 {
   var fps = frameRate();
-  FPS_string = "FPS:" + fps.toFixed(0);
+  FPSstring = "FPS:" + fps.toFixed(0);
 
-  points_string = "Points: " + Global.points;
+  pointsString = "Points: " + Global.points;
 }
 
 function renderBackgroundUI()
@@ -394,8 +413,21 @@ function renderBackgroundUI()
     textFont('Courier New');
     stroke(Global.backgroundColor);
     fill(Global.textColor);
-    text(FPS_string, FPS_string_location.x,FPS_string_location.y);
-    text(points_string,points_string_location.x,points_string_location.y);
+    text(FPSstring, FPSstringLocation.x,FPSstringLocation.y);
+    text(pointsString,pointsStringLocation.x,pointsStringLocation.y);
+}
+
+function renderForegroundUI()
+{
+    if(Global.playerDead)
+    {
+        textSize(16);
+        textStyle(NORMAL);
+        textFont('Courier New');
+        stroke(Global.backgroundColor);
+        fill(Global.textColor);
+        text(Game_Over_string , Game_Over_string_location.x,Game_Over_string_location.y);
+    }
 }
 
 function halfSecondUpdateLoop(){
@@ -425,7 +457,7 @@ function onCanvas(x,y)
 
 function playerShootEvent()
 {
-    if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount) )
+    if(Global.sprites.player_sprite && Global.sprites.player_sprite.GunCooldown.canFire(frameCount) && !Global.sprites.player_sprite.removed)
     {
         Global.sprites.player_sprite.GunCooldown.fire(frameCount);
         Global.PlayerShotsTotal += 1;
@@ -555,4 +587,27 @@ function resumeSoundIfContextBlocked()
 function startGameMusic()
 {
     Global.soundMgr.queueSound('giddyup');
+}
+
+function createPlayerSprite()
+{
+     //create sprite in lower middle of screen,with normal size collision box
+    Global.sprites.player_sprite = createSprite(Global.canvasWidth/2,Global.canvasHeight*(5/6),Global.images.player_ship.width,Global.images.player_ship.height)
+    Global.sprites.player_sprite.addImage(Global.images.player_ship);
+    Global.sprites.player_sprite.scale = 3;
+    Global.sprites.player_sprite.setDefaultCollider();
+    Global.sprites.player_sprite.health = 5;
+    Global.sprites.player_sprite.damage = 20;
+    Global.sprites.player_sprite.hasShield = true;
+    Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
+    if(playerVulnerableDebug)
+    {
+        Global.friendlyGroup.add(Global.sprites.player_sprite);
+    }
+}
+
+function playerDeathEvents()
+{
+    Global.playerDead = true;
+    Global.textColor = color(255,0,0);
 }
