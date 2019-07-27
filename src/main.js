@@ -4,7 +4,7 @@ const frameDebug = false;
 const targetFrameRate = 60;
 
 const backgroundColor = 0;
-const playerVulnerableDebug = true;
+const playerInvulnerableDebug = true;
 
 let pointsString = '';
 let pointsStringLocation;
@@ -17,10 +17,8 @@ const backgroundStarCount = 25;
 let attackAIcounter = 0;
 
 let Global = {};
-Global.enableStory = true;
 Global.canvasWidth = 700;
 Global.canvasHeight = 700;
-Global.points = 0;
 Global.images = {};
 Global.backgroundStars = [];
 Global.foregroundObjects = [];
@@ -36,6 +34,9 @@ Global.enemyGroup;
 Global.enemyShipGroup;
 
 function reset() {
+    Global.enableStory = false;
+    Global.enableSound = false;
+
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
     canvas.parent('sketch-holder');
     canvas.drawingContext.imageSmoothingEnabled = false;
@@ -50,6 +51,7 @@ function reset() {
     Global.points = 0;
 
     Global.soundMgr = new SoundManager();
+    Global.soundMgr.mute = !Global.enableSound;
     Global.enemyCreator = new EnemyCreator();
     Global.waveManager = new WaveManager();
     Global.waypointManager = new WaypointManager();
@@ -256,7 +258,7 @@ function draw() {
               explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
             }
 
-            if(Global.friendlyGroup.contains(targetSprite) && playerVulnerableDebug)
+            if(Global.friendlyGroup.contains(targetSprite) && (!playerInvulnerableDebug && debugMode))
             {
               let newpos = targetSprite.position;
               targetSprite.remove();
@@ -282,10 +284,9 @@ function draw() {
         let spr = allSprites[idx];
 
         //Check if an enemy sprite needs to be scheduled
-        if(attackAIcounter>0 && Global.enemyShipGroup.contains(spr))
+        if(Global.enemyShipGroup.contains(spr) && spr.waypoints.length <= 0)
         {
-            attackAIcounter--;
-            updateAttackAI(spr);
+            Global.director.coordinateSpriteWithDiveAttackSchedule(spr);
         }
 
         //check for colors
@@ -600,7 +601,7 @@ function createPlayerSprite()
     Global.sprites.player_sprite.damage = 20;
     Global.sprites.player_sprite.hasShield = true;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
-    if(playerVulnerableDebug)
+    if(!playerInvulnerableDebug && debugMode)
     {
         Global.friendlyGroup.add(Global.sprites.player_sprite);
     }

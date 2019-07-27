@@ -8,18 +8,42 @@ class DirectorAI
       this._setupStages(); //creates the master timeline
       this.waitTTL = 0;
       this.waveScheduled = false;
-      this.diveAttack = false;
+      this.diveAttackScheduled = false;
       this.diveAttackRandomSkipCount = 0;
       this.diveAttackShipCounter = 0;
+      this.diveWaveToggle = false;
+      this.diveAttackRandomSkipCountMax = 5;
+      this.diveAttackShipCounterMax = 3;
     }
 
     run()
     {
+      if(this.waitTTL > 0)
+      {
+          this.waitTTL--;
+      } else
+      {
+          this.waitTTL += 15;
+          return; //we really want to just do this a few times a sec
+      }
+
       if(this.readyForNextStage())
       {
           console.log("Getting next stage!")
-          this.getNextStage()
+
+          if(!this.diveWaveToggle && Global.enemyShipGroup.length>0)
+          {
+              this._setupDive();
+          }
+          else
+          {
+            this.getNextStage()
+          }
+
+          this.diveWaveToggle = !this.diveWaveToggle;
       }
+
+
 
       //If we have an attack ready, busy-loop until the waveManager is ready.
       if(this.waveScheduled && !Global.waveManager.isBusy())
@@ -33,15 +57,15 @@ class DirectorAI
           this.attackObj = null;
       }
 
-      if(this.waitTTL > 0)
-      {
-          this.waitTTL--;
-      }
+
     }
 
     readyForNextStage()
     {
-        if(this.waitTTL > 0 ||  this.timeline.length == 0 ||  this.waveScheduled || (Global.enemyShipGroup.length > 0 && this.currentBatch != this.timeline[0].batch))
+        if(this.waitTTL > 0||this.timeline.length == 0
+            ||this.diveAttackScheduled||this.waveScheduled||
+            (Global.enemyShipGroup.length > 0 && this.currentBatch != this.timeline[0].batch)
+          )
         {
             return false;
         }
@@ -76,6 +100,40 @@ class DirectorAI
         }
     }
 
+    coordinateSpriteWithDiveAttackSchedule(spr)
+    {
+        if(this.diveAttackScheduled && spr)
+        {
+            if(this.diveAttackRandomSkipCount > 0)
+            {
+                this.diveAttackRandomSkipCount--;
+            }
+            else
+            {
+                let newWaypoints = Global.waypointManager.get('bottomCircleRight'); //TODO randomize
+                newWaypoints.push(spr.formationPoint);
+                spr.waypoints = newWaypoints;
+
+                this.diveAttackShipCounter--;
+                if(this.diveAttackShipCounter <= 0)
+                {
+                  this.diveAttackScheduled = false;
+                }
+            }
+        }
+    }
+
+    _setupDive()
+    {
+        this.diveAttackScheduled = true;
+        this.waitTTL += 300;
+        this.diveAttackRandomSkipCount = randomFromInterval(0,this.diveAttackRandomSkipCountMax);
+        this.diveAttackShipCounter = randomFromInterval(1,this.diveAttackShipCounterMax);
+    }
+
+
+
+
     _setupStages()
     {
       let storyTTL = Global.enableStory ? 300 : 0;
@@ -98,14 +156,14 @@ class DirectorAI
                           count:2,
                           type:'flat',
                           timing:60,
-                          direction:'bottom left'});
+                          direction:'atkBottomLeft'});
       this.timeline.push({batch:2,
                           ttl:waveTTL,
                           attack:1,
                           count:2,
                           type:'flat',
                           timing:60,
-                          direction:'bottom right'});
+                          direction:'atkBottomRight'});
 
       this.timeline.push({batch:2,
                           ttl:waveTTL,
@@ -113,7 +171,7 @@ class DirectorAI
                           count:2,
                           type:'flat',
                           timing:60,
-                          direction:'bottom left'});
+                          direction:'atkBottomLeft'});
       this.timeline.push({batch:3,
                           attack:0,
                           msg:"Another wave off the starboard side!",
@@ -126,7 +184,7 @@ class DirectorAI
                           count:6,
                           type:'flat_shield',
                           timing:60,
-                          direction:'mid right'});
+                          direction:'atkMidRight'});
       this.timeline.push({batch:9,
                           attack:0,
                           msg:"<that's all the stages for now>",
@@ -187,31 +245,52 @@ class WaveManager
       let offset = 65;
       switch(direction)
        {
-          case 'bottom left':
+          case 'bottomLeft':
             pos =  createVector(0-offset,Global.canvasHeight+offset);
             waypointArray = Global.waypointManager.get('bottomLeft');
             break;
 
-          case 'bottom right':
+          case 'atkBottomLeft':
+            pos =  createVector(0-offset,Global.canvasHeight+offset);
+            waypointArray = Global.waypointManager.get('atkBottomLeft');
+            break;
+
+          case 'bottomRight':
             pos = createVector(Global.canvasWidth+offset,Global.canvasHeight+offset);
             waypointArray = Global.waypointManager.get('bottomRight')
             break;
 
-          case 'mid left':
+
+          case 'atkBottomRight':
+            pos = createVector(Global.canvasWidth+offset,Global.canvasHeight+offset);
+            waypointArray = Global.waypointManager.get('atkBottomRight')
+            break;
+
+          case 'midLeft':
             pos = createVector(0-offset,Global.canvasHeight/2);
             waypointArray = Global.waypointManager.get('midLeft')
             break;
 
-          case 'mid right':
+            case 'atkMidLeft':
+            pos = createVector(0-offset,Global.canvasHeight/2);
+            waypointArray = Global.waypointManager.get('atkMidLeft')
+            break;
+
+          case 'midRight':
             pos = createVector(Global.canvasWidth+offset,Global.canvasHeight/2);
             waypointArray = Global.waypointManager.get('midRight')
             break;
 
-          case 'top left':
+          case 'atkMidRight':
+            pos = createVector(Global.canvasWidth+offset,Global.canvasHeight/2);
+            waypointArray = Global.waypointManager.get('atkMidRight')
+            break;
+
+          case 'topLeft':
             pos =  createVector(0-offset,0-offset);
             break;
 
-          case 'top right':
+          case 'topRight':
             pos = createVector(Global.canvasWidth+offset,0-offset);
             break;
 
@@ -443,74 +522,115 @@ class WaypointManager
     get(direction)
     {
       let offset = 65;
+      switch(direction)
+      {
+          case 'bottomLeft': {
+            let waypoints = [];
+            waypoints.push({x:-offset,y:Global.canvasHeight+offset});
+            waypoints.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
+            return waypoints;
+            break;
+            }
 
-      if(direction == 'bottomLeft')
-      {
-        let waypoints = [];
-        waypoints.push({x:-offset,y:Global.canvasHeight+offset});
-        waypoints.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.6});
-        return this.markLastWaypointToAttack(waypoints);
-      }
-      if(direction == 'bottomRight')
-      {
-        let waypoints = [];
-        waypoints.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
-        waypoints.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
-        return this.markLastWaypointToAttack(waypoints);
-      }
-      if(direction == 'midLeft')
-      {
-        let waypoints = [];
-        waypoints.push({x:0-offset,y:Global.canvasHeight*0.5});
-        waypoints.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.5});
-        return this.markLastWaypointToAttack(waypoints);
-      }
-      if(direction == 'midRight')
-      {
-        let waypoints = [];
-        waypoints.push({x:Global.canvasWidth+offset,y:Global.canvasHeight*0.5});
-        waypoints.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.5});
-        return this.markLastWaypointToAttack(waypoints);
-      }
-      if(direction=='bottomCircleLeft')
-      {
-        let circleOffset = Global.canvasWidth*0.15;
-        let circleCenterX = Global.canvasWidth * 0.25;
-        let circleCenterY = Global.canvasHeight * 0.5;
-        let waypoints=[];
-        waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
-        waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
-        waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
-        waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
-        return waypoints;
-      }
-      if(direction == 'bottomCircleCenter')
-      {
-        let circleOffset = Global.canvasWidth*0.15;
-        let circleCenterX = Global.canvasWidth * 0.5;
-        let circleCenterY = Global.canvasHeight * 0.5;
-        let waypoints=[];
-        waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
-        waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
-        waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
-        waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
-        return waypoints;
-      }
-      if(direction == 'bottomCircleRight')
-      {
-        let circleOffset = Global.canvasWidth*0.15;
-        let circleCenterX = Global.canvasWidth * 0.75;
-        let circleCenterY = Global.canvasHeight * 0.5;
-        let waypoints=[];
-        waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
-        waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
-        waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
-        waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
-        return waypoints;
-      }
+          case 'atkBottomLeft':{
+            return this.markLastWaypointToAttack(this.get('bottomLeft'));
+            break;
+            }
 
-       console.log('waypoint type not found:'+direction);
-       return [];
+          case 'bottomRight': {
+            let waypoints = [];
+            waypoints.push({x:Global.canvasWidth+offset,y:Global.canvasHeight+offset});
+            waypoints.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.6});
+            return waypoints;
+            break;
+          }
+
+          case 'atkBottomRight': {
+            return this.markLastWaypointToAttack(this.get('bottomRight'));
+            break;
+          }
+
+          case 'midLeft': {
+            let waypoints = [];
+            waypoints.push({x:0-offset,y:Global.canvasHeight*0.5});
+            waypoints.push({x:Global.canvasWidth*0.4,y:Global.canvasHeight*0.5});
+            return waypoints;
+            break;
+          }
+
+          case 'atkMidLeft': {
+            return this.markLastWaypointToAttack(this.get('midLeft'));
+            break;
+          }
+
+          case 'midRight': {
+            let waypoints = [];
+            waypoints.push({x:Global.canvasWidth+offset,y:Global.canvasHeight*0.5});
+            waypoints.push({x:Global.canvasWidth*0.6,y:Global.canvasHeight*0.5});
+            return waypoints;
+            break;
+          }
+
+          case 'atkMidRight': {
+            return this.markLastWaypointToAttack(this.get('midRight'));
+            break;
+          }
+
+          case 'bottomCircleLeft': {
+            let circleOffset = Global.canvasWidth*0.15;
+            let circleCenterX = Global.canvasWidth * 0.25;
+            let circleCenterY = Global.canvasHeight * 0.5;
+            let waypoints=[];
+            waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
+            waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
+            waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
+            waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
+            return waypoints;
+            break;
+          }
+
+          case 'atkDirectBottomCircleLeft': {
+              return this.markAllWaypointsToAttack(this.get('bottomCircleLeft'));
+          }
+
+          case 'bottomCircleCenter': {
+            let circleOffset = Global.canvasWidth*0.15;
+            let circleCenterX = Global.canvasWidth * 0.5;
+            let circleCenterY = Global.canvasHeight * 0.5;
+            let waypoints=[];
+            waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
+            waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
+            waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
+            waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
+            return waypoints;
+            break;
+          }
+
+          case 'atkDirectBottomCircleCenter': {
+              return this.markAllWaypointsToAttack(this.get('bottomCircleCenter'));
+          }
+
+          case 'bottomCircleRight': {
+            let circleOffset = Global.canvasWidth*0.15;
+            let circleCenterX = Global.canvasWidth * 0.75;
+            let circleCenterY = Global.canvasHeight * 0.5;
+            let waypoints=[];
+            waypoints.push({x:circleCenterX,y:circleCenterY-circleOffset});
+            waypoints.push({x:circleCenterX+circleOffset,y:circleCenterY});
+            waypoints.push({x:circleCenterX,y:circleCenterY+circleOffset});
+            waypoints.push({x:circleCenterX-circleOffset,y:circleCenterY});
+            return waypoints;
+            break;
+          }
+
+          case 'atkDirectBottomCircleRight': {
+              return this.markAllWaypointsToAttack(this.get('bottomCircleRight'));
+          }
+
+          default:
+            console.log('waypoint type not found:'+direction);
+            return [];
+      }
     }
 
     //we may have multiple points where we want to mix in attacks, here is where we do that
