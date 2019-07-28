@@ -14,6 +14,7 @@ class DirectorAI
       this.diveWaveToggle = false;
       this.diveAttackRandomSkipCountMax = 5;
       this.diveAttackShipCounterMax = 3;
+      this.currentDiveAttack = '';
     }
 
     run()
@@ -23,27 +24,21 @@ class DirectorAI
           this.waitTTL--;
       } else
       {
-          this.waitTTL += 15;
+          this.waitTTL += 5;
           return; //we really want to just do this a few times a sec
       }
 
-      if(this.readyForNextStage())
+      if(this.diveWaveToggle && this.readyForNextStage())
       {
-          console.log("Getting next stage!")
-
-          if(!this.diveWaveToggle && Global.enemyShipGroup.length>0)
-          {
-              this._setupDive();
-          }
-          else
-          {
-            this.getNextStage()
-          }
-
-          this.diveWaveToggle = !this.diveWaveToggle;
+          this.getNextStage()
       }
 
+      if(!this.diveWaveToggle && this.readyForDiveAttack())
+      {
+          this._setupDive();
+      }
 
+      this.diveWaveToggle = !this.diveWaveToggle;
 
       //If we have an attack ready, busy-loop until the waveManager is ready.
       if(this.waveScheduled && !Global.waveManager.isBusy())
@@ -56,8 +51,6 @@ class DirectorAI
           this.waveScheduled = false;
           this.attackObj = null;
       }
-
-
     }
 
     readyForNextStage()
@@ -66,6 +59,15 @@ class DirectorAI
             ||this.diveAttackScheduled||this.waveScheduled||
             (Global.enemyShipGroup.length > 0 && this.currentBatch != this.timeline[0].batch)
           )
+        {
+            return false;
+        }
+        return true;
+    }
+
+    readyForDiveAttack()
+    {
+        if(this.waitTTL > 0||this.diveAttackScheduled||this.waveScheduled||Global.enemyShipGroup.length==0)
         {
             return false;
         }
@@ -110,7 +112,8 @@ class DirectorAI
             }
             else
             {
-                let newWaypoints = Global.waypointManager.get('bottomCircleRight'); //TODO randomize
+                let newAttack = this.currentDiveAttack;
+                let newWaypoints = Global.waypointManager.get(newAttack);
                 newWaypoints.push(spr.formationPoint);
                 spr.waypoints = newWaypoints;
 
@@ -126,9 +129,11 @@ class DirectorAI
     _setupDive()
     {
         this.diveAttackScheduled = true;
-        this.waitTTL += 300;
+        this.waitTTL += 500;
         this.diveAttackRandomSkipCount = randomFromInterval(0,this.diveAttackRandomSkipCountMax);
         this.diveAttackShipCounter = randomFromInterval(1,this.diveAttackShipCounterMax);
+        this.currentDiveAttack = Global.waypointManager.getRandomDiveAttackOption();
+
     }
 
 
@@ -337,28 +342,38 @@ class WaveManager
        switch(direction)
        {
           case 'bottom left':
+          case 'bottomLeft':
+          case 'atkBottomLeft':
             pos =  createVector(0,Global.canvasHeight);
             break;
 
           case 'bottom right':
+          case 'bottomRight':
+          case 'atkBottomRight':
             pos = createVector(Global.canvasWidth,Global.canvasHeight);
             break;
 
           case 'mid left':
+          case 'midLeft':
+          case 'atkmidLeft':
             pos = createVector(0,Global.canvasHeight/2);
             _count=40;
             break;
 
           case 'mid right':
+          case 'midRight':
+          case 'atkMidRight':
             pos = createVector(Global.canvasWidth,Global.canvasHeight/2);
             _count=40;
             break;
 
           case 'top left':
+          case 'topLeft':
             pos =  createVector(0,0);
             break;
 
           case 'top right':
+          case 'topRight':
             pos = createVector(Global.canvasWidth,0);
             break;
 
@@ -631,6 +646,19 @@ class WaypointManager
             console.log('waypoint type not found:'+direction);
             return [];
       }
+    }
+
+    getDiveAttackOptions()
+    {
+        return ['atkDirectBottomCircleLeft','atkDirectBottomCircleCenter','atkDirectBottomCircleRight']
+    }
+
+    getRandomDiveAttackOption()
+    {
+        let atkOptions = this.getDiveAttackOptions();
+        let pick = getRandomIntInclusive(0,atkOptions.length-1);
+        let waypointValue = atkOptions[pick]
+        return waypointValue;
     }
 
     //we may have multiple points where we want to mix in attacks, here is where we do that

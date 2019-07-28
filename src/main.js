@@ -34,8 +34,8 @@ Global.enemyGroup;
 Global.enemyShipGroup;
 
 function reset() {
-    Global.enableStory = false;
-    Global.enableSound = false;
+    Global.enableStory = true;
+    Global.enableSound = true;
 
     let canvas = createCanvas(Global.canvasWidth, Global.canvasHeight);
     canvas.parent('sketch-holder');
@@ -391,6 +391,12 @@ function keyPressed() {
 
 function randomFromInterval(min,max){
     return Math.random()*(max-min+1)+min;
+}
+
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
 }
 
 //true-false coin-flip
