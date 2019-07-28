@@ -67,7 +67,6 @@ class SoundManager
                 //cheap trick to try to avoid repeating sounds
                 if(previousSound==currentSound)
                 {
-                    console.log("Found a repeated sound: ",previousSound)
                     continue;
                 }
                 this.playSound(currentSound);
