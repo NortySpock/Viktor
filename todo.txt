@@ -1,12 +1,11 @@
 Bugs
 --------------------
+Possible for a dive attack setup to stall and lockup the AI if the last enemy is killed in the middle of setup
+
 
 
 Short term
 ---------------------
-AI waypoint / attack system
-Write a skip debug button
-Write a skip story feature flag
 bullet "choke" helper function for enemy ships
 
 Long term
