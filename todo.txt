@@ -1,20 +1,18 @@
 Bugs
 --------------------
-Possible for a dive attack setup to stall and lockup the AI if the last enemy is killed in the middle of setup
-
-
+Hit Percentage irrational fraction
 
 Short term
 ---------------------
+Hit percentage
 bullet "choke" helper function for enemy ships
 
 Long term
 ----------------------
-Hit percentage
 Large enemy ships with health
 Cookies with high-score list
 Attract / Demo mode
-Command Pattern for Player to allow flexibility for Attract / Demo mode
+Command Pattern for Player to allow flexibility for Attract / Demo mode (waypoint system?)
 Powerup Management System
 - Card deck draw style system
 -- so you don't get totally screwed by the RNG
@@ -25,7 +23,6 @@ Powerup Management System
 -- shotgun blast
 -- minion
 -- bomb
-Data Driven Design? Is that possible with P5?
 
 sounds
 ----------------------------

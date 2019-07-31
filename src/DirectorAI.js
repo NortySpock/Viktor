@@ -28,8 +28,14 @@ class DirectorAI
           return; //we really want to just do this a few times a sec
       }
 
-      //If we're checking for wave, check to see if the next mini-wave is ready 
-      //i.e. there are other waves, 
+      //bailout if we find an impossible situation
+      if(this.diveAttackScheduled && Global.enemyShipGroup.length==0)
+      {
+          this.diveAttackScheduled=false;
+      }
+
+      //If we're checking for wave, check to see if the next mini-wave is ready
+      //i.e. there are other waves,
       if(this.readyForNextStage() && this.diveWaveToggle)
       {
           this.getNextStage()

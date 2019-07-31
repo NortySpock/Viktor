@@ -4,7 +4,7 @@ const frameDebug = false;
 const targetFrameRate = 60;
 
 const backgroundColor = 0;
-const playerInvulnerableDebug = true;
+const playerInvulnerableDebug = false;
 
 let pointsString = '';
 let pointsStringLocation;
@@ -12,6 +12,8 @@ var FPSstring  = '';
 var FPSstringLocation;
 const Game_Over_string = 'Game Over. Press [Enter] to start again.';
 let Game_Over_string_location;
+let Game_Over_shots_location;
+let Game_Over_hit_percent_location;
 let Game_Over_status = false;
 const backgroundStarCount = 25;
 let attackAIcounter = 0;
@@ -69,6 +71,8 @@ function reset() {
     pointsStringLocation = createVector(Global.canvasWidth*(19/24),20);
     FPSstringLocation = createVector(10,20);
     Game_Over_string_location = createVector(Global.canvasWidth/5,Global.canvasHeight/2);
+    Game_Over_shots_location = createVector(Global.canvasWidth/5,Global.canvasHeight*(4/6));
+    Game_Over_hit_percent_location = createVector(Global.canvasWidth/5,Global.canvasHeight*(5/6));
 
     Global.backgroundStars = [];
     preFillBackgroundStars();
@@ -87,6 +91,7 @@ function reset() {
 
     Global.PlayerShotsHit = 0;
     Global.PlayerShotsTotal = 0;
+    Global.PlayerHitPercent = 0;
 
     createPlayerSprite();
 
@@ -373,19 +378,7 @@ function keyPressed() {
     }
   }
 
-  if(key=='T' && debugMode===true)
-  {
-    let pos = Global.sprites.player_sprite.position;
-    let explode_sprite = createSprite(pos.x, pos.y+100, 16, 16);
-    explode_sprite.scale = 3
-    explode_sprite.life = targetFrameRate;
-    explode_sprite.addAnimation('explode', Global.animations.blue_explosion);
-  }
 
-  if(key=='K' && debugMode===true)
-  {
-      attackAIcounter += 2;
-  }
 
 };
 
@@ -430,10 +423,15 @@ function renderForegroundUI()
     {
         textSize(16);
         textStyle(NORMAL);
+        textAlign(LEFT);
         textFont('Courier New');
         stroke(Global.backgroundColor);
         fill(Global.textColor);
         text(Game_Over_string , Game_Over_string_location.x,Game_Over_string_location.y);
+        let shots_string =      '               Hits:'+Global.PlayerShotsHit + '      ' + 'Fired:'+Global.PlayerShotsTotal
+        text(shots_string , Game_Over_shots_location.x,Game_Over_shots_location.y);
+        let percentage_string = '               Percentage:'+calculateHitPercentage()+'%'
+        text(percentage_string , Game_Over_hit_percent_location.x,Game_Over_hit_percent_location.y);
     }
 }
 
@@ -617,4 +615,15 @@ function playerDeathEvents()
 {
     Global.playerDead = true;
     Global.textColor = color(255,0,0);
+    Global.PlayerHitPercent = calculateHitPercentage();
+}
+
+function calculateHitPercentage()
+{
+    if(Global.PlayerShotsTotal <= 0)
+    {
+      return 0;
+    } else {
+       return (Global.PlayerShotsHit / Global.PlayerShotsTotal)*100 ;
+    }
 }
