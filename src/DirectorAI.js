@@ -28,12 +28,16 @@ class DirectorAI
           return; //we really want to just do this a few times a sec
       }
 
-      if(this.diveWaveToggle && this.readyForNextStage())
+      //If we're checking for wave, check to see if the next mini-wave is ready 
+      //i.e. there are other waves, 
+      if(this.readyForNextStage() && this.diveWaveToggle)
       {
           this.getNextStage()
       }
 
-      if(!this.diveWaveToggle && this.readyForDiveAttack())
+      //if we've checking for dives, check to see if the next dive is ready
+      //i.e. there are enemies in play, we don't have an existing wave running, etc
+      if(this.readyForDiveAttack() && !this.diveWaveToggle)
       {
           this._setupDive();
       }
