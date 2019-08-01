@@ -1,11 +1,12 @@
 Bugs
 --------------------
-Hit Percentage irrational fraction
+
 
 Short term
 ---------------------
-Hit percentage
 bullet "choke" helper function for enemy ships
+More waypoint types
+More enemy ship sprites
 
 Long term
 ----------------------

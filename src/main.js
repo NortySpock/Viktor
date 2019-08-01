@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = true;
+const debugMode = false;
 const frameDebug = false;
 const targetFrameRate = 60;
 
@@ -11,6 +11,7 @@ let pointsStringLocation;
 var FPSstring  = '';
 var FPSstringLocation;
 const Game_Over_string = 'Game Over. Press [Enter] to start again.';
+const Won_The_Game_string = 'You made it to the Solar Federation base! Success!'
 let Game_Over_string_location;
 let Game_Over_shots_location;
 let Game_Over_hit_percent_location;
@@ -51,6 +52,7 @@ function reset() {
     Global.playerDead = false;
 
     Global.points = 0;
+    Global.WonTheGame = false;
 
     Global.soundMgr = new SoundManager();
     Global.soundMgr.mute = !Global.enableSound;
@@ -363,6 +365,17 @@ function keyPressed() {
     Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
   }
 
+  if(key == 'P' && debugMode)
+  {
+      playerDeathEvents();
+  }
+
+
+  if(key == 'I' && debugMode)
+  {
+      wonTheGameEvents();
+  }
+
 
   if(key == 'O' && debugMode == true && Global.sprites.player_sprite)
   {
@@ -428,11 +441,28 @@ function renderForegroundUI()
         stroke(Global.backgroundColor);
         fill(Global.textColor);
         text(Game_Over_string , Game_Over_string_location.x,Game_Over_string_location.y);
-        let shots_string =      '               Hits:'+Global.PlayerShotsHit + '      ' + 'Fired:'+Global.PlayerShotsTotal
+        let shots_string =      '               Hits:'+Global.FinalPlayerShotsHit + '      ' + 'Fired:'+Global.FinalPlayerShotsTotal
         text(shots_string , Game_Over_shots_location.x,Game_Over_shots_location.y);
-        let percentage_string = '               Percentage:'+calculateHitPercentage()+'%'
+        let percentage_string = '               Percentage:'+Global.PlayerHitPercent+'%'
         text(percentage_string , Game_Over_hit_percent_location.x,Game_Over_hit_percent_location.y);
     }
+
+    if(Global.WonTheGame && !Global.playerDead) //unlikey to do both but hey
+    {
+        textSize(16);
+        textStyle(NORMAL);
+        textAlign(LEFT);
+        textFont('Courier New');
+        stroke(Global.backgroundColor);
+        fill(Global.textColor);
+        text(Won_The_Game_string , Game_Over_string_location.x,Game_Over_string_location.y);
+        let shots_string =      '               Hits:'+Global.FinalPlayerShotsHit + '      ' + 'Fired:'+Global.FinalPlayerShotsTotal
+        text(shots_string , Game_Over_shots_location.x,Game_Over_shots_location.y);
+        let percentage_string = '               Percentage:'+Global.PlayerHitPercent+'%'
+        text(percentage_string , Game_Over_hit_percent_location.x,Game_Over_hit_percent_location.y);
+    }
+
+
 }
 
 function halfSecondUpdateLoop(){
@@ -523,17 +553,6 @@ function runWaypoints(spr)
     }
 }
 
-function updateAttackAI(spr)
-{
-    if(spr)
-    {
-        let newWaypoints = Global.waypointManager.get('bottomCircleRight');
-        newWaypoints = Global.waypointManager.markAllWaypointsToAttack(newWaypoints);
-        newWaypoints.push(spr.formationPoint);
-        spr.waypoints = newWaypoints;
-    }
-}
-
 function midpoint(x1,y1,x2,y2)
 {
     return pointOnLine(x1,y1,x2,y2,0.5);
@@ -615,7 +634,19 @@ function playerDeathEvents()
 {
     Global.playerDead = true;
     Global.textColor = color(255,0,0);
+    Global.FinalPlayerShotsHit = Global.PlayerShotsHit;
+    Global.FinalPlayerShotsTotal = Global.PlayerShotsTotal;
     Global.PlayerHitPercent = calculateHitPercentage();
+}
+
+function wonTheGameEvents()
+{
+    Global.WonTheGame = true;
+    Global.textColor = color(255, 127, 0);
+    Global.FinalPlayerShotsHit = Global.PlayerShotsHit;
+    Global.FinalPlayerShotsTotal = Global.PlayerShotsTotal;
+    Global.PlayerHitPercent = calculateHitPercentage();
+
 }
 
 function calculateHitPercentage()
@@ -624,6 +655,6 @@ function calculateHitPercentage()
     {
       return 0;
     } else {
-       return (Global.PlayerShotsHit / Global.PlayerShotsTotal)*100 ;
+       return ((Global.FinalPlayerShotsHit / Global.FinalPlayerShotsTotal)*100).toFixed(2);
     }
 }

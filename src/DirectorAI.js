@@ -34,21 +34,25 @@ class DirectorAI
           this.diveAttackScheduled=false;
       }
 
-      //If we're checking for wave, check to see if the next mini-wave is ready
+
+    //If we're checking for wave, check to see if the next mini-wave is ready
       //i.e. there are other waves,
-      if(this.readyForNextStage() && this.diveWaveToggle)
+      if(this.diveWaveToggle)
       {
-          this.getNextStage()
+        if(this.readyForNextStage())
+        {
+            this.getNextStage()
+        }
       }
-
-      //if we've checking for dives, check to see if the next dive is ready
-      //i.e. there are enemies in play, we don't have an existing wave running, etc
-      if(this.readyForDiveAttack() && !this.diveWaveToggle)
+      else
       {
+        //if we've checking for dives, check to see if the next dive is ready
+        //i.e. there are enemies in play, we don't have an existing wave running, etc
+        if(this.readyForDiveAttack())
+        {
           this._setupDive();
+        }
       }
-
-      this.diveWaveToggle = !this.diveWaveToggle;
 
       //If we have an attack ready, busy-loop until the waveManager is ready.
       if(this.waveScheduled && !Global.waveManager.isBusy())
@@ -60,6 +64,15 @@ class DirectorAI
           this.waitTTL += 30
           this.waveScheduled = false;
           this.attackObj = null;
+      }
+
+      //flip flop so we're only handling one each run
+      this.diveWaveToggle = !this.diveWaveToggle;
+
+
+      if(this._HasThePlayerJustWon())
+      {
+          wonTheGameEvents();
       }
     }
 
@@ -143,7 +156,6 @@ class DirectorAI
         this.diveAttackRandomSkipCount = randomFromInterval(0,this.diveAttackRandomSkipCountMax);
         this.diveAttackShipCounter = randomFromInterval(1,this.diveAttackShipCounterMax);
         this.currentDiveAttack = Global.waypointManager.getRandomDiveAttackOption();
-
     }
 
 
@@ -214,6 +226,15 @@ class DirectorAI
         {
             console.log(item)
         }
+    }
+
+    _HasThePlayerJustWon()
+    {
+        if(this.waitTTL > 0 || this.timeline.length > 0 || Global.enemyGroup.length > 0 || Global.playerDead || Global.WonTheGame) //already won
+        {
+            return false;
+        }
+        return false; //return true; //TODO Enable this when I think the game is complete and has an ending
     }
 }
 
