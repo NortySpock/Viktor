@@ -159,6 +159,8 @@ function draw() {
       Global.sprites.player_sprite.setDefaultCollider()
     }
 
+
+
     //check all collisions
     for(let i = allSprites.length - 1; i >= 0; i--)
     {
@@ -265,7 +267,7 @@ function draw() {
               explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
             }
 
-            if(Global.friendlyGroup.contains(targetSprite) && (!playerInvulnerableDebug && debugMode))
+            if(Global.friendlyGroup.contains(targetSprite) && !(playerInvulnerableDebug && debugMode))
             {
               let newpos = targetSprite.position;
               targetSprite.remove();
@@ -624,7 +626,7 @@ function createPlayerSprite()
     Global.sprites.player_sprite.damage = 20;
     Global.sprites.player_sprite.hasShield = true;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
-    if(!playerInvulnerableDebug && debugMode)
+    if(!(playerInvulnerableDebug && debugMode))
     {
         Global.friendlyGroup.add(Global.sprites.player_sprite);
     }
