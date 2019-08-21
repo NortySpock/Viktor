@@ -35,7 +35,7 @@ class DirectorAI
       }
 
 
-    //If we're checking for wave, check to see if the next mini-wave is ready
+      //If we're checking for wave, check to see if the next mini-wave is ready
       //i.e. there are other waves,
       if(this.diveWaveToggle)
       {
@@ -78,13 +78,17 @@ class DirectorAI
 
     readyForNextStage()
     {
-        if(this.waitTTL > 0||this.timeline.length == 0
-            ||this.diveAttackScheduled||this.waveScheduled||
-            (Global.enemyShipGroup.length > 0 && this.currentBatch != this.timeline[0].batch)
-          )
+        if(this.waitTTL > 0||this.timeline.length == 0||this.diveAttackScheduled||this.waveScheduled)
         {
             return false;
         }
+
+        //If they haven't shot down all the ships yet and the next batch is different from the current batch in the timeline
+        if(Global.enemyShipGroup.length > 0 && this.currentBatch != this.timeline[0].batch)
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -152,7 +156,9 @@ class DirectorAI
     _setupDive()
     {
         this.diveAttackScheduled = true;
-        this.waitTTL += 500;
+        this.waitTTL += 500;  //arbitrary, gives a bit of time for the dive to complete
+
+        //since we don't want to just have the same few fighters get picked for a dive
         this.diveAttackRandomSkipCount = randomFromInterval(0,this.diveAttackRandomSkipCountMax);
         this.diveAttackShipCounter = randomFromInterval(1,this.diveAttackShipCounterMax);
         this.currentDiveAttack = Global.waypointManager.getRandomDiveAttackOption();
@@ -554,7 +560,7 @@ class EnemyCreator
         sprite.baseAccel = 0.3;
         sprite.maxSpeed = 3;
         sprite.point_value = 10+10;
-        sprite.GunCooldown = new GunCooldown(targetFrameRate/2);
+        sprite.GunCooldown = new GunCooldown(targetFrameRate/3);
     }
 
     _deepcopy(thing)
@@ -673,6 +679,71 @@ class WaypointManager
               return this.markAllWaypointsToAttack(this.get('bottomCircleRight'));
           }
 
+          case 'backslashBottomLeft':{
+              let relOffset = Global.canvasWidth*0.08;
+              let centerX = Global.canvasWidth*0.25;
+              let centerY = Global.canvasHeight*0.65;
+              let waypoints = [];
+              waypoints.push({x:centerX-relOffset,y:centerY-relOffset});
+              waypoints.push({x:centerX,y:centerY});
+              waypoints.push({x:centerX+relOffset,y:centerY+relOffset});
+              return waypoints;
+              break;
+          }
+
+          case 'atkBackslashBottomLeft':{
+              return this.markAllWaypointsToAttack(this.get('backslashBottomLeft'));
+          }
+
+          case 'backslashBottomRight':{
+              let relOffset = Global.canvasWidth*0.08;
+              let centerX = Global.canvasWidth*0.75;
+              let centerY = Global.canvasHeight*0.65;
+              let waypoints = [];
+              waypoints.push({x:centerX-relOffset,y:centerY-relOffset});
+              waypoints.push({x:centerX,y:centerY});
+              waypoints.push({x:centerX+relOffset,y:centerY+relOffset});
+              return waypoints;
+              break;
+          }
+
+          case 'atkBackslashBottomRight':{
+              return this.markAllWaypointsToAttack(this.get('backslashBottomRight'));
+          }
+
+          case 'backslashTopLeft':{
+              let relOffset = Global.canvasWidth*0.08;
+              let centerX = Global.canvasWidth*0.25;
+              let centerY = Global.canvasHeight*0.25;
+              let waypoints = [];
+              waypoints.push({x:centerX-relOffset,y:centerY-relOffset});
+              waypoints.push({x:centerX,y:centerY});
+              waypoints.push({x:centerX+relOffset,y:centerY+relOffset});
+              return waypoints;
+              break;
+          }
+
+          case 'atkBackslashTopLeft':{
+              return this.markAllWaypointsToAttack(this.get('backslashTopLeft'));
+          }
+
+          case 'backslashTopRight':{
+              let relOffset = Global.canvasWidth*0.08;
+              let centerX = Global.canvasWidth*0.75;
+              let centerY = Global.canvasHeight*0.25;
+              let waypoints = [];
+              waypoints.push({x:centerX-relOffset,y:centerY-relOffset});
+              waypoints.push({x:centerX,y:centerY});
+              waypoints.push({x:centerX+relOffset,y:centerY+relOffset});
+              return waypoints;
+              break;
+          }
+
+          case 'atkBackslashTopRight':{
+              return this.markAllWaypointsToAttack(this.get('backslashTopRight'));
+          }
+
+
           default:
             console.log('waypoint type not found:'+direction);
             return [];
@@ -681,7 +752,7 @@ class WaypointManager
 
     getDiveAttackOptions()
     {
-        return ['atkDirectBottomCircleLeft','atkDirectBottomCircleCenter','atkDirectBottomCircleRight']
+        return ['atkDirectBottomCircleLeft','atkDirectBottomCircleCenter','atkDirectBottomCircleRight','atkBackslashBottomLeft','atkBackslashBottomRight','atkBackslashTopLeft','atkBackslashTopRight']
     }
 
     getRandomDiveAttackOption()
@@ -783,10 +854,10 @@ class WaypointManager
 
     _renderMyPoints()
     {
-      //this._renderArrayOfPoints(this._bottomLeftAngle, color("HotPink"));
-      //this._renderArrayOfPoints(this._bottomCircleLeft ,color("FireBrick"));
-      //this._renderArrayOfPoints(this.get('bottomCircleRight') ,color("LightBlue"));
-      //this._renderArrayOfPoints(this.get('bottomCircleCenter'),color("Olive"));
+      this._renderArrayOfPoints(this.get('backslashBottomLeft'), color("HotPink"));
+      this._renderArrayOfPoints(this.get('backslashBottomRight'), color("FireBrick"));
+      this._renderArrayOfPoints(this.get('backslashTopLeft'), color("LightBlue"));
+      this._renderArrayOfPoints(this.get('backslashTopRight'), color("Olive"));
     }
 
     _renderArrayOfPoints(arrayOfPoints, color)
