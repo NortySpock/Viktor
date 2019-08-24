@@ -540,11 +540,10 @@ function runWaypoints(spr)
         // then remove the waypoint so we can go to the next waypoint
         if(dist(spr.position.x,spr.position.y,currentWaypoint.x,currentWaypoint.y) < 5)
         {
-            if(currentWaypoint.fire && spr.GunCooldown.canFire(frameCount)) //TODO gunCooldown
+            if(currentWaypoint.fire && spr.GunCooldown.canFire(frameCount))
             {
-                //TODO handle firing at waypoints
                 spr.GunCooldown.fire(frameCount);
-                fireCyanEnemyBulletStraightDown(spr.position.x,spr.position.y);
+                spr.fire();
             }
 
             //go to next waypoint

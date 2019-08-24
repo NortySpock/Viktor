@@ -563,6 +563,7 @@ class EnemyCreator
         sprite.maxSpeed = 3;
         sprite.point_value = 10+10;
         sprite.GunCooldown = new GunCooldown(targetFrameRate/3);
+        sprite.fire = function (){fireCyanEnemyBulletStraightDown(this.position.x,this.position.y)}
     }
 
     _deepcopy(thing)
