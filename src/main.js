@@ -81,7 +81,7 @@ function reset() {
 
     setInterval(halfSecondUpdateLoop,500);
 
-    //drop all sprites for reset
+    //drop all sprites for reset of in-progress game
     for(let i = allSprites.length - 1; i >= 0; i--)
     {
         let mainSprite = allSprites[i];
@@ -105,9 +105,8 @@ function preload()
   Global.images.ship1 = loadImage('img/ship1.png');
   Global.images.ship2 = loadImage('img/ship2.png');
   Global.images.cyan_bolt = loadImage('img/cyan_bullet2.png');
-  Global.images.enemy3 = loadImage('img/enemy3.png');
   Global.images.player_ship = loadImage('img/player_ship.png');
-  Global.images.purple_bolt = loadImage('img/purple_bullet.png');
+  Global.images.cyan_bubble = loadImage('img/cyan_bubble.png');
   Global.images.enemy1 = loadImage('img/enemy1.png');
   Global.images.cyan_bolt2 = loadImage('img/cyan_bullet2.png');
   Global.images.red_bolt = loadImage('img/red_bullet.png');
@@ -367,15 +366,16 @@ function keyPressed() {
     Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
   }
 
-  if(key == 'P' && debugMode)
-  {
-      playerDeathEvents();
-  }
 
 
   if(key == 'I' && debugMode)
   {
       wonTheGameEvents();
+  }
+
+  if(key == 'N' && debugMode)
+  {
+    fireEnemyCyanBubbleInDirection(mouseX,mouseY, -1,0)
   }
 
 
@@ -469,6 +469,10 @@ function renderForegroundUI()
 
 function halfSecondUpdateLoop(){
   updateUIstuff();
+  if(debugMode)
+  {
+    console.log("sprites:"+allSprites.length);
+  }
 }
 
 function preFillBackgroundStars()
@@ -534,13 +538,13 @@ function runWaypoints(spr)
         // if we get close enough to the waypoint
         // we will first check to see if the waypoint says to fire and handle that
         // then remove the waypoint so we can go to the next waypoint
-        if(dist(spr.position.x,spr.position.y,currentWaypoint.x,currentWaypoint.y) < 4)
+        if(dist(spr.position.x,spr.position.y,currentWaypoint.x,currentWaypoint.y) < 5)
         {
             if(currentWaypoint.fire && spr.GunCooldown.canFire(frameCount)) //TODO gunCooldown
             {
                 //TODO handle firing at waypoints
                 spr.GunCooldown.fire(frameCount);
-                fireEnemyBulletStraightDown(spr.position.x,spr.position.y);
+                fireCyanEnemyBulletStraightDown(spr.position.x,spr.position.y);
             }
 
             //go to next waypoint
@@ -583,7 +587,7 @@ function pointOnLineOverPlayer(x1,y1,x2,y2)
 }
 
 
-function fireEnemyBulletStraightDown(x,y)
+function fireCyanEnemyBulletStraightDown(x,y)
 {
   let h = Global.images.cyan_bolt.height
   let w = Global.images.cyan_bolt.width
@@ -599,6 +603,25 @@ function fireEnemyBulletStraightDown(x,y)
   Global.enemyGroup.add(new_bullet);
 
   Global.soundMgr.queueSound('player_bullet');
+}
+
+
+
+function fireEnemyCyanBubbleInDirection(x,y,xvel,yvel)
+{
+  let h = Global.images.cyan_bubble.height
+  let w = Global.images.cyan_bubble.width
+  let new_bullet = createSprite(x,y,h,w);
+  new_bullet.addImage(Global.images.cyan_bubble);
+  new_bullet.scale = 3;
+  new_bullet.setVelocity(xvel,yvel);
+  new_bullet.mass = 0.1;
+  new_bullet.damage = 10;
+  new_bullet.life = Global.canvasWidth;
+  Global.bulletGroup.add(new_bullet);
+  //Global.enemyGroup.add(new_bullet);
+
+  //Global.soundMgr.queueSound('player_bullet');
 }
 
 
@@ -626,6 +649,7 @@ function createPlayerSprite()
     Global.sprites.player_sprite.damage = 20;
     Global.sprites.player_sprite.hasShield = true;
     Global.sprites.player_sprite.GunCooldown = new GunCooldown(targetFrameRate*0.71); //experimentally determined
+    Global.sprites.player_sprite.GameObjectName = 'player_ship';
     if(!(playerInvulnerableDebug && debugMode))
     {
         Global.friendlyGroup.add(Global.sprites.player_sprite);

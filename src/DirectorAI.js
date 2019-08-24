@@ -507,11 +507,13 @@ class EnemyCreator
             case 'flat':
                 newSprite = this._createDefaultEnemy(posObj);
                 this._setFlat(newSprite);
+                newSprite.GameObjectName = type;
                 break;
             case 'flat_shield':
                 newSprite = this._createDefaultEnemy(posObj);
                 this._setFlat(newSprite);
                 newSprite.hasShield=true;
+                newSprite.GameObjectName = type;
                 break;
             default:
                 console.log('enemy type not found:'+type);
