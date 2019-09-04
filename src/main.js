@@ -110,6 +110,10 @@ function preload()
   Global.images.enemy1 = loadImage('img/enemy1.png');
   Global.images.cyan_bolt2 = loadImage('img/cyan_bullet2.png');
   Global.images.red_bolt = loadImage('img/red_bullet.png');
+  Global.images.armor = loadImage('img/armor.png');
+  Global.images.wings = loadImage('img/wings.png');
+  Global.images.mine = loadImage('img/mine.png');
+
 
   let rotary_explosion_images = 5;
   let rotary_explosion_sprite_sheet = loadSpriteSheet('img/rotary_explosion.png',16,16,rotary_explosion_images);
@@ -120,6 +124,12 @@ function preload()
   let blue_explosion_sprite_sheet = loadSpriteSheet('img/blue_explosion.png',16,16,blue_explosion_images);
   Global.animations.blue_explosion = loadAnimation(blue_explosion_sprite_sheet);
   Global.animations.blue_explosion.frameDelay  = targetFrameRate/blue_explosion_images;
+
+  let boss_images = 3
+  let boss1 = loadImage('img/boss.png'); //avg
+  let boss2 = loadImage('img/boss2.png'); //max
+  let boss3 = loadImage('img/boss3.png'); //min
+  Global.animations.boss = loadAnimation('img/boss3.png','img/boss.png','img/boss2.png','img/boss.png') // cycle is min, avg, max, avg -> min
 }
 
 function setup() {
@@ -360,17 +370,6 @@ function keyPressed() {
       Global.soundMgr.mute = !Global.soundMgr.mute
   }
 
-  if(key == 'S')
-  {
-    Global.backgroundStars.push(new BackgroundStar(createVector(randomFromInterval(0,Global.canvasWidth),randomFromInterval(0,Global.canvasHeight))));
-  }
-
-
-
-  if(key == 'I' && debugMode)
-  {
-      wonTheGameEvents();
-  }
 
   if(key == 'N' && debugMode)
   {
@@ -378,21 +377,51 @@ function keyPressed() {
   }
 
 
-  if(key == 'O' && debugMode == true && Global.sprites.player_sprite)
+
+  if(key == 'A' && debugMode == true)
   {
-    let player = Global.sprites.player_sprite;
-    if(player.hasShield)
-    {
-       player.hasShield=false;
-       Global.ParticleSystem.addParticleSpray(player.position,color(255),3,20,10);
-    }
-    else
-    {
-        Global.ParticleSystem.addParticleSpray(player.position,player.shapeColor,3,20,10);
-    }
+      let x = mouseX;
+      let y = mouseY;
+      let h = Global.images.cyan_bubble.height
+      let w = Global.images.cyan_bubble.width
+      let new_sprite = createSprite(x,y,h,w);
+      new_sprite.addImage(Global.images.armor);
+      new_sprite.scale = 3;
   }
 
 
+   if(key == 'D' && debugMode == true)
+  {
+      let x = mouseX;
+      let y = mouseY;
+      let h = Global.images.cyan_bubble.height
+      let w = Global.images.cyan_bubble.width
+      let new_sprite = createSprite(x,y,h,w);
+      new_sprite.addAnimation('boss',Global.animations.boss);
+      new_sprite.scale = 3;
+  }
+
+  if(key == 'F' && debugMode == true)
+  {
+      let x = mouseX;
+      let y = mouseY;
+      let h = Global.images.cyan_bubble.height
+      let w = Global.images.cyan_bubble.width
+      let new_sprite = createSprite(x,y,h,w);
+      new_sprite.addImage(Global.images.wings);
+      new_sprite.scale = 3;
+  }
+
+    if(key == 'G' && debugMode == true)
+  {
+      let x = mouseX;
+      let y = mouseY;
+      let h = Global.images.cyan_bubble.height
+      let w = Global.images.cyan_bubble.width
+      let new_sprite = createSprite(x,y,h,w);
+      new_sprite.addImage(Global.images.mine);
+      new_sprite.scale = 3;
+  }
 
 };
 

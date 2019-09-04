@@ -5,7 +5,6 @@ Bugs
 Short term
 ---------------------
 bullet "choke" helper function for enemy ships
-More enemy ship sprites
 Final End-Game destination
 
 Long term

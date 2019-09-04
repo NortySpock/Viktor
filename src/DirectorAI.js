@@ -5,7 +5,6 @@ class DirectorAI
     {
       this.timeline = [];
       this.attackObj = {};
-      this._setupStages(); //creates the master timeline
       this.waitTTL = 0;
       this.waveScheduled = false;
       this.diveAttackScheduled = false;
@@ -15,6 +14,7 @@ class DirectorAI
       this.diveAttackRandomSkipCountMax = 5;
       this.diveAttackShipCounterMax = 3;
       this.currentDiveAttack = '';
+      this._setupStages(); //creates the master timeline
     }
 
     run()

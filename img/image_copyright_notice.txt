@@ -6,8 +6,14 @@ purple_bullet.png
 red_bullet.png
 robobullet.png
 rotary_explosion.png
+blue_explosion.png
+armor.png
+boss.png
+favicon.png
+mine.png
+wings.png
 
 Copyright (c) 2018 NortySpock
 ship2.png
 ship1.png
-enemy3.png
+cyan_bubble.png
