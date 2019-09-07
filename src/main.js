@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = false;
+const debugMode = true;
 const frameDebug = false;
 const targetFrameRate = 60;
 
@@ -111,7 +111,7 @@ function preload()
   Global.images.cyan_bolt2 = loadImage('img/cyan_bullet2.png');
   Global.images.red_bolt = loadImage('img/red_bullet.png');
   Global.images.armor = loadImage('img/armor.png');
-  Global.images.wings = loadImage('img/wings.png');
+  
   Global.images.mine = loadImage('img/mine.png');
 
 
@@ -126,10 +126,15 @@ function preload()
   Global.animations.blue_explosion.frameDelay  = targetFrameRate/blue_explosion_images;
 
   let boss_images = 3
-  let boss1 = loadImage('img/boss.png'); //avg
-  let boss2 = loadImage('img/boss2.png'); //max
-  let boss3 = loadImage('img/boss3.png'); //min
+  Global.images.boss = loadImage('img/boss.png');
   Global.animations.boss = loadAnimation('img/boss3.png','img/boss.png','img/boss2.png','img/boss.png') // cycle is min, avg, max, avg -> min
+  
+  let wings_images = 3
+  Global.images.wings = loadImage('img/wings.png');
+  Global.animations.wings = loadAnimation('img/wings2.png','img/wings.png','img/wings3.png','img/wings.png') //cycle is min, avg, max, avg -> min
+  
+  
+  
 }
 
 function setup() {
@@ -382,8 +387,8 @@ function keyPressed() {
   {
       let x = mouseX;
       let y = mouseY;
-      let h = Global.images.cyan_bubble.height
-      let w = Global.images.cyan_bubble.width
+      let h = Global.images.armor.height
+      let w = Global.images.armor.width
       let new_sprite = createSprite(x,y,h,w);
       new_sprite.addImage(Global.images.armor);
       new_sprite.scale = 3;
@@ -394,8 +399,8 @@ function keyPressed() {
   {
       let x = mouseX;
       let y = mouseY;
-      let h = Global.images.cyan_bubble.height
-      let w = Global.images.cyan_bubble.width
+      let h = Global.images.boss.height
+      let w = Global.images.boss.width
       let new_sprite = createSprite(x,y,h,w);
       new_sprite.addAnimation('boss',Global.animations.boss);
       new_sprite.scale = 3;
@@ -405,10 +410,10 @@ function keyPressed() {
   {
       let x = mouseX;
       let y = mouseY;
-      let h = Global.images.cyan_bubble.height
-      let w = Global.images.cyan_bubble.width
+      let h = Global.images.wings.height
+      let w = Global.images.wings.width
       let new_sprite = createSprite(x,y,h,w);
-      new_sprite.addImage(Global.images.wings);
+      new_sprite.addAnimation('wings',Global.animations.wings);
       new_sprite.scale = 3;
   }
 
@@ -416,8 +421,8 @@ function keyPressed() {
   {
       let x = mouseX;
       let y = mouseY;
-      let h = Global.images.cyan_bubble.height
-      let w = Global.images.cyan_bubble.width
+      let h = Global.images.mine.height
+      let w = Global.images.mine.width
       let new_sprite = createSprite(x,y,h,w);
       new_sprite.addImage(Global.images.mine);
       new_sprite.scale = 3;

@@ -14,7 +14,7 @@ class DirectorAI
       this.diveAttackRandomSkipCountMax = 5;
       this.diveAttackShipCounterMax = 3;
       this.currentDiveAttack = '';
-      this._setupStages(); //creates the master timeline
+      //this._setupStages(); //creates the master timeline
     }
 
     run()
