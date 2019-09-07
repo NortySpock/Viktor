@@ -137,8 +137,7 @@ function draw() {
     //do physics and render background items
     for(let i = 0; i < Global.backgroundStars.length;i++)
     {
-      Global.backgroundStars[i].render();
-      Global.backgroundStars[i].update();
+      Global.backgroundStars[i].updateAndRender();
     }
 
     Global.ParticleSystem.run();

@@ -18,7 +18,7 @@ class BackgroundStar
   }
 
   //manually make the star fall, because it only falls down
-  update()
+  updateAndRender()
   {
     this.pos.y += this.fallSpeed;
 
@@ -28,11 +28,7 @@ class BackgroundStar
       this.pos.y = -10; //recycle to top
       this.pos.x = randomFromInterval(0,Global.canvasWidth);
     }
-  }
 
-  //render with the size at the position
-  render()
-  {
     stroke(this.color);
     strokeWeight(this.size);
     point(this.pos.x,this.pos.y);

@@ -24,10 +24,14 @@ class Particle
       this.ttl = this.ttl + random(-ttlVariation, ttlVariation) //slight variation in particle lifetime
   }
 
-  update()
+  updateAndRender()
   {
     if(this.ttl > 0)
     {
+        stroke(this.color);
+        strokeWeight(this.size);
+        point(this.pos.x,this.pos.y);
+
         this.ttl--;
         this.pos.add(this.vel);
 
@@ -35,17 +39,6 @@ class Particle
         {
             this.ttl=0;
         }
-    }
-  }
-
-  //render with the size at the position
-  render()
-  {
-    if(this.ttl > 0)
-    {
-      stroke(this.color);
-      strokeWeight(this.size);
-      point(this.pos.x,this.pos.y);
     }
   }
 }
@@ -87,8 +80,7 @@ class ParticleSystem
          let p = this._particles[i];
          if(p != null)
          {
-           p.update();
-           p.render();
+           p.updateAndRender();
          }
        }
     }
