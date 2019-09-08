@@ -28,10 +28,12 @@ class Particle
   {
     if(this.ttl > 0)
     {
+        //render
         stroke(this.color);
         strokeWeight(this.size);
         point(this.pos.x,this.pos.y);
 
+        //update
         this.ttl--;
         this.pos.add(this.vel);
 

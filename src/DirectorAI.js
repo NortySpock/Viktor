@@ -14,7 +14,7 @@ class DirectorAI
       this.diveAttackRandomSkipCountMax = 5;
       this.diveAttackShipCounterMax = 3;
       this.currentDiveAttack = '';
-      //this._setupStages(); //creates the master timeline
+      this._setupStages(); //creates the master timeline
     }
 
     run()
@@ -166,7 +166,6 @@ class DirectorAI
 
 
 
-
     _setupStages()
     {
       let storyTTL = Global.enableStory ? 300 : 0;
@@ -218,7 +217,28 @@ class DirectorAI
                           type:'flat_shield',
                           timing:60,
                           direction:'atkMidRight'});
-      this.timeline.push({batch:9,
+    this.timeline.push({batch:5,
+                          attack:0,
+                          msg:"Uh oh, these ones look different!",
+                          color:color('orange'),
+                          spot:"low",
+                          ttl:storyTTL});
+    this.timeline.push({batch:6,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:4,
+                          type:'armor',
+                          timing:60,
+                          direction:'atkMidLeft'});
+    this.timeline.push({batch:7,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:8,
+                          type:'armor',
+                          timing:60,
+                          direction:'atkMidRight'});
+
+      this.timeline.push({batch:99,
                           attack:0,
                           msg:"<that's all the stages for now>",
                           color:color('orange'),
@@ -327,6 +347,12 @@ class WaveManager
             pos = createVector(Global.canvasWidth+offset,Global.canvasHeight/2);
             waypointArray = Global.waypointManager.get('atkMidRight')
             break;
+
+          case 'atkLoopMidRight':
+            pos = createVector(Global.canvasWidth+offset,Global.canvasHeight/2);
+            waypointArray = Global.waypointManager.get('atkMidRight').concat()
+            break;
+
 
           case 'topLeft':
             pos =  createVector(0-offset,0-offset);
@@ -515,6 +541,11 @@ class EnemyCreator
                 newSprite.hasShield=true;
                 newSprite.GameObjectName = type;
                 break;
+            case 'armor':
+                newSprite = this._createDefaultEnemy(posObj);
+                this._setArmor(newSprite);
+                newSprite.GameObjectName = type;
+                break;
             default:
                 console.log('enemy type not found:'+type);
         }
@@ -558,12 +589,28 @@ class EnemyCreator
         sprite.hasShield = false;
         sprite.shieldScale = 1.2;
         sprite.health = 5;
-        sprite.damage = 20
+        sprite.damage = 20;
         sprite.baseAccel = 0.3;
         sprite.maxSpeed = 3;
-        sprite.point_value = 10+10;
+        sprite.point_value = 20;
         sprite.GunCooldown = new GunCooldown(targetFrameRate/3);
-        sprite.fire = function (){fireCyanEnemyBulletStraightDown(this.position.x,this.position.y)}
+        sprite.fire = function (){fireEnemyCyanBulletStraightDown(this.position.x,this.position.y)};
+    }
+
+    _setArmor(sprite)
+    {
+        sprite.addImage(Global.images.armor);
+        sprite.scale = 3;
+        sprite.setDefaultCollider();
+        sprite.hasShield = false;
+        sprite.shieldScale = 1.2;
+        sprite.health = 25;
+        sprite.damage = 20;
+        sprite.baseAccel = 0.15;
+        sprite.maxSpeed = 2;
+        sprite.point_value = 30;
+        sprite.GunCooldown = new GunCooldown(targetFrameRate/3);
+        sprite.fire = function (){fireShotgunEnemyCyanBubbleInRandomDownDirection(this.position.x,this.position.y)};
     }
 
     _deepcopy(thing)

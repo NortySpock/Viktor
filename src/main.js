@@ -1,5 +1,5 @@
 "use strict";
-const debugMode = true;
+const debugMode = false;
 const frameDebug = false;
 const targetFrameRate = 60;
 
@@ -111,7 +111,7 @@ function preload()
   Global.images.cyan_bolt2 = loadImage('img/cyan_bullet2.png');
   Global.images.red_bolt = loadImage('img/red_bullet.png');
   Global.images.armor = loadImage('img/armor.png');
-  
+
   Global.images.mine = loadImage('img/mine.png');
 
 
@@ -128,13 +128,13 @@ function preload()
   let boss_images = 3
   Global.images.boss = loadImage('img/boss.png');
   Global.animations.boss = loadAnimation('img/boss3.png','img/boss.png','img/boss2.png','img/boss.png') // cycle is min, avg, max, avg -> min
-  
+
   let wings_images = 3
   Global.images.wings = loadImage('img/wings.png');
   Global.animations.wings = loadAnimation('img/wings2.png','img/wings.png','img/wings3.png','img/wings.png') //cycle is min, avg, max, avg -> min
-  
-  
-  
+
+
+
 }
 
 function setup() {
@@ -378,7 +378,7 @@ function keyPressed() {
 
   if(key == 'N' && debugMode)
   {
-    fireEnemyCyanBubbleInDirection(mouseX,mouseY, -1,0)
+    fireEnemyCyanBubbleWithVelocity(mouseX,mouseY, -1,0)
   }
 
 
@@ -619,7 +619,7 @@ function pointOnLineOverPlayer(x1,y1,x2,y2)
 }
 
 
-function fireCyanEnemyBulletStraightDown(x,y)
+function fireEnemyCyanBulletStraightDown(x,y)
 {
   let h = Global.images.cyan_bolt.height
   let w = Global.images.cyan_bolt.width
@@ -638,22 +638,43 @@ function fireCyanEnemyBulletStraightDown(x,y)
 }
 
 
-
-function fireEnemyCyanBubbleInDirection(x,y,xvel,yvel)
+function fireShotgunEnemyCyanBubbleInRandomDownDirection(x,y)
 {
-  let h = Global.images.cyan_bubble.height
-  let w = Global.images.cyan_bubble.width
+    let randAngle = [180, 180, 180-45, 180+45]; //down, down again, downRight, downLeft just for a bit of a mix
+    let randIndex = getRandomIntInclusive(0,randAngle.length-1)
+    fireShotgunEnemyCyanBubbleAtDirection(x,y,randAngle[randIndex]);
+}
+
+function fireShotgunEnemyCyanBubbleAtDirection(x,y,angle)
+{
+    let spread = 8
+    fireEnemyCyanBubbleAtAngle(x,y,angle,3)
+    fireEnemyCyanBubbleAtAngle(x,y,angle-spread,3)
+    fireEnemyCyanBubbleAtAngle(x,y,angle+spread,3)
+}
+
+function fireEnemyCyanBubbleAtAngle(x,y,angle,vel)
+{
+    let xcomponent = vel * Math.sin(radians(angle));
+    let ycomponent = vel * -Math.cos(radians(angle));
+    fireEnemyCyanBubbleWithVelocity(x,y,xcomponent,ycomponent);
+}
+
+function fireEnemyCyanBubbleWithVelocity(x,y,xvel,yvel)
+{
+  let h = Global.images.cyan_bubble.height;
+  let w = Global.images.cyan_bubble.width;
   let new_bullet = createSprite(x,y,h,w);
   new_bullet.addImage(Global.images.cyan_bubble);
   new_bullet.scale = 3;
   new_bullet.setVelocity(xvel,yvel);
   new_bullet.mass = 0.1;
   new_bullet.damage = 10;
-  new_bullet.life = Global.canvasWidth;
+  new_bullet.life = Global.canvasWidth + Global.canvasHeight;
   Global.bulletGroup.add(new_bullet);
-  //Global.enemyGroup.add(new_bullet);
+  Global.enemyGroup.add(new_bullet);
 
-  //Global.soundMgr.queueSound('player_bullet');
+  Global.soundMgr.queueSound('player_bullet');
 }
 
 

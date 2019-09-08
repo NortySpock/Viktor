@@ -20,6 +20,7 @@ class BackgroundStar
   //manually make the star fall, because it only falls down
   updateAndRender()
   {
+    //update
     this.pos.y += this.fallSpeed;
 
     //if it falls off the screen, move it back to the top
@@ -29,6 +30,7 @@ class BackgroundStar
       this.pos.x = randomFromInterval(0,Global.canvasWidth);
     }
 
+    //render
     stroke(this.color);
     strokeWeight(this.size);
     point(this.pos.x,this.pos.y);

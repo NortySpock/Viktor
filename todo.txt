@@ -4,8 +4,10 @@ Bugs
 
 Short term
 ---------------------
-bullet "choke" helper function for enemy ships
+Write out wings attack
+Write a new sound for cyan bubble
 Final End-Game destination
+Boss destroyed ship
 
 Long term
 ----------------------
