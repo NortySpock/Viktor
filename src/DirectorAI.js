@@ -14,6 +14,7 @@ class DirectorAI
       this.diveAttackRandomSkipCountMax = 5;
       this.diveAttackShipCounterMax = 3;
       this.currentDiveAttack = '';
+      this.bossFight = false;
       this._setupStages(); //creates the master timeline
     }
 
@@ -126,6 +127,10 @@ class DirectorAI
                 this.attackObj = next;
                 this.waveScheduled = true;
             }
+            if(typeof next.execRun === "function")
+            {
+                next.execRun();
+            }
         }
     }
 
@@ -156,15 +161,20 @@ class DirectorAI
     _setupDive()
     {
         this.diveAttackScheduled = true;
-        this.waitTTL += 500;  //arbitrary, gives a bit of time for the dive to complete
+        this.waitTTL += 450;  //arbitrary, gives a bit of time for the dive to complete
 
         //since we don't want to just have the same few fighters get picked for a dive
         this.diveAttackRandomSkipCount = randomFromInterval(0,this.diveAttackRandomSkipCountMax);
         this.diveAttackShipCounter = randomFromInterval(1,this.diveAttackShipCounterMax);
-        this.currentDiveAttack = Global.waypointManager.getRandomDiveAttackOption();
+        if(this.bossFight)
+        {
+            this.currentDiveAttack = Global.waypointManager.getRandomBossDiveAttackOption();
+        }
+        else
+        {
+            this.currentDiveAttack = Global.waypointManager.getRandomDiveAttackOption();
+        }
     }
-
-
 
     _setupStages()
     {
@@ -172,15 +182,9 @@ class DirectorAI
       let waveTTL = 180;
       this.timeline.push({batch:1,
                           attack: 0,
-                          msg:"Get your ship through the blockade to the Solar Federation base!",
+                          msg:"Get your ship through the blockade!",
                           color:color('orange'),
                           spot:"top",
-                          ttl:storyTTL});
-      this.timeline.push({batch:1,
-                          attack:0,
-                          msg:"Stage 1",
-                          color:color('orange'),
-                          spot:"low",
                           ttl:storyTTL});
       this.timeline.push({batch:2,
                           ttl:waveTTL,
@@ -219,9 +223,9 @@ class DirectorAI
                           direction:'atkMidRight'});
     this.timeline.push({batch:5,
                           attack:0,
-                          msg:"Uh oh, these ones look different!",
+                          msg:"These ones look different!",
                           color:color('orange'),
-                          spot:"low",
+                          spot:"top",
                           ttl:storyTTL});
     this.timeline.push({batch:6,
                           ttl:waveTTL,
@@ -238,12 +242,60 @@ class DirectorAI
                           timing:60,
                           direction:'atkMidRight'});
 
-      this.timeline.push({batch:99,
+    this.timeline.push({batch:8,
                           attack:0,
-                          msg:"<that's all the stages for now>",
+                          msg:"Here they come!",
                           color:color('orange'),
-                          spot:"low",
+                          spot:"top",
                           ttl:storyTTL});
+
+    this.timeline.push({batch:9,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:7,
+                          type:'flat_shield',
+                          timing:60,
+                          direction:'atkMidRight'});
+
+    this.timeline.push({batch:9,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:7,
+                          type:'armor',
+                          timing:60,
+                          direction:'atkMidLeft'});
+
+
+    this.timeline.push({batch:9,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:7,
+                          type:'flat_shield',
+                          timing:60,
+                          direction:'atkBottomLeft'});
+
+        this.timeline.push({batch:9,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:7,
+                          type:'armor',
+                          timing:60,
+                          direction:'atkBottomRight'});
+
+       this.timeline.push({batch:10,
+                          attack:0,
+                          msg:"Uh oh...",
+                          color:color('orange'),
+                          spot:"top",
+                          ttl:storyTTL});
+      this.timeline.push({batch:11,
+                          ttl:waveTTL,
+                          attack:1,
+                          count:1,
+                          type:'boss',
+                          timing:60,
+                          direction:'topLeft',
+                          execRun: function(){Global.director.bossFight = true} });
     }
 
     _debugTimelineItem(item)
@@ -260,7 +312,7 @@ class DirectorAI
         {
             return false;
         }
-        return false; //return true; //TODO Enable this when I think the game is complete and has an ending
+        return true;
     }
 }
 
@@ -418,6 +470,7 @@ class WaveManager
 
           case 'mid left':
           case 'midLeft':
+          case 'atkMidLeft':
           case 'atkmidLeft':
             pos = createVector(0,Global.canvasHeight/2);
             _count=40;
@@ -426,6 +479,7 @@ class WaveManager
           case 'mid right':
           case 'midRight':
           case 'atkMidRight':
+          case 'atkmidRight':
             pos = createVector(Global.canvasWidth,Global.canvasHeight/2);
             _count=40;
             break;
@@ -489,7 +543,7 @@ class WaveManager
     {
       if(this.formationPoints.length == 0)
       {
-        console.log("ERROR: ran out of formation points!")
+        //console.log("Ran out of formation points!")
         this.createFormationPoints(); //regenerate the formation points and hope
       }
       return this.formationPoints.shift(); //shift gives FIFO behavior
@@ -544,6 +598,11 @@ class EnemyCreator
             case 'armor':
                 newSprite = this._createDefaultEnemy(posObj);
                 this._setArmor(newSprite);
+                newSprite.GameObjectName = type;
+                break;
+            case 'boss':
+                newSprite = this._createDefaultEnemy(posObj);
+                this._setBoss(newSprite);
                 newSprite.GameObjectName = type;
                 break;
             default:
@@ -611,6 +670,51 @@ class EnemyCreator
         sprite.point_value = 30;
         sprite.GunCooldown = new GunCooldown(targetFrameRate/3);
         sprite.fire = function (){fireShotgunEnemyCyanBubbleInRandomDownDirection(this.position.x,this.position.y)};
+    }
+
+    _setBoss(sprite)
+    {
+        sprite.addAnimation('boss',Global.animations.boss);
+        sprite.scale = 3;
+        sprite.setDefaultCollider();
+        sprite.hasShield = false;
+        sprite.shieldScale = 1.2;
+        sprite.health = 109; //about 11 hits
+        sprite.damage = 100;
+        sprite.baseAccel = 0.15;
+        sprite.maxSpeed = 2;
+        sprite.point_value = 500;
+        sprite.GunCooldown = new GunCooldown(5);
+        sprite.FireToggle = false;
+        sprite.formationPoint = createVector(Global.canvasWidth/2 ,Global.canvasHeight * 1/12);
+        sprite.fire = function ()
+        {
+            this.FireToggle = !this.FireToggle
+            if(this.FireToggle)
+            {
+                let gunoffset = this.position.y + 35
+                //Firing 3 on top of each other is going to make it tough to shoot down
+                //and more likely to kill you in one hit
+                fireBossCannon(this.position.x,gunoffset)
+                fireBossCannon(this.position.x,gunoffset)
+                fireBossCannon(this.position.x,gunoffset)
+            }
+            else
+            {
+                let x = this.position.x;
+                let y = this.position.y;
+
+                fireShotgunEnemyCyanBubbleAtDirection(x,y,180);
+                if(coinFlip())
+                {
+                    fireShotgunEnemyCyanBubbleAtDirection(x,y,180+45);
+                }
+                else
+                {
+                    fireShotgunEnemyCyanBubbleAtDirection(x,y,180-45);
+                }
+            }
+        };
     }
 
     _deepcopy(thing)
@@ -777,6 +881,24 @@ class WaypointManager
               return this.markAllWaypointsToAttack(this.get('backslashTopLeft'));
           }
 
+          case 'backslashTopMid':{
+              let relOffset = Global.canvasWidth*0.08;
+              let centerX = Global.canvasWidth*0.5;
+              let centerY = Global.canvasHeight*0.25;
+              let waypoints = [];
+              waypoints.push({x:centerX-relOffset,y:centerY-relOffset});
+              waypoints.push({x:centerX,y:centerY});
+              waypoints.push({x:centerX+relOffset,y:centerY+relOffset});
+              return waypoints;
+              break;
+          }
+
+          case 'atkBackslashTopMid':{
+              return this.markAllWaypointsToAttack(this.get('backslashTopMid'));
+          }
+
+
+
           case 'backslashTopRight':{
               let relOffset = Global.canvasWidth*0.08;
               let centerX = Global.canvasWidth*0.75;
@@ -802,12 +924,20 @@ class WaypointManager
 
     getDiveAttackOptions()
     {
-        return ['atkDirectBottomCircleLeft','atkDirectBottomCircleCenter','atkDirectBottomCircleRight','atkBackslashBottomLeft','atkBackslashBottomRight','atkBackslashTopLeft','atkBackslashTopRight']
+        return ['atkDirectBottomCircleLeft','atkDirectBottomCircleCenter','atkDirectBottomCircleRight','atkBackslashBottomLeft','atkBackslashBottomRight','atkBackslashTopLeft','atkBackslashTopMid','atkBackslashTopRight']
     }
 
     getRandomDiveAttackOption()
     {
         let atkOptions = this.getDiveAttackOptions();
+        let pick = getRandomIntInclusive(0,atkOptions.length-1);
+        let waypointValue = atkOptions[pick]
+        return waypointValue;
+    }
+
+    getRandomBossDiveAttackOption()
+    {
+        let atkOptions = ['atkBackslashTopLeft','atkBackslashTopMid','atkBackslashTopRight']
         let pick = getRandomIntInclusive(0,atkOptions.length-1);
         let waypointValue = atkOptions[pick]
         return waypointValue;

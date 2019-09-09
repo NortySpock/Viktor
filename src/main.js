@@ -11,7 +11,7 @@ let pointsStringLocation;
 var FPSstring  = '';
 var FPSstringLocation;
 const Game_Over_string = 'Game Over. Press [Enter] to start again.';
-const Won_The_Game_string = 'You made it to the Solar Federation base! Success!'
+const Won_The_Game_string = 'You made it past the blockade! Success!'
 let Game_Over_string_location;
 let Game_Over_shots_location;
 let Game_Over_hit_percent_location;
@@ -47,7 +47,10 @@ function reset() {
     frameRate(targetFrameRate);
     background(0);
 
+    Global.blackColor = color(0);
     Global.backgroundColor = color(0);
+    Global.flashOn = false;
+
     Global.textColor = color(255);
     Global.playerDead = false;
 
@@ -102,8 +105,8 @@ function reset() {
 
 function preload()
 {
-  Global.images.ship1 = loadImage('img/ship1.png');
-  Global.images.ship2 = loadImage('img/ship2.png');
+  //Global.images.ship1 = loadImage('img/ship1.png');
+  //Global.images.ship2 = loadImage('img/ship2.png');
   Global.images.cyan_bolt = loadImage('img/cyan_bullet2.png');
   Global.images.player_ship = loadImage('img/player_ship.png');
   Global.images.cyan_bubble = loadImage('img/cyan_bubble.png');
@@ -112,7 +115,9 @@ function preload()
   Global.images.red_bolt = loadImage('img/red_bullet.png');
   Global.images.armor = loadImage('img/armor.png');
 
-  Global.images.mine = loadImage('img/mine.png');
+  //Global.images.mine = loadImage('img/mine.png');
+  Global.images.bossBeam = loadImage('img/boss_beam.png');
+  Global.images.shattered = loadImage('img/shattered.png');
 
 
   let rotary_explosion_images = 5;
@@ -129,9 +134,11 @@ function preload()
   Global.images.boss = loadImage('img/boss.png');
   Global.animations.boss = loadAnimation('img/boss3.png','img/boss.png','img/boss2.png','img/boss.png') // cycle is min, avg, max, avg -> min
 
+  /*
   let wings_images = 3
   Global.images.wings = loadImage('img/wings.png');
   Global.animations.wings = loadAnimation('img/wings2.png','img/wings.png','img/wings3.png','img/wings.png') //cycle is min, avg, max, avg -> min
+  */
 
 
 
@@ -191,7 +198,7 @@ function draw() {
         {
             rectMode(CENTER);
             fill(0,0,0,0);
-            stroke(255); //TODO change this to use the sprite's color for the shield
+            stroke(255);
             let radius = Math.max(mainSprite.width*Global.shieldScale,mainSprite.height*Global.shieldScale);
             ellipse(mainSprite.position.x,mainSprite.position.y,radius,radius)
         }
@@ -243,6 +250,8 @@ function draw() {
                         {
                             Global.ParticleSystem.addParticleSpray(mainSprite.position,targetSprite.shapeColor,particle_size,particle_ttl,particle_count);
                             Global.soundMgr.queueSound('thud');
+
+
                         }
                         targetSprite.health -= mainSprite.damage;
                     }
@@ -272,12 +281,40 @@ function draw() {
               {
                 Global.points += targetSprite.point_value;
               }
-              let newpos = targetSprite.position;
-              targetSprite.remove();
-              let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
-              explode_sprite.scale = 3
-              explode_sprite.life = targetFrameRate;
-              explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
+
+              if(targetSprite.GameObjectName === 'boss') //special handling for boss dying
+              {
+                  let newpos = targetSprite.position;
+                  let particle_color = targetSprite.shapeColor
+                  let p_size = 3;
+                  let p_ttl = 600;
+                  let p_count = 40;
+                  targetSprite.remove();
+
+                  flashTheScreen(); //just once
+
+                  let offset = 15
+                  let leftPoint = createVector(newpos.x-offset,newpos.y)
+                  let rightPoint = createVector(newpos.x+offset,newpos.y)
+                  Global.ParticleSystem.addParticleSpray(newpos,particle_color,p_size,p_ttl,p_count);
+                  Global.ParticleSystem.addParticleSpray(leftPoint,particle_color,p_size,p_ttl,p_count);
+                  Global.ParticleSystem.addParticleSpray(rightPoint,particle_color,p_size,p_ttl,p_count);
+
+                  let shatteredSprite = createSprite(newpos.x, newpos.y, 16, 16);
+                  shatteredSprite.scale = 3
+                  shatteredSprite.life = 2*Global.canvasHeight+10;
+                  shatteredSprite.addImage(Global.images.shattered)
+                  shatteredSprite.setVelocity(0,0.5);
+              }
+              else
+              {
+                  let newpos = targetSprite.position;
+                  targetSprite.remove();
+                  let explode_sprite = createSprite(newpos.x, newpos.y, 16, 16);
+                  explode_sprite.scale = 3
+                  explode_sprite.life = targetFrameRate;
+                  explode_sprite.addAnimation('explode', Global.animations.rotary_explosion);
+              }
             }
 
             if(Global.friendlyGroup.contains(targetSprite) && !(playerInvulnerableDebug && debugMode))
@@ -321,6 +358,12 @@ function draw() {
               spr.hasTrueShapeColor = true;
             }
         }
+
+        //some bullets are lasting too long. As a dirty hack, occasionally check to see if they are offscreen and not near deletion
+        if(Global.bulletGroup.contains(spr) && spr.life > 15 && !onCanvas(spr.position.x,spr.position.y))
+        {
+            spr.life = 15; //give it a little time to leave but remove it soon
+        }
     }
 
     Global.director.run();
@@ -329,6 +372,14 @@ function draw() {
 
     //play all the sounds we've built up this frame
     Global.soundMgr.playAllQueuedSounds();
+
+
+    if(Global.flashOn)
+    {
+        Global.backgroundColor = Global.blackColor;
+        Global.flashOn = false;
+    }
+
 
     if(false)
     {
@@ -374,60 +425,6 @@ function keyPressed() {
   {
       Global.soundMgr.mute = !Global.soundMgr.mute
   }
-
-
-  if(key == 'N' && debugMode)
-  {
-    fireEnemyCyanBubbleWithVelocity(mouseX,mouseY, -1,0)
-  }
-
-
-
-  if(key == 'A' && debugMode == true)
-  {
-      let x = mouseX;
-      let y = mouseY;
-      let h = Global.images.armor.height
-      let w = Global.images.armor.width
-      let new_sprite = createSprite(x,y,h,w);
-      new_sprite.addImage(Global.images.armor);
-      new_sprite.scale = 3;
-  }
-
-
-   if(key == 'D' && debugMode == true)
-  {
-      let x = mouseX;
-      let y = mouseY;
-      let h = Global.images.boss.height
-      let w = Global.images.boss.width
-      let new_sprite = createSprite(x,y,h,w);
-      new_sprite.addAnimation('boss',Global.animations.boss);
-      new_sprite.scale = 3;
-  }
-
-  if(key == 'F' && debugMode == true)
-  {
-      let x = mouseX;
-      let y = mouseY;
-      let h = Global.images.wings.height
-      let w = Global.images.wings.width
-      let new_sprite = createSprite(x,y,h,w);
-      new_sprite.addAnimation('wings',Global.animations.wings);
-      new_sprite.scale = 3;
-  }
-
-    if(key == 'G' && debugMode == true)
-  {
-      let x = mouseX;
-      let y = mouseY;
-      let h = Global.images.mine.height
-      let w = Global.images.mine.width
-      let new_sprite = createSprite(x,y,h,w);
-      new_sprite.addImage(Global.images.mine);
-      new_sprite.scale = 3;
-  }
-
 };
 
 function randomFromInterval(min,max){
@@ -444,6 +441,12 @@ function getRandomIntInclusive(min, max) {
 function coinFlip()
 {
   return (int(Math.random() * 2) == 0);
+}
+
+function flashTheScreen()
+{
+    Global.backgroundColor = color(255);
+    Global.flashOn = true;
 }
 
 function updateUIstuff()
@@ -496,8 +499,6 @@ function renderForegroundUI()
         let percentage_string = '               Percentage:'+Global.PlayerHitPercent+'%'
         text(percentage_string , Game_Over_hit_percent_location.x,Game_Over_hit_percent_location.y);
     }
-
-
 }
 
 function halfSecondUpdateLoop(){
@@ -671,6 +672,24 @@ function fireEnemyCyanBubbleWithVelocity(x,y,xvel,yvel)
   new_bullet.mass = 0.1;
   new_bullet.damage = 10;
   new_bullet.life = Global.canvasWidth + Global.canvasHeight;
+  Global.bulletGroup.add(new_bullet);
+  Global.enemyGroup.add(new_bullet);
+
+  Global.soundMgr.queueSound('player_bullet');
+}
+
+function fireBossCannon(x,y)
+{
+  let h = Global.images.bossBeam.height;
+  let w = Global.images.bossBeam.width;
+  let new_bullet = createSprite(x,y,h,w);
+  new_bullet.addImage(Global.images.bossBeam);
+  new_bullet.scale = 3;
+  let yvel = 3.5;
+  new_bullet.setVelocity(0,3.5);
+  new_bullet.mass = 0.1;
+  new_bullet.damage = 100;
+  new_bullet.life = Global.canvasHeight;
   Global.bulletGroup.add(new_bullet);
   Global.enemyGroup.add(new_bullet);
 

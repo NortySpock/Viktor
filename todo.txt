@@ -4,10 +4,7 @@ Bugs
 
 Short term
 ---------------------
-Write out wings attack
-Write a new sound for cyan bubble
-Final End-Game destination
-Boss destroyed ship
+Write a new sound for the other enemy shots
 
 Long term
 ----------------------
