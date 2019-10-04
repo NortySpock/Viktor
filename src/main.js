@@ -117,7 +117,7 @@ function preload()
 
   //Global.images.mine = loadImage('img/mine.png');
   Global.images.bossBeam = loadImage('img/boss_beam.png');
-  Global.images.shattered = loadImage('img/shattered.png');
+  Global.images.shattered = loadImage('img/bossDestroyed.png');
 
 
   let rotary_explosion_images = 5;

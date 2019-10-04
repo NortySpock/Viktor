@@ -180,7 +180,7 @@ class DirectorAI
     {
       let storyTTL = Global.enableStory ? 300 : 0;
       let waveTTL = 180;
-      this.timeline.push({batch:1,
+      /*this.timeline.push({batch:1,
                           attack: 0,
                           msg:"Get your ship through the blockade!",
                           color:color('orange'),
@@ -287,7 +287,7 @@ class DirectorAI
                           msg:"Uh oh...",
                           color:color('orange'),
                           spot:"top",
-                          ttl:storyTTL});
+                          ttl:storyTTL}); */
       this.timeline.push({batch:11,
                           ttl:waveTTL,
                           attack:1,
@@ -604,6 +604,7 @@ class EnemyCreator
                 newSprite = this._createDefaultEnemy(posObj);
                 this._setBoss(newSprite);
                 newSprite.GameObjectName = type;
+                newSprite.health = 1; //TODO change back from  testing
                 break;
             default:
                 console.log('enemy type not found:'+type);
